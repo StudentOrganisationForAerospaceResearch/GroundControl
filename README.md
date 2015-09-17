@@ -7,7 +7,7 @@ Minimal reversi game made in python
 Please use this stadard header in all documents:
 
 """
-2015/??/??
+2015/MM/DD
 
 Group 22, CPSC 231
 
