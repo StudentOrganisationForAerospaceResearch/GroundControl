@@ -32,53 +32,105 @@ turtle1 = turtle.Turtle()
 turtle1.hideturtle()
 
 # Sets The Drawing Speed Of The Turtle
-turtle1.speed(10)
+turtle1.speed(0)
 
-# For Loop To Teleport The Turtle To Coordinates & Print The Reversi Table
-for indexCounter in range(9):
+
+# Function To Print Out The Reversi Table
+def printOutTable():
+    # For Loop To Teleport The Turtle To Coordinates & Print The Reversi Table
+    for indexCounter in range(9):
+        # Lifts Up The Turtle & Prevents It From Leaving A Trail
+        turtle1.up()
+        # Teleports The Turtle To The Left Hand Side Of The Next Row
+        turtle1.goto(boardTopLeftX, boardTopLeftY - indexCounter * boardTopLeftY / 4)
+        # Lowers The Turtle & Allows It To Leave A Trail Again
+        turtle1.down()
+        # Prints Out The Row's Line
+        turtle1.forward(boardTopLeftX * -2)
+
+        # Turns The Turtle Right To Print Out A Vertical Line
+        turtle1.right(90)
+        # Lifts Up The Turtle & Prevents It From Leaving A Trail
+        turtle1.up()
+        # Teleports The Turtle To The Top Of The Next Column
+        turtle1.goto(boardTopLeftX - indexCounter * boardTopLeftX / 4, boardTopLeftY)
+        # Lowers The Turtle & Allows It To Leave A Trail Again
+        turtle1.down()
+        # Prints Out The Row's Line
+        turtle1.forward(boardTopLeftY * 2)
+        # Turns The Turtle Back Left To Print Out The Horizontal Line
+        turtle1.left(90)
+
+
+# Function To Check Whether Or Not The X & Y Coordinates Fed In Are Valid
+def checkIfValidMove(inputX, inputY):
+    # Checks To See Whether Or Not The Coordinates The User Entered Are Within Bounds
+    if inputX <= 8 and inputY <= 8 and inputX >= 1 and inputY >= 1:
+        # Checks To See Whether Or Not The Entry Index In The Matrix Is Free
+        if boardMatrix[inputX][inputY] == 0:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+# Function To Teleport The Turtle To A Certain Tile (To Print Out The Circle Later)
+def teleportToTile(inputX, inputY):
     # Lifts Up The Turtle & Prevents It From Leaving A Trail
     turtle1.up()
-    # Teleports The Turtle To The Left Hand Side Of The Next Row
-    turtle1.goto(boardTopLeftX, boardTopLeftY - indexCounter * boardTopLeftY / 4)
+    # Teleports To The Relevant Tile
+    turtle1.goto(boardTopLeftX - (inputX - 0.5) * boardTopLeftX / 4, boardTopLeftY - inputY * boardTopLeftY / 4)
     # Lowers The Turtle & Allows It To Leave A Trail Again
     turtle1.down()
-    # Prints Out The Row's Line
-    turtle1.forward(boardTopLeftX * -2)
 
-    # Turns The Turtle Right To Print Out A Vertical Line
-    turtle1.right(90)
-    # Lifts Up The Turtle & Prevents It From Leaving A Trail
-    turtle1.up()
-    # Teleports The Turtle To The Top Of The Next Column
-    turtle1.goto(boardTopLeftX - indexCounter * boardTopLeftX / 4, boardTopLeftY)
-    # Lowers The Turtle & Allows It To Leave A Trail Again
-    turtle1.down()
-    # Prints Out The Row's Line
-    turtle1.forward(boardTopLeftY * 2)
-    # Turns The Turtle Back Left To Print Out The Horizontal Line
-    turtle1.left(90)
+
+# Function To Add A Piece To The Board
+def addPieceToBoard(inputX, inputY, moveCount):
+    # Starts The Fill Command (To Fill In The Printed Circle)
+    turtle1.begin_fill()
+
+    # If / Else Statement To Check Which Colour To Fill The Circle With (Odd Is Blue & Even Is Red) & It Also Stores Who Occupied The Tile
+    if moveCount % 2 == 0:
+        # If The Number Is Even, Fills It Blue & Stores That They Occupied It
+        turtle1.fillcolor("Red")
+        boardMatrix[inputX][inputY] = "Red"
+    else:
+        # If The Number Is Odd, Fills It Red & Stores That They Occupied It
+        turtle1.fillcolor("Blue")
+        boardMatrix[inputX][inputY] = "Blue"
+        moveCount += 1
+
+    # Prints Out A Circle In The Tile
+    turtle1.circle(-boardTopLeftX / 8)
+    # Ends The Fill Command
+    turtle1.end_fill()
+
+
+# Calls Function To Print Out The Reversi Table
+printOutTable()
 
 # Welcomes The User To The Program
-print("Welcome to" + "\n" + 
-"""╦═╗┌─┐┬  ┬┌─┐┬─┐┌─┐┬
-╠╦╝├┤ └┐┌┘├┤ ├┬┘└─┐│
-╩╚═└─┘ └┘ └─┘┴└─└─┘┴""" + "\n" + 
-"In this game you will be able to..." + "\n" +
-"""╔╦╗┬ ┬┌─┐┌─┐  ╔═╗┌─┐┌┬┐┌─┐┌┬┐┬ ┬┬┌┐┌┌─┐  
- ║ └┬┘├─┘├┤   ╚═╗│ ││││├┤  │ ├─┤│││││ ┬  
- ╩  ┴ ┴  └─┘  ╚═╝└─┘┴ ┴└─┘ ┴ ┴ ┴┴┘└┘└─┘ 
-"""+ "\n" +
-"You will eventually be able to click on the tile where you want to play your piece, but for now, please input coordinates. The point of the game is as follows:"+ "\n" +
-"""╔═╗┌─┐┌┬┐  ┌─┐┌─┐  ┌┬┐┌─┐┌┐┌┬ ┬  ┌─┐┬┌─┐┌─┐┌─┐┌─┐
-║ ╦├┤  │   ├─┤└─┐  │││├─┤│││└┬┘  ├─┘│├┤ │  ├┤ └─┐
-╚═╝└─┘ ┴   ┴ ┴└─┘  ┴ ┴┴ ┴┘└┘ ┴   ┴  ┴└─┘└─┘└─┘└─┘
-┌─┐┌─┐  ┌─┐┌─┐┌─┐┌─┐┬┌┐ ┬  ┌─┐                   
-├─┤└─┐  ├─┘│ │└─┐└─┐│├┴┐│  ├┤                    
-┴ ┴└─┘  ┴  └─┘└─┘└─┘┴└─┘┴─┘└─┘                   
-┬┌┐┌  ┬ ┬┌─┐┬ ┬┬─┐  ┌─┐┌─┐┬  ┌─┐┬ ┬┬─┐           
-││││  └┬┘│ ││ │├┬┘  │  │ ││  │ ││ │├┬┘           
-┴┘└┘   ┴ └─┘└─┘┴└─  └─┘└─┘┴─┘└─┘└─┘┴└─  
-""")
+print("Welcome to" + "\n" +
+      """???????  ???????????
+      ????? ?????? ???????
+      ?????? ?? ??????????""" + "\n" +
+      "In this game you will be able to..." + "\n" +
+      """???? ???????  ???????????????? ????????  
+       ? ????????   ???? ??????  ? ???????? ?  
+       ?  ? ?  ???  ??????? ???? ? ? ???????? 
+      """+ "\n" +
+      "You will eventually be able to click on the tile where you want to play your piece, but for now, please input coordinates. The point of the game is as follows:"+ "\n" +
+      """?????????  ??????  ?????????? ?  ????????????????
+      ? ???  ?   ??????  ????????????  ?????? ?  ?? ???
+      ?????? ?   ? ????  ? ?? ???? ?   ?  ?????????????
+      ??????  ??????????????? ?  ???                   
+      ??????  ???? ????????????  ??                    
+      ? ????  ?  ???????????????????                   
+      ????  ? ????? ????  ???????  ???? ????           
+      ????  ???? ?? ????  ?  ? ??  ? ?? ????           
+      ????   ? ?????????  ??????????????????  
+      """)
 
 # Endless While Loop To Handle The User's Inputted Move
 while True:
@@ -86,40 +138,13 @@ while True:
     placePieceX = int(input("\nRow You Would Like To Place A Piece In: "))
     placePieceY = int(input("Column You Would Like To Place A Piece In: "))
 
-    # Lifts Up The Turtle & Prevents It From Leaving A Trail
-    turtle1.up()
-    # Teleports To The Relevant Tile
-    turtle1.goto(boardTopLeftX - (placePieceX - 0.5) * boardTopLeftX / 4, boardTopLeftY - placePieceY * boardTopLeftY / 4)
-    # Lowers The Turtle & Allows It To Leave A Trail Again
-    turtle1.down()
-    # Starts The Fill Command (To Fill In The Printed Circle)
-    turtle1.begin_fill()
-
-    # Checks To See Whether Or Not The Coordinates The User Entered Are Within Bounds
-    if placePieceX <= 8 and placePieceY <= 8 and placePieceX >= 1 and placePieceY >= 1:
-        # Checks To See Whether Or Not The Entry Index In The Matrix Is Free
-        if boardMatrix[placePieceX][placePieceY] == 0:
-            # If / Else Statement To Check Which Colour To Fill The Circle With (Odd Is Blue & Even Is Red) & It Also Stores Who Occupied The Tile
-            if moveCounter %2 == 0:
-                # If The Number Is Even, Fills It Blue & Stores That They Occupied It
-                turtle1.fillcolor("Red")
-                boardMatrix[placePieceX][placePieceY] = "Red"
-                moveCounter += 1
-            else:
-                # If The Number Is Odd, Fills It Red & Stores That They Occupied It
-                turtle1.fillcolor("Blue")
-                boardMatrix[placePieceX][placePieceY] = "Blue"
-                moveCounter += 1
-
-            # Prints Out A Circle In The Tile
-            turtle1.circle(-boardTopLeftX / 8)
-            # Ends The Fill Command
-            turtle1.end_fill()
-        else:
-            # Informs The User That Their Entered Move Coordinates Were Invalid
-            print("Invalid Move!")
+    # Checks To See If The Coordinates Entered Is Valid & Then Performs The Move
+    if checkIfValidMove(placePieceX, placePieceY):
+        moveCounter += 1
+        teleportToTile(placePieceX, placePieceY)
+        addPieceToBoard(placePieceX, placePieceY, moveCounter)
     else:
-        # Informs The User That Their Entered Move Coordinates Were Invalid
+        # Tells The User That The Coordinates Entered Were Invalid
         print("Invalid Move!")
 
 # Closes The Program If The GUI Overlay Is Clicked
