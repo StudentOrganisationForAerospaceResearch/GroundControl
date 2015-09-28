@@ -13,6 +13,7 @@ This part of the game is in charge of prompting the user for input & displaying 
 
 # Imports In Module(s) That Will Be Utilized
 import turtle
+import time
 from ASCII import printOutASCII
 
 # Initialize Variables
@@ -28,7 +29,7 @@ boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in rang
 # Initialize The Display Out & The First Turtle
 displayOut = turtle.Screen()
 turtle1 = turtle.Turtle()
-displayOut.bgcolor("#101010")
+displayOut.bgcolor("Brown")
 displayOut.title("Reversi By Group 22")
 
 # Hides The Turtle Pointer
@@ -39,10 +40,19 @@ turtle1.speed(0)
 displayOut.delay(0)
 
 
+# Function To Print Out The ASCII Intro To The Display Overlay & Waits 10 Seconds Before Running The Program
+def printOutIntro():
+    turtle1.write(printOutASCII())
+    time.sleep(10)
+    turtle1.clear()
+
+
 # Function To Print Out The Reversi Table
 def printOutTable():
+    # Clears Out The Display Overlay Before Printing Out The Table
+    turtle1.clear()
     # Sets The Turtle's Tracer Colour To White
-    turtle1.color("white")
+    turtle1.color("White")
     # For Loop To Teleport The Turtle To Coordinates & Print The Reversi Table
     for indexCounter in range(9):
         # Lifts Up The Turtle & Prevents It From Leaving A Trail
@@ -67,7 +77,7 @@ def printOutTable():
         # Turns The Turtle Back Left To Print Out The Horizontal Line
         turtle1.left(90)
     # Sets The Turtle's Tracer Colour To Black
-    turtle1.color("black")
+    turtle1.color("Black")
 
 
 # Function To Check Whether Or Not The X & Y Coordinates Fed In Are Valid
@@ -101,12 +111,12 @@ def addPieceToBoard(inputRow, inputColumn, moveCount):
     # If / Else Statement To Check Which Colour To Fill The Circle With (Odd Is Blue & Even Is Red) & It Also Stores Who Occupied The Tile
     if moveCount % 2 == 0:
         # If The Number Is Even, Fills It Blue & Stores That They Occupied It
-        turtle1.fillcolor("Red")
-        boardMatrix[inputRow][inputColumn] = "Red"
+        turtle1.fillcolor("White")
+        boardMatrix[inputRow][inputColumn] = "White"
     else:
         # If The Number Is Odd, Fills It Red & Stores That They Occupied It
-        turtle1.fillcolor("Blue")
-        boardMatrix[inputRow][inputColumn] = "Blue"
+        turtle1.fillcolor("Black")
+        boardMatrix[inputRow][inputColumn] = "Black"
         moveCount += 1
 
     # Prints Out A Circle In The Tile
@@ -114,12 +124,11 @@ def addPieceToBoard(inputRow, inputColumn, moveCount):
     # Ends The Fill Command
     turtle1.end_fill()
 
+# Calls The Function To Print Out The Intro Message
+printOutIntro()
 
 # Calls Function To Print Out The Reversi Table
 printOutTable()
-
-# Welcomes The User To The Program
-printOutASCII()
 
 # Endless While Loop To Handle The User's Inputted Move
 while True:
