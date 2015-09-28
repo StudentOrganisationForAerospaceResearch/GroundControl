@@ -13,23 +13,24 @@ This part of the game is in charge of simply being called by the GUI.py to print
 
 
 def printOutASCII():
-    print("Welcome to" + "\n" +
-          """╦═╗┌─┐┬  ┬┌─┐┬─┐┌─┐┬
-          ╠╦╝├┤ └┐┌┘├┤ ├┬┘└─┐│
-          ╩╚═└─┘ └┘ └─┘┴└─└─┘┴""" + "\n" +
-          "In this game you will be able to..." + "\n" +
-          """╔╦╗┬ ┬┌─┐┌─┐  ╔═╗┌─┐┌┬┐┌─┐┌┬┐┬ ┬┬┌┐┌┌─┐
-           ║ └┬┘├─┘├┤   ╚═╗│ ││││├┤  │ ├─┤│││││ ┬
-           ╩  ┴ ┴  └─┘  ╚═╝└─┘┴ ┴└─┘ ┴ ┴ ┴┴┘└┘└─┘
-          """ + "\n" +
-          "You will eventually be able to click on the tile where you want to play your piece, but for now, please input coordinates. The point of the game is as follows:" + "\n" +
-          """╔═╗┌─┐┌┬┐  ┌─┐┌─┐  ┌┬┐┌─┐┌┐┌┬ ┬  ┌─┐┬┌─┐┌─┐┌─┐┌─┐
-          ║ ╦├┤  │   ├─┤└─┐  │││├─┤│││└┬┘  ├─┘│├┤ │  ├┤ └─┐
-          ╚═╝└─┘ ┴   ┴ ┴└─┘  ┴ ┴┴ ┴┘└┘ ┴   ┴  ┴└─┘└─┘└─┘└─┘
-          ┌─┐┌─┐  ┌─┐┌─┐┌─┐┌─┐┬┌┐ ┬  ┌─┐
-          ├─┤└─┐  ├─┘│ │└─┐└─┐│├┴┐│  ├┤
-          ┴ ┴└─┘  ┴  └─┘└─┘└─┘┴└─┘┴─┘└─┘
-          ┬┌┐┌  ┬ ┬┌─┐┬ ┬┬─┐  ┌─┐┌─┐┬  ┌─┐┬ ┬┬─┐
-          ││││  └┬┘│ ││ │├┬┘  │  │ ││  │ ││ │├┬┘
-          ┴┘└┘   ┴ └─┘└─┘┴└─  └─┘└─┘┴─┘└─┘└─┘┴└─
-          """)
+    asciiIntro = ("Welcome to" + "\n" + 
+            """╦═╗┌─┐┬  ┬┌─┐┬─┐┌─┐┬
+            ╠╦╝├┤ └┐┌┘├┤ ├┬┘└─┐│
+            ╩╚═└─┘ └┘ └─┘┴└─└─┘┴""" + "\n" + 
+            "In this game you will be able to..." + "\n" +
+            """╔╦╗┬ ┬┌─┐┌─┐  ╔═╗┌─┐┌┬┐┌─┐┌┬┐┬ ┬┬┌┐┌┌─┐  
+             ║ └┬┘├─┘├┤   ╚═╗│ ││││├┤  │ ├─┤│││││ ┬  
+             ╩  ┴ ┴  └─┘  ╚═╝└─┘┴ ┴└─┘ ┴ ┴ ┴┴┘└┘└─┘ 
+            """+ "\n" +
+            "You will eventually be able to click on the tile where you want to play your piece, but for now, please input coordinates. The point of the game is as follows:"+ "\n" +
+            """╔═╗┌─┐┌┬┐  ┌─┐┌─┐  ┌┬┐┌─┐┌┐┌┬ ┬  ┌─┐┬┌─┐┌─┐┌─┐┌─┐
+            ║ ╦├┤  │   ├─┤└─┐  │││├─┤│││└┬┘  ├─┘│├┤ │  ├┤ └─┐
+            ╚═╝└─┘ ┴   ┴ ┴└─┘  ┴ ┴┴ ┴┘└┘ ┴   ┴  ┴└─┘└─┘└─┘└─┘
+            ┌─┐┌─┐  ┌─┐┌─┐┌─┐┌─┐┬┌┐ ┬  ┌─┐                   
+            ├─┤└─┐  ├─┘│ │└─┐└─┐│├┴┐│  ├┤                    
+            ┴ ┴└─┘  ┴  └─┘└─┘└─┘┴└─┘┴─┘└─┘                   
+            ┬┌┐┌  ┬ ┬┌─┐┬ ┬┬─┐  ┌─┐┌─┐┬  ┌─┐┬ ┬┬─┐           
+            ││││  └┬┘│ ││ │├┬┘  │  │ ││  │ ││ │├┬┘           
+            ┴┘└┘   ┴ └─┘└─┘┴└─  └─┘└─┘┴─┘└─┘└─┘┴└─  
+            """)
+    return asciiIntro
