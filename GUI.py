@@ -14,6 +14,8 @@ This part of the game is in charge of prompting the user for input & displaying 
 # Imports In Module(s) That Will Be Utilized
 import turtle
 import time
+import math
+import random
 from ASCII import printOutASCII
 
 # Initialize Variables
@@ -23,7 +25,7 @@ boardOutlineColour = "White"
 boardBackgroundColour = "Brown"
 player1Colour = "White"
 player2Colour = "Black"
-playerPieceCoordinates = [0, 0]
+playerPieceData = [1, 0, 0]
 
 # Initialize Board 8x8 Matrix
 boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in range(9)]
@@ -31,19 +33,14 @@ boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in rang
 # Initialize The Display Out & The First Turtle
 displayOut = turtle.Screen()
 turtle1 = turtle.Turtle()
-turtle1.hideturtle()
 displayOut.bgcolor(boardBackgroundColour)
 displayOut.title("Reversi By Group 22")
 displayOut.setup(abs(halfBoardWidth * 2 + halfBoardWidth * 1 / 4), abs(halfBoardHeight * 2 + halfBoardHeight * 1 / 4))
 
-# Sets The Drawing Speed Of The Turtle & The Screen Print Out Delay To 0 (Instantaneous)
-turtle1.speed(0)
-displayOut.delay(0)
-
 
 # Function To Print Out The ASCII Intro To The Display Overlay & Waits 10 Seconds Before Running The Program
 def printOutIntro():
-    teleportToTile(5.5, 0.5)
+    teleportToTile(6, 1)
     turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(halfBoardWidth) * 1 / 25)))
     time.sleep(10)
     turtle1.clear()
@@ -100,19 +97,30 @@ def teleportToTile(inputRow, inputColumn):
     # Lifts Up The Turtle & Prevents It From Leaving A Trail
     turtle1.up()
     # Teleports To The Relevant Tile
-    turtle1.goto(halfBoardWidth - (inputColumn - 0.5) * halfBoardWidth / 4, halfBoardHeight - inputRow * halfBoardHeight / 4)
+    turtle1.goto(halfBoardWidth - (math.floor(inputColumn) - 0.5) * halfBoardWidth / 4, halfBoardHeight - math.floor(inputRow) * halfBoardHeight / 4)
     # Lowers The Turtle & Allows It To Leave A Trail Again
     turtle1.down()
 
 
+# Function To Calculate The Tile Based On The Provided Coordinates (Used To Convert Raw Click Data)
+def coordinatesCalculateTile(inputX, inputY):
+    # Calculates The Row Based On The X Coordinate Provided
+    calculatedRow = math.floor(abs(((inputY - halfBoardHeight) / (halfBoardHeight / 4))) + 1)
+    # Calculates The Column Based On The Y Coordinate Provided
+    calculatedColumn = math.floor(abs(((inputX - halfBoardWidth) / (halfBoardWidth / 4))) + 1)
+    # Stores The Row & Column Values Of The Piece That Is Being Added
+    playerPieceData[1] = calculatedRow
+    playerPieceData[2] = calculatedColumn
+
+
 # Function To Return The Row The User Added His Piece To
 def getUserPieceRow():
-    return playerPieceCoordinates[0]
+    return playerPieceData[1]
 
 
 # Function To Return The Column The User Added His Piece To
 def getUserPieceColumn():
-    return playerPieceCoordinates[1]
+    return playerPieceData[2]
 
 
 # Function To Add A Piece To The Board
@@ -136,35 +144,55 @@ def addPieceToBoard(inputRow, inputColumn, moveCount):
     turtle1.end_fill()
 
 
+# Function To Run & Call Other Functions When The GUI Overlay Is Clicked
+def graphicalOverlayClicked(inputX, inputY):
+    coordinatesCalculateTile(inputX, inputY)
+    if checkIfValidMove(playerPieceData[1], playerPieceData[2]):
+        playerPieceData[0] += 1
+        teleportToTile(playerPieceData[1], playerPieceData[2])
+        addPieceToBoard(playerPieceData[1], playerPieceData[2], playerPieceData[0])
+
+
+# Function To Perform The Initial Setup Tasks For The GUI
+def performInitialSetup():
+    # Resets The Display Overlay & The Turtle
+    displayOut.reset()
+    turtle1.reset()
+    # Hides The Turtle & Makes The Animation Speed / Delay Instantaneous
+    turtle1.hideturtle()
+    turtle1.speed(0)
+    displayOut.delay(0)
+    # Calls The Functions To Print Out The Intro & Board
+    printOutIntro()
+    printOutTable()
+    # Adds The Default Tiles To The Board
+    teleportToTile(4, 4)
+    addPieceToBoard(4, 4, 1)
+    teleportToTile(4, 5)
+    addPieceToBoard(4, 5, 2)
+    teleportToTile(5, 4)
+    addPieceToBoard(5, 4, 2)
+    teleportToTile(5, 5)
+    addPieceToBoard(5, 5, 1)
+    # Randomly Allows Either Player 1 Or Player 2 To Go First
+    playerPieceData[0] = random.randint(1, 2)
+
+
 # Main Function To Run The GUI
 def main():
-    # Initialize A Move Counter (Will Be Used To Determine Whose Turn It Is & Which Colour Piece To Place Down)
-    moveCounter = 1
+    # Calls The Function To Perform The Initial Setup Of The Board
+    performInitialSetup()
 
-    # Calls The Function To Print Out The Intro Message
-    printOutIntro()
+    # Calls A Function When A Spot On The Board Is Clicked (Handles Placing The Tiles)
+    displayOut.onclick(graphicalOverlayClicked)
 
-    # Calls Function To Print Out The Reversi Table
-    printOutTable()
+    # Listens To User Input From The GUI
+    displayOut.listen()
 
-    # Endless While Loop To Handle The User's Inputted Move
-    while True:
-        # Prompts The User For Their Move's Location & Stores It In Variables (Pop Up Box)
-        placePieceRow = int(displayOut.numinput("Piece Row Input. Move Count: " + str(moveCounter), "Row You Would Like To Place A Piece In: ", minval=1, maxval=8))
-        placePieceColumn = int(displayOut.numinput("Piece Column Input. Move Count: " + str(moveCounter), "Column You Would Like To Place A Piece In: ", minval=1, maxval=8))
-
-        # Checks To See If The Coordinates Entered Is Valid & Then Performs The Move & Stores The Coordinates
-        if checkIfValidMove(placePieceRow, placePieceColumn):
-            moveCounter += 1
-            teleportToTile(placePieceRow, placePieceColumn)
-            addPieceToBoard(placePieceRow, placePieceColumn, moveCounter)
-            # Stores The Row & Column Values Of The Piece That Is Being Added
-            playerPieceCoordinates[0] = placePieceRow
-            playerPieceCoordinates[1] = placePieceColumn
-
-    # Closes The Program If The GUI Overlay Is Clicked
-    displayOut.exitonclick()
+    # Loops Through The Main Loop Endlessly To Keep Getting User Input From The GUI
+    displayOut.mainloop()
 
 
 # Calls The Main Function To Run The GUI
 main()
+
