@@ -1,0 +1,11 @@
+reversi.py
+
+gui/
+	draw.py
+	input.py
+ai/
+	ai.py
+	validMoves.py
+gameRules/
+	rules.txt
+	

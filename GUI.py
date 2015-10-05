@@ -10,15 +10,13 @@ Sharjeel Junaid
 Description:
 This part of the game is in charge of prompting the user for input & displaying it out on a graphical overlay while allowing user input
 """
-
-# Imports In Module(s) That Will Be Utilized
 import turtle
 import time
 import math
 import random
 from ASCII import printOutASCII
 
-# Initialize Variables
+# Initialize global variables (necessary for when functions are called from a different file)
 halfBoardWidth = -250.0
 halfBoardHeight = -halfBoardWidth
 boardOutlineColour = "White"
@@ -27,10 +25,10 @@ player1Colour = "White"
 player2Colour = "Black"
 playerPieceData = [1, 0, 0]
 
-# Initialize Board 8x8 Matrix
+# Initialize board 8x8 matrix (2D array)
 boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in range(9)]
 
-# Initialize The Display Out & The First Turtle
+# Initialize the display out & the first turtle
 displayOut = turtle.Screen()
 turtle1 = turtle.Turtle()
 displayOut.bgcolor(boardBackgroundColour)
@@ -38,7 +36,7 @@ displayOut.title("Reversi By Group 22")
 displayOut.setup(abs(halfBoardWidth * 2 + halfBoardWidth * 1 / 4), abs(halfBoardHeight * 2 + halfBoardHeight * 1 / 4))
 
 
-# Function To Print Out The ASCII Intro To The Display Overlay & Waits 10 Seconds Before Running The Program
+# Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
     teleportToTile(6, 1)
     turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(halfBoardWidth) * 1 / 25)))
@@ -46,36 +44,30 @@ def printOutIntro():
     turtle1.clear()
 
 
-# Function To Print Out The Reversi Table
+# Function to print out the reversi table. Clears display before printing and sets color to contrast BG
+# Takes no params, accesses global variable boardOutlineColour
 def printOutTable():
-    # Clears Out The Display Overlay Before Printing Out The Table
     turtle1.clear()
-    # Sets The Turtle's Tracer Colour To The Defined Colour
     turtle1.color(boardOutlineColour)
-    # For Loop To Teleport The Turtle To Coordinates & Print The Reversi Table
+
+    # For loop to teleport the turtle through generating the board. Starts top left
     for indexCounter in range(9):
-        # Lifts Up The Turtle & Prevents It From Leaving A Trail
+        # Lift turtle and teleport to left hand side of the following row, top left if first row
+        # Then draw line
         turtle1.up()
-        # Teleports The Turtle To The Left Hand Side Of The Next Row
         turtle1.goto(halfBoardWidth, halfBoardHeight - indexCounter * halfBoardHeight / 4)
-        # Lowers The Turtle & Allows It To Leave A Trail Again
         turtle1.down()
-        # Prints Out The Row's Line
         turtle1.forward(-halfBoardWidth * 2)
 
-        # Turns The Turtle Right To Print Out A Vertical Line
+        # Turn turtle to print columnal line, follows same steps as above
+        # Then turns the turtle back to the horizontal for the next row
         turtle1.right(90)
-        # Lifts Up The Turtle & Prevents It From Leaving A Trail
         turtle1.up()
-        # Teleports The Turtle To The Top Of The Next Column
         turtle1.goto(halfBoardWidth - indexCounter * halfBoardWidth / 4, halfBoardHeight)
-        # Lowers The Turtle & Allows It To Leave A Trail Again
         turtle1.down()
-        # Prints Out The Row's Line
         turtle1.forward(halfBoardHeight * 2)
-        # Turns The Turtle Back Left To Print Out The Horizontal Line
         turtle1.left(90)
-    # Sets The Turtle's Tracer Colour To Black
+
     turtle1.color("Black")
 
 
