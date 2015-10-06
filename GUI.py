@@ -16,7 +16,7 @@ import math
 import random
 from ASCII import printOutASCII
 
-# Initialize global variables (necessary for when functions are called from a different file)
+# Initialize global constants (necessary for when functions are called from a different file)
 halfBoardWidth = -250.0
 halfBoardHeight = -halfBoardWidth
 boardOutlineColour = "White"
@@ -35,14 +35,12 @@ displayOut.bgcolor(boardBackgroundColour)
 displayOut.title("Reversi By Group 22")
 displayOut.setup(abs(halfBoardWidth * 2 + halfBoardWidth * 1 / 4), abs(halfBoardHeight * 2 + halfBoardHeight * 1 / 4))
 
-
 # Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
     teleportToTile(6, 1)
     turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(halfBoardWidth) * 1 / 25)))
     time.sleep(10)
     turtle1.clear()
-
 
 # Function to print out the reversi table. Clears display before printing and sets color to contrast BG
 # Takes no params, accesses global variable boardOutlineColour
@@ -70,12 +68,15 @@ def printOutTable():
 
     turtle1.color("Black")
 
-
-# Function To Check Whether Or Not The X & Y Coordinates Fed In Are Valid
+# Function to check whether coordinates are valid - returns boolean
+# Params:
+#   inputRow - x coordinate in numerical value
+#   inputColumn - y coordinate in numerical 
+# Implied:
+#   boardMatrix[8][8] - from global variables. Is mutable, but not changed
 def checkIfValidMove(inputRow, inputColumn):
-    # Checks To See Whether Or Not The Coordinates The User Entered Are Within Bounds
     if inputRow <= 8 and inputColumn <= 8 and inputRow >= 1 and inputColumn >= 1:
-        # Checks To See Whether Or Not The Entry Index In The Matrix Is Free
+        # Checks to see whether the entry index in the matrix is free
         if boardMatrix[inputRow][inputColumn] == 0:
             return True
         else:
@@ -83,80 +84,90 @@ def checkIfValidMove(inputRow, inputColumn):
     else:
         return False
 
-
-# Function To Teleport The Turtle To A Certain Tile (To Print Out The Circle Later)
+# Function to teleport the turtle to a different position without leaving a trail
+# Params:
+#   inputRow - x coordinate in numerical value
+#   inputColumn - y coordinate in numerical value
 def teleportToTile(inputRow, inputColumn):
-    # Lifts Up The Turtle & Prevents It From Leaving A Trail
     turtle1.up()
-    # Teleports To The Relevant Tile
     turtle1.goto(halfBoardWidth - (math.floor(inputColumn) - 0.5) * halfBoardWidth / 4, halfBoardHeight - math.floor(inputRow) * halfBoardHeight / 4)
-    # Lowers The Turtle & Allows It To Leave A Trail Again
     turtle1.down()
 
-
-# Function To Calculate The Tile Based On The Provided Coordinates (Used To Convert Raw Click Data)
+# Function to calculate the tile requested by the coordinates given (Used to convert raw click Data)
+# Params:
+#   inputX - x coordinate in numerical value
+#   inputY - y coordinate in numerical value
 def coordinatesCalculateTile(inputX, inputY):
-    # Calculates The Row Based On The X Coordinate Provided
-    calculatedRow = math.floor(abs(((inputY - halfBoardHeight) / (halfBoardHeight / 4))) + 1)
-    # Calculates The Column Based On The Y Coordinate Provided
-    calculatedColumn = math.floor(abs(((inputX - halfBoardWidth) / (halfBoardWidth / 4))) + 1)
+    # Calculates row and column based on input
+    calculatedColumn = math.floor(abs(((inputY - halfBoardHeight) / (halfBoardHeight / 4))) + 1)
+    calculatedRow = math.floor(abs(((inputX - halfBoardWidth) / (halfBoardWidth / 4))) + 1)
+    
     # Stores The Row & Column Values Of The Piece That Is Being Added
-    playerPieceData[1] = calculatedRow
-    playerPieceData[2] = calculatedColumn
+    playerPieceData[1] = calculatedColumn
+    playerPieceData[2] = calculatedRow
 
 
-# Function To Return The Row The User Added His Piece To
+# Function to return the row at which the user added his piece
 def getUserPieceRow():
     return playerPieceData[1]
 
 
-# Function To Return The Column The User Added His Piece To
+# Function to return the column at which the user added his piece
 def getUserPieceColumn():
     return playerPieceData[2]
 
 
-# Function To Add A Piece To The Board
+# Function to add a piece to the board
+# Params:
+#   inputRow - x coordinate in numerical value
+#   inputColumn - y coordinate in numerical value
+#   moveCount - the numerical value of the move number
 def addPieceToBoard(inputRow, inputColumn, moveCount):
-    # Starts The Fill Command (To Fill In The Printed Circle)
+    # Starts the fill method to fill the printed circle
     turtle1.begin_fill()
 
-    # If / Else Statement To Check Which Colour To Fill The Circle With & Also Stores Who Occupied The Tile
+    # If move even, fill piece with player1Colour and store that they occupied said space.
+    # If move odd, fill piece with player2Color and store that they occupied said space
     if moveCount % 2 == 0:
-        # If The Number Is Even (Player 1), Fills It The Defined Colour & Stores That They Occupied It
         turtle1.fillcolor(player1Colour)
         boardMatrix[inputRow][inputColumn] = player1Colour
     else:
-        # If The Number Is Odd (Player 2), Fills It The Defined Colour & Stores That They Occupied It
         turtle1.fillcolor(player2Colour)
         boardMatrix[inputRow][inputColumn] = player2Colour
 
-    # Prints Out A Circle In The Tile
+    # Print out circle with radius of 1/16 of board and end fill method
     turtle1.circle(abs(halfBoardWidth / 8))
-    # Ends The Fill Command
     turtle1.end_fill()
 
-
-# Function To Run & Call Other Functions When The GUI Overlay Is Clicked
+# Function to run and call other functions when the GUI is clicked
+# Params:
+#   inputX - x coordinate in numerical value
+#   inputY - y coordinate in numerical value
 def graphicalOverlayClicked(inputX, inputY):
+    # Calculate tile clicked
     coordinatesCalculateTile(inputX, inputY)
+    
+    # Validate move, then store that a piece has been played and draw the piece in the correct location
     if checkIfValidMove(playerPieceData[1], playerPieceData[2]):
         playerPieceData[0] += 1
         teleportToTile(playerPieceData[1], playerPieceData[2])
         addPieceToBoard(playerPieceData[1], playerPieceData[2], playerPieceData[0])
 
-
-# Function To Perform The Initial Setup Tasks For The GUI
+# Function to perform initial setup for the GUI
 def performInitialSetup():
     # Resets The Display Overlay & The Turtle
     displayOut.reset()
     turtle1.reset()
+    
     # Hides The Turtle & Makes The Animation Speed / Delay Instantaneous
     turtle1.hideturtle()
     turtle1.speed(0)
     displayOut.delay(0)
+    
     # Calls The Functions To Print Out The Intro & Board
     printOutIntro()
     printOutTable()
+    
     # Adds The Default Tiles To The Board
     teleportToTile(4, 4)
     addPieceToBoard(4, 4, 1)
@@ -166,25 +177,19 @@ def performInitialSetup():
     addPieceToBoard(5, 4, 2)
     teleportToTile(5, 5)
     addPieceToBoard(5, 5, 1)
+    
     # Randomly Allows Either Player 1 Or Player 2 To Go First
     playerPieceData[0] = random.randint(1, 2)
 
 
-# Main Function To Run The GUI
+# Main function to run gui separate from other files
 def main():
-    # Calls The Function To Perform The Initial Setup Of The Board
+    # Call initial setup, then wait for user action, then loop though wait for user action
     performInitialSetup()
-
-    # Calls A Function When A Spot On The Board Is Clicked (Handles Placing The Tiles)
     displayOut.onclick(graphicalOverlayClicked)
-
-    # Listens To User Input From The GUI
     displayOut.listen()
-
-    # Loops Through The Main Loop Endlessly To Keep Getting User Input From The GUI
     displayOut.mainloop()
 
-
-# Calls The Main Function To Run The GUI
-main()
+if __name__=='__main__'
+    main()
 
