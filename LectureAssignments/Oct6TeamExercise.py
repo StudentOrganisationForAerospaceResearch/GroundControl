@@ -3,7 +3,9 @@
 
 Group 22, CPSC 231
 
-Murray Cobbe Nathan Meulenbroek Sharjeel Junaid
+Murray Cobbe
+Nathan Meulenbroek
+Sharjeel Junaid
 
 Description: Includes a function to test a date for validity
 """
