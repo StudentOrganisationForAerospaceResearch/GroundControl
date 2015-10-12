@@ -10,7 +10,6 @@ This part of the game is in charge of prompting the user for input & displaying 
 
 # Imports In Module(s) That Will Be Utilized
 import turtle
-import time
 
 # Initialize Variables
 halfBoardWidth = -250.0
