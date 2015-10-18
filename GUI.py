@@ -13,6 +13,7 @@ This part of the game is in charge of prompting the user for input & displaying 
 import turtle
 import time
 import math
+import os.path
 from ASCII import printOutASCII
 
 # Initialize global constants (necessary for when functions are called from a different file)
@@ -132,15 +133,21 @@ def getUserPieceData():
 #   inputColumn - column value in numerical value
 #   playerNumber - the numerical value of the move number
 def addPieceToBoard(inputRow, inputColumn, playerNumber):
+    # Sets the default colour to transparent to prevent accidental fills
+    turtle1.fillcolor("")
+    turtle1.color("")
+
     # Starts the fill method to fill the printed circle
     turtle1.begin_fill()
 
     # If provided 1, fill piece with PLAYER_1_COLOUR and store that they occupied said space
     # If provided 2, fill piece with PLAYER_2_COLOUR and store that they occupied said space
     if playerNumber == 1:
+        turtle1.color("black")
         turtle1.fillcolor(PLAYER_1_COLOUR)
         boardMatrix[inputRow][inputColumn] = 1
     elif playerNumber == 2:
+        turtle1.color("black")
         turtle1.fillcolor(PLAYER_2_COLOUR)
         boardMatrix[inputRow][inputColumn] = 2
 
@@ -174,6 +181,52 @@ def teleAddPieceToBoard(inputRow, inputColumn, playerNumber):
     addPieceToBoard(playerPieceData[0], playerPieceData[1], playerNumber)
 
 
+# Function to export the game's current state to a file
+def saveGameStateToFile(gameBoard, moveCount):
+    # Initialize a save game file & the save game file writer utility (overwrites any existing file) & specifies that it is to be written to
+    saveGameFile = open("Reversi Save Game", "w")
+
+    # Loops through the entire board matrix & writes it to the file
+    for rowCounter in range(1, 9):
+        for columnCounter in range(1, 9):
+            saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
+    saveGameFile.write(str(moveCount))
+
+    # Closes the save game file writer utility
+    saveGameFile.close()
+
+
+# Function to import the game's state from a file
+def importGameStateFromFile():
+    # Initialize a new list & the save game file reader utility & specifies that it is to be imported from
+    saveGameFile = open("Reversi Save Game", "r")
+    importedBoard = [[0 for importedMatrixIndex in range(9)] for importedMatrixIndex in range(9)]
+    currentIndex = 0
+    fileData = saveGameFile.read()
+
+    # Loops through the entire file & imports it into the temp board matrix
+    for rowCounter in range(1, 9):
+        for columnCounter in range(1, 9):
+            importedBoard[rowCounter][columnCounter] = int(fileData[currentIndex:currentIndex + 1])
+            currentIndex += 1
+
+    # Closes the save game file reader utility
+    saveGameFile.close()
+
+    # Returns backed the fully populated board
+    return importedBoard
+
+
+# Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
+def updateBoardPieces(inputBoardMatrix):
+    # Loops through the entire board matrix, comparing entries & adding in changed pieces
+    for rowCounter in range(1, 9):
+        for columnCounter in range(1, 9):
+            if inputBoardMatrix[rowCounter][columnCounter] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter][columnCounter] != 0:
+                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter][columnCounter]
+                teleAddPieceToBoard(rowCounter, columnCounter, int(boardMatrix[rowCounter][columnCounter]))
+
+
 # Function to perform initial setup for the GUI
 def performInitialSetup():
     # Resets The Display Overlay & The Turtle & The Click Listener
@@ -198,22 +251,30 @@ def performInitialSetup():
     printOutIntro()
     printOutTable()
 
-    # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
-    displayOut.onclick(graphicalOverlayClicked)
-    displayOut.listen()
-
     # Adds The Default Tiles To The Board
     teleAddPieceToBoard(4, 4, 1)
     teleAddPieceToBoard(4, 5, 2)
     teleAddPieceToBoard(5, 4, 2)
     teleAddPieceToBoard(5, 5, 1)
 
+    # Checks to see if a save file exists & asks the user to import it in & adds the pieces to the board if user specifies
+    if os.path.isfile("Reversi Save Game"):
+        # Prompts the user for whether or not to import the save game file (Pop Up Box)
+        userSaveGamePrompt = displayOut.textinput("Load Save Game", "Save File Found! Load It? (Yes / No): ")
+        if userSaveGamePrompt.lower() == "yes":
+            updateBoardPieces(importGameStateFromFile())
 
-# Main function to run gui separate from other files
+    # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
+    displayOut.onclick(graphicalOverlayClicked)
+    displayOut.listen()
+
+
+# Main function to run the GUI separate from other files
 def main():
     # Call initial setup, then wait for user action, then loop though wait for user action
     performInitialSetup()
     displayOut.mainloop()
+    saveGameStateToFile(boardMatrix, 9)
 
 
 # Calls the main function if the file is called directly
