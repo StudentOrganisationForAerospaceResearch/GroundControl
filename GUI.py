@@ -17,8 +17,8 @@ import os.path
 from ASCII import printOutASCII
 
 # Initialize global constants (necessary for when functions are called from a different file)
-HALF_Board_Width = -250.0
-HALF_BOARD_HEIGHT = -HALF_Board_Width
+HALF_BOARD_WIDTH = -250.0
+HALF_BOARD_HEIGHT = -HALF_BOARD_WIDTH
 BOARD_OUTLINE_COLOUR = "White"
 BOARD_BACKGROUND_COLOUR = "Brown"
 PLAYER_1_COLOUR = "White"
@@ -38,7 +38,7 @@ turtle1 = turtle.Turtle()
 # Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
     teleportToTile(6, 1)
-    turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_Board_Width) * 1 / 25)))
+    turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
     time.sleep(10)
     turtle1.clear()
 
@@ -54,15 +54,15 @@ def printOutTable():
         # Lift turtle and teleport to left hand side of the following row, top left if first row
         # Then draw line
         turtle1.up()
-        turtle1.goto(HALF_Board_Width, HALF_BOARD_HEIGHT - indexCounter * HALF_BOARD_HEIGHT / 4)
+        turtle1.goto(HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT - indexCounter * HALF_BOARD_HEIGHT / 4)
         turtle1.down()
-        turtle1.forward(-HALF_Board_Width * 2)
+        turtle1.forward(-HALF_BOARD_WIDTH * 2)
 
         # Turn turtle to print column line, follows same steps as above
         # Then turns the turtle back to the horizontal for the next row
         turtle1.right(90)
         turtle1.up()
-        turtle1.goto(HALF_Board_Width - indexCounter * HALF_Board_Width / 4, HALF_BOARD_HEIGHT)
+        turtle1.goto(HALF_BOARD_WIDTH - indexCounter * HALF_BOARD_WIDTH / 4, HALF_BOARD_HEIGHT)
         turtle1.down()
         turtle1.forward(HALF_BOARD_HEIGHT * 2)
         turtle1.left(90)
@@ -98,7 +98,7 @@ def teleportToTile(inputRow, inputColumn):
     # Then the two calculated values are multiplied together to get the raw X coordinate of where that tile would be on the board
     # Then the newly calculated value is taken and subtracted from half the width of the board to get the distance from the vertex to that tile
     # Performs the same calculation for the raw Y coordinate & half the board's height to get the raw Y coordinate however the floored input value is unnecessary due to the turtle resting on the horizontal line all the time
-    turtle1.goto((HALF_Board_Width - ((math.floor(inputColumn) - 0.5) * (HALF_Board_Width / 4))),
+    turtle1.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn) - 0.5) * (HALF_BOARD_WIDTH / 4))),
                  (HALF_BOARD_HEIGHT - (math.floor(inputRow) * (HALF_BOARD_HEIGHT / 4))))
     turtle1.down()
 
@@ -115,7 +115,7 @@ def coordinatesCalculateTile(inputX, inputY):
     # Then floors the resultant value to prevent the calculation returning a value that would be partway in a tile
     # Performs the same calculation using the raw X coordinate & half the board's width to get the column value
     calculatedRow = math.floor(abs(((inputY - HALF_BOARD_HEIGHT) / (HALF_BOARD_HEIGHT / 4))) + 1)
-    calculatedColumn = math.floor(abs(((inputX - HALF_Board_Width) / (HALF_Board_Width / 4))) + 1)
+    calculatedColumn = math.floor(abs(((inputX - HALF_BOARD_WIDTH) / (HALF_BOARD_WIDTH / 4))) + 1)
 
     # Stores The Row & Column Values Of The Piece That Is Being Added
     playerPieceData[0] = calculatedRow
@@ -152,7 +152,7 @@ def addPieceToBoard(inputRow, inputColumn, playerNumber):
         boardMatrix[inputRow][inputColumn] = 2
 
     # Print out circle with radius of 1/16 of board and end fill method
-    turtle1.circle(abs(HALF_Board_Width / 8))
+    turtle1.circle(abs(HALF_BOARD_WIDTH / 8))
     turtle1.end_fill()
 
 
@@ -222,8 +222,8 @@ def updateBoardPieces(inputBoardMatrix):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
-            if inputBoardMatrix[rowCounter][columnCounter] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter][columnCounter] != 0:
-                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter][columnCounter]
+            if inputBoardMatrix[rowCounter-1][columnCounter-1] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter-1][columnCounter-1] != 0:
+                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter-1][columnCounter-1]
                 teleAddPieceToBoard(rowCounter, columnCounter, int(boardMatrix[rowCounter][columnCounter]))
 
 
@@ -239,7 +239,7 @@ def performInitialSetup():
     # Takes Half the width of the board (global constant) and multiplies it by 2 to get the entire board's width
     # Then calculates 1/8th of the board's width and subtracts it from the total width to provide some empty space on the sides
     # Then does the same calculation for the board's height
-    displayOut.setup(abs(((HALF_Board_Width * 2) + (HALF_Board_Width * 0.25))),
+    displayOut.setup(abs(((HALF_BOARD_WIDTH * 2) + (HALF_BOARD_WIDTH * 0.25))),
                      abs(((HALF_BOARD_HEIGHT * 2) + (HALF_BOARD_HEIGHT * 0.25))))
 
     # Hides The Turtle & Makes The Animation Speed / Delay Instantaneous

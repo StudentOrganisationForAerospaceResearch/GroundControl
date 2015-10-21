@@ -1,5 +1,5 @@
 
-#import GUI
+
 
 #initializes the 8x8 reversi board and assigns a value of 0 to every square.
 #0 = Empty square
@@ -25,12 +25,12 @@ boardY = 0
 
     
 def main():
-    turn = 1
+    playerOne = True;
     
     while True:
         turn += 1
-        getMove(0, 0, turn)
-
+        getMove(0, 0, playerOne)
+        
 
 def findValids(board, Player):
     
@@ -58,6 +58,12 @@ def findValids(board, Player):
 
 def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
     
+    if Player == True:
+        checkpieces = 1
+    else:
+        checkpieces = 2
+        
+        
     scanX = 0
     scanY = 0
     
@@ -77,7 +83,7 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
                     
                     break;
  
-                elif( board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] ==Player and (scanX>1 or scanY>1)):
+                elif( board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] ==checkpieces and (scanX>1 or scanY>1)):
                     
                     print(dirX, dirY)
                     
@@ -88,7 +94,7 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
                     else:
                         while scanX>=1 or scanY>=1:
                         
-                            board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] = Player
+                            board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] = checkpieces
                         
                             #printer.addPieceToBoard((boardX+(scanX*dirX)), (boardY+(scanY*dirY)), Player)
                         
@@ -132,13 +138,11 @@ def printBoard(toPrint):
 
     
 
-def getMove( X, Y, turn,):
+def getMove( X, Y, turn):
     
     printBoard(board)
     
-    Player = (turn%2)+1
-    
-    findValids(board, Player)
+    validMoves =  findValids(board, turn)
     #Loops the program until a valid move takes place.
     while True:
     
@@ -175,7 +179,7 @@ def getMove( X, Y, turn,):
 
         
     
-        if (board[boardX][boardY] == 0):
+        if (board[boardX][boardY] == 0 and validMoves[boardX][boardY] == 1):
             
             #Flips opponent pieces as need in all 8 axis from the played piece. 
             checkFlips(1, 0, boardX, boardY, Player, False)
@@ -190,7 +194,7 @@ def getMove( X, Y, turn,):
             board[boardX][boardY] = Player
             print("Move Complete")
             turn = turn+1
-            
+            GUI.updateboardpieces(board)
             break
 
         else:
@@ -198,9 +202,16 @@ def getMove( X, Y, turn,):
             print("Sorry, that is not a valid move.")
         
 
-
 #END GetMove
 
+#Takes a new board array and overwrites the current one.
+#newboard must be an 2D integer array storing values in indexes 0 to 8 on both axis. 
+def writeboard (newBoard):
+    
+        board = newBoard
+        
 
-main()
-print(board[boardX][boardY])
+
+if __name__ == "__main__":
+    main()
+    print(board[boardX][boardY])
