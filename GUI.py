@@ -222,8 +222,8 @@ def updateBoardPieces(inputBoardMatrix):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
-            if inputBoardMatrix[rowCounter-1][columnCounter-1] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter-1][columnCounter-1] != 0:
-                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter-1][columnCounter-1]
+            if inputBoardMatrix[rowCounter][columnCounter] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter][columnCounter] != 0:
+                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter][columnCounter]
                 teleAddPieceToBoard(rowCounter, columnCounter, int(boardMatrix[rowCounter][columnCounter]))
 
 
