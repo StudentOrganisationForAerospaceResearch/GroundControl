@@ -7,20 +7,20 @@
 #2 = black piece
 global validMoves
 global board
-board = [[0 for i in range(8)] for i in range(8)]
-validMoves = [[0 for i in range(8)] for i in range(8)]
+board = [[0 for i in range(9)] for i in range(9)]
+validMoves = [[0 for i in range(9)] for i in range(9)]
 
 #Sets the four center squares to their start of game states.  
-board[3][3] = 1
 board[4][4] = 1
-board[3][4] = 2
-board[4][3] = 2
+board[5][5] = 1
+board[4][5] = 2
+board[5][4] = 2
 
 #printer = GUI()
 
 #To be used later to take player inputs.
-boardX = 0
-boardY = 0
+boardX = 1
+boardY = 1
 
 
     
@@ -28,14 +28,15 @@ def main():
     playerOne = True;
     
     while True:
-        turn += 1
+        
         getMove(0, 0, playerOne)
+        playerOne = not playerOne
         
 
 def findValids(board, Player):
     
-    for x in range(8):
-        for y in range(8):
+    for x in range(1, 9):
+        for y in range(1, 9):
             
             if (checkFlips(1, 0, x, y, Player, True) or 
             checkFlips(0, 1, x, y, Player, True) or 
@@ -52,6 +53,7 @@ def findValids(board, Player):
                 
                 validMoves[x][y] = 0
     printBoard(validMoves)
+    return validMoves
         
 #Finds and flips appropriate opponent in a direction of travel defined by dirX and dirY
     #Example: when dirX = 0 and dirY = -1 the squares directly below the new piece are checked. 
@@ -70,21 +72,25 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
     boardX = X
     boardY = Y
    
-    while(0<(boardX+scanX)<7 and 0<(boardY+scanY)<7):
+    while(1<(boardX+scanX)<8 and 1<(boardY+scanY)<8):
                 
                 
                 
                 scanX = scanX + 1
                 scanY = scanY + 1
                 #Print statements used for debugging.
-                #print("x: " + str(boardX+scanX))
-                #print("y: " + str(boardY+scanY))
-                if (board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == 0 ):
+
+                if (board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == 0):
+                    
+                    break;
+                
+                elif (scanX == 1 and scanY == 1 and board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == checkpieces):
                     
                     break;
  
                 elif( board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] ==checkpieces and (scanX>1 or scanY>1)):
-                    
+                    print("x: " + str(boardX+(scanX*dirX)))
+                    print("y: " + str(boardY+(scanY*dirY)))
                     print(dirX, dirY)
                     
                     if ifReturn:
@@ -96,7 +102,7 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
                         
                             board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] = checkpieces
                         
-                            #printer.addPieceToBoard((boardX+(scanX*dirX)), (boardY+(scanY*dirY)), Player)
+                            
                         
                             scanX = scanX - 1
                             scanY = scanY - 1
@@ -105,11 +111,11 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
    
 def printBoard(toPrint):
     #Increments within the loop, used to print the correct board coordinate.  
-    printX = 0
-    printY = 0
+    printX = 1
+    printY = 1
     
     #Loops once for every row of the board. 
-    for y in range(8):
+    for y in range(1, 9):
         
         #Prints a spaces to improve board readability.  
         print("-----------------")
@@ -117,19 +123,19 @@ def printBoard(toPrint):
         nextLine = "|"
         
         
-        printX = 0
+        printX = 1
         
         #Loops once for every column of the board.
-        for x in range(8):  
+        for x in range(1, 9):  
             
             
             nextLine = nextLine + str(toPrint[printX][printY]) + "|"
             
             #Increments printX for use in the next run of the loop.
-            printX = printX+1
+            printX += 1
         
         print(nextLine)
-        printY = printY+1
+        printY += 1
     print()
 
 #END printBoard
@@ -142,6 +148,10 @@ def getMove( X, Y, turn):
     
     printBoard(board)
     
+    if turn == True:
+        Player = 1
+    else:
+        Player = 2
     validMoves =  findValids(board, turn)
     #Loops the program until a valid move takes place.
     while True:
@@ -167,7 +177,7 @@ def getMove( X, Y, turn):
             boardY = int(input("In which row would you like to play? "))
 
             
-            if(0>boardY>7):
+            if(1>boardY>8):
         
                 
                 print("Sorry, that is not a valid board position. Please use a number between 0 and 7.")
@@ -179,7 +189,7 @@ def getMove( X, Y, turn):
 
         
     
-        if (board[boardX][boardY] == 0 and validMoves[boardX][boardY] == 1):
+        if (validMoves[boardX][boardY] == 1):
             
             #Flips opponent pieces as need in all 8 axis from the played piece. 
             checkFlips(1, 0, boardX, boardY, Player, False)
@@ -194,7 +204,7 @@ def getMove( X, Y, turn):
             board[boardX][boardY] = Player
             print("Move Complete")
             turn = turn+1
-            GUI.updateboardpieces(board)
+            #GUI.updateboardpieces(board)
             break
 
         else:
@@ -210,6 +220,7 @@ def writeboard (newBoard):
     
         board = newBoard
         
+
 
 
 if __name__ == "__main__":
