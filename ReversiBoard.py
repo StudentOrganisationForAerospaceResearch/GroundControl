@@ -79,7 +79,10 @@ def checkFlips(dirX, dirY, X, Y, Player, ifReturn):
                 scanX = scanX + 1
                 scanY = scanY + 1
                 #Print statements used for debugging.
-
+                
+                if(board[boardX][boardY] !=0):
+                    break
+                
                 if (board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == 0):
                     
                     break;
