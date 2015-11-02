@@ -14,6 +14,7 @@ import turtle
 import time
 import math
 import os.path
+import ReversiBoard
 from ASCII import printOutASCII
 
 # Initialize global constants (necessary for when functions are called from a different file)
@@ -24,13 +25,13 @@ BOARD_BACKGROUND_COLOUR = "Brown"
 PLAYER_1_COLOUR = "White"
 PLAYER_2_COLOUR = "Black"
 
-# Initialize global mutable list (index 1 = latest user added piece row, index 2 = latest user added piece column)
-playerPieceData = [0, 0]
+# Initialize global mutable list (index 1 = latest user added piece row, index 2 = latest user added piece column, index 3 = move alternator / tracker)
+playerPieceData = [0, 0, 0]
 
 # Initialize global mutable 8x8 matrix (2D array) to act as the board
 boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in range(9)]
 
-# Initialize the display out & the first turtle
+# Initialize the mutable display out & the mutable first turtle
 displayOut = turtle.Screen()
 turtle1 = turtle.Turtle()
 
@@ -39,7 +40,7 @@ turtle1 = turtle.Turtle()
 def printOutIntro():
     teleportToTile(6, 1)
     turtle1.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
-    time.sleep(10)
+    time.sleep(0)
     turtle1.clear()
 
 
@@ -227,12 +228,20 @@ def updateBoardPieces(inputBoardMatrix):
                 teleAddPieceToBoard(rowCounter, columnCounter, int(boardMatrix[rowCounter][columnCounter]))
 
 
+# Function to handle the end of the game
+def endGame():
+    userGameRestartPrompt = displayOut.textinput("Game Has Ended!", "Would You Like To Restart? (Yes / No): ")
+    if userGameRestartPrompt.lower() == "yes":
+        performInitialSetup()
+
+
 # Function to perform initial setup for the GUI
 def performInitialSetup():
-    # Resets The Display Overlay & The Turtle & The Click Listener
+    # Resets The Display Overlay & The Turtle & The Click Listener & The Piece Data & The Board Matrix
     displayOut.reset()
     turtle1.reset()
     displayOut.onclick(None)
+    playerPieceData[2] = 0
 
     displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
     displayOut.title("Reversi By Group 22")
@@ -261,7 +270,9 @@ def performInitialSetup():
     if os.path.isfile("Reversi Save Game"):
         # Prompts the user for whether or not to import the save game file (Pop Up Box)
         userSaveGamePrompt = displayOut.textinput("Load Save Game", "Save File Found! Load It? (Yes / No): ")
-        if userSaveGamePrompt.lower() == "yes":
+        if userSaveGamePrompt == None:
+            print("Save game load aborted")
+        elif userSaveGamePrompt.lower() == "yes":
             updateBoardPieces(importGameStateFromFile())
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
