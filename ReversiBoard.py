@@ -1,6 +1,6 @@
 
-
-
+import AI
+artInt = AI.AI
 #initializes the 8x8 reversi board and assigns a value of 0 to every square.
 #0 = Empty square
 #1 = White piece
@@ -163,8 +163,8 @@ def printBoard(toPrint):
 def aiMove():
     
     validMoves =  _findValids(board, False)
-    coords = AI._getMove(validMoves)
-    _getMove(coords[1], coords[2], False)
+    coords = artInt.getMove(validMoves)
+    _getMove(coords[0], coords[1], False)
 
 #END aiMove
 """
@@ -176,7 +176,7 @@ PARAMS:
 def playerMove(X, Y):
     validMoves =  _findValids(board, True)
     _getMove(X, Y, True)
-    aiMove()
+    
     
     
 #END playerMove
@@ -250,7 +250,7 @@ def _getMove( X, Y, playerTurn):
         board[boardX][boardY] = Player
         print("Move Complete")
         #GUI.updateboardpieces(board)
-        break
+        
 
     else:
         
