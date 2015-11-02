@@ -14,8 +14,8 @@ import turtle
 import time
 import math
 import os.path
-import ReversiBoard
 from ASCII import printOutASCII
+import ReversiBoard
 
 # Initialize global constants (necessary for when functions are called from a different file)
 HALF_BOARD_WIDTH = -250.0
@@ -25,11 +25,14 @@ BOARD_BACKGROUND_COLOUR = "Brown"
 PLAYER_1_COLOUR = "White"
 PLAYER_2_COLOUR = "Black"
 
-# Initialize global mutable list (index 1 = latest user added piece row, index 2 = latest user added piece column, index 3 = move alternator / tracker)
+# Initialize global mutable list (index 1 = latest user added piece row, index 2 = latest user added piece column)
 playerPieceData = [0, 0, 0]
 
 # Initialize global mutable 8x8 matrix (2D array) to act as the board
 boardMatrix = [[0 for boardMatrixIndex in range(9)] for boardMatrixIndex in range(9)]
+
+# Initialize global mutable object from the ReversiBoard
+backend = ReversiBoard
 
 # Initialize the mutable display out & the mutable first turtle
 displayOut = turtle.Screen()
@@ -165,10 +168,15 @@ def graphicalOverlayClicked(inputX, inputY):
     # Calculate tile clicked
     coordinatesCalculateTile(inputX, inputY)
 
-    # Validate move, then store that a piece has been played and draw the piece (always player piece) in the correct location
-    if checkIfValidMove(playerPieceData[0], playerPieceData[1]):
-        teleportToTile(playerPieceData[0], playerPieceData[1])
-        addPieceToBoard(playerPieceData[0], playerPieceData[1], 1)
+    # Feeds the backend with the user's inputted piece Row & Column values
+    backend.playerMove(playerPieceData[1], playerPieceData[0])
+    # Updates the board's pieces based on the newly populated board provided from the backend
+    updateBoardPieces(backend.getBoard())
+
+    # Calls the function that will allow the AI to now perform its turn
+    backend.aiMove()
+    # Updates the board's pieces based on the newly populated board provided from the backend
+    updateBoardPieces(backend.getBoard())
 
 
 # Function to teleport and add the defined colour piece to the board and to the board matrix
@@ -223,15 +231,15 @@ def updateBoardPieces(inputBoardMatrix):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
-            if inputBoardMatrix[rowCounter][columnCounter] != boardMatrix[rowCounter][columnCounter] and inputBoardMatrix[rowCounter][columnCounter] != 0:
-                boardMatrix[rowCounter][columnCounter] = inputBoardMatrix[rowCounter][columnCounter]
-                teleAddPieceToBoard(rowCounter, columnCounter, int(boardMatrix[rowCounter][columnCounter]))
+            teleAddPieceToBoard(columnCounter, rowCounter, int(inputBoardMatrix[rowCounter][columnCounter]))
 
 
 # Function to handle the end of the game
 def endGame():
     userGameRestartPrompt = displayOut.textinput("Game Has Ended!", "Would You Like To Restart? (Yes / No): ")
-    if userGameRestartPrompt.lower() == "yes":
+    if userGameRestartPrompt == None or userGameRestartPrompt.lower() != "yes":
+        print("Restart game prompt closed")
+    elif userGameRestartPrompt.lower() == "yes":
         performInitialSetup()
 
 
@@ -270,7 +278,7 @@ def performInitialSetup():
     if os.path.isfile("Reversi Save Game"):
         # Prompts the user for whether or not to import the save game file (Pop Up Box)
         userSaveGamePrompt = displayOut.textinput("Load Save Game", "Save File Found! Load It? (Yes / No): ")
-        if userSaveGamePrompt == None:
+        if userSaveGamePrompt == None or userSaveGamePrompt.lower() != "yes":
             print("Save game load aborted")
         elif userSaveGamePrompt.lower() == "yes":
             updateBoardPieces(importGameStateFromFile())
