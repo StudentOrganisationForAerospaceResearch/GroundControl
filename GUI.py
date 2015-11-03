@@ -162,7 +162,7 @@ def graphicalOverlayClicked(inputX, inputY):
 # Params:
 #   inputRow - row value in numerical value
 #   inputColumn - column value coordinate in numerical value
-def teleAddPieceToBoard(inputRow, inputColumn, playerNumber, inputTurtle):
+def teleAddPieceToBoard(inputColumn, inputRow, playerNumber, inputTurtle):
     teleportToTile(inputRow, inputColumn, inputTurtle)
     addPieceToBoard(playerNumber, inputTurtle)
 

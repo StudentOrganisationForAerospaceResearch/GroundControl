@@ -95,13 +95,13 @@ def __checkFlips(dirX, dirY, X, Y, Player, ifReturn):
         if(board[boardX][boardY] !=0):
             break
                 
-        if (board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == 0):    
-            break;
+        elif (board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == 0):    
+            break
                 
         elif (scanX == 1 and scanY == 1 and board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == checkpieces):
-            break;
+            break
  
-        elif( board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] ==checkpieces and (scanX>1 or scanY>1)):
+        elif( board[boardX+(scanX*dirX)][boardY+(scanY*dirY)] == checkpieces and (scanX>1 or scanY>1)):
             
             print("x: " + str(boardX+(scanX*dirX)))
             print("y: " + str(boardY+(scanY*dirY)))
