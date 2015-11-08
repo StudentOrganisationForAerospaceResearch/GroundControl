@@ -1,16 +1,18 @@
 STATICBOARDVALUES = [[100, 50, 50, 50, 50, 50, 50, 100], [50, 10, 10, 10, 10, 10, 10, 50],
-                 [50, 10, 10, 10, 10, 10, 10, 50], [50, 10, 10, 10, 10, 10, 10, 50],
-                 [50, 10, 10, 10, 10, 10, 10, 50], [50, 10, 10, 10, 10, 10, 10, 50],
-                 [50, 10, 10, 10, 10, 10, 10, 50], [100, 50, 50, 50, 50, 50, 50, 100]]
+                     [50, 10, 10, 10, 10, 10, 10, 50], [50, 10, 10, 10, 10, 10, 10, 50],
+                     [50, 10, 10, 10, 10, 10, 10, 50], [50, 10, 10, 10, 10, 10, 10, 50],
+                     [50, 10, 10, 10, 10, 10, 10, 50], [100, 50, 50, 50, 50, 50, 50, 100]]
 
 class AI():
+
+
 
     # assign board places static values based on their strategic value
     def getMove(validMoves, mode):
         if mode == 1:
-                return easy(validMoves)
+            return AI.easy(validMoves)
         else:
-                return
+            return
 
     def easy(validMoves):
         coords = [0, 0]
