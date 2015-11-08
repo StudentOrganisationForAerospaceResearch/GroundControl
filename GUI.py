@@ -162,7 +162,7 @@ def graphicalOverlayClicked(inputX, inputY):
 # Params:
 #   inputRow - row value in numerical value
 #   inputColumn - column value coordinate in numerical value
-def teleAddPieceToBoard(inputColumn, inputRow, playerNumber, inputTurtle):
+def teleAddPieceToBoard(inputRow, inputColumn, playerNumber, inputTurtle):
     teleportToTile(inputRow, inputColumn, inputTurtle)
     addPieceToBoard(playerNumber, inputTurtle)
 
@@ -176,10 +176,10 @@ def addGhostPiecesToBoard(inputTurtle):
     currentBoardState = backend.getBoard()
 
     # Adds the ghost pieces to the board where there is a valid move opportunity
-    for row in range(9):
-        for column in range(9):
-            if playerValidMoves[row][column] == 1 and currentBoardState[row][column] == 0:
-                teleAddPieceToBoard(row, column, 3, inputTurtle)
+    for rowCounter in range(9):
+        for columnCounter in range(9):
+            if playerValidMoves[rowCounter][columnCounter] == 1 and currentBoardState[rowCounter][columnCounter] == 0:
+                teleAddPieceToBoard(rowCounter, columnCounter, 3, inputTurtle)
 
 
 # Function to export the game's current state to a file
@@ -223,7 +223,7 @@ def updateBoardPieces(inputBoardMatrix, inputTurtle):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
-            teleAddPieceToBoard(columnCounter, rowCounter, int(inputBoardMatrix[rowCounter][columnCounter]), inputTurtle)
+            teleAddPieceToBoard(rowCounter, columnCounter, int(inputBoardMatrix[rowCounter][columnCounter]), inputTurtle)
 
 
 # Function to handle the end of the game
