@@ -170,7 +170,7 @@ def teleAddPieceToBoard(inputColumn, inputRow, playerNumber, inputTurtle):
 # Function to teleport and add the ghost pieces onto the board
 def addGhostPiecesToBoard(inputTurtle):
     # Gets the array containing all the valid moves the player can perform
-    playerValidMoves = backend._findValids(None, 1)
+    playerValidMoves = backend.__findValids(True)
 
     # Gets the array containing the current board pieces
     currentBoardState = backend.getBoard()
