@@ -23,9 +23,8 @@ boardY = 1
 
     
 def main():
-    playerOne = True;
-    
-    __isValid(6, 4, True)
+    print("No Code currently in main")
+#Used for bugtesting
         
 #END main
 """
@@ -65,13 +64,14 @@ def __isValid(x, y, playersTurn):
     
     isValid = False
     scan = 1
-    
+
+
     if playersTurn == True:
         player = 1
         opponent = 2
     else:
-        player = 1
-        opponent = 2
+        player = 2
+        opponent = 1
     
     if board[x][y] == 0:
         
@@ -85,8 +85,8 @@ def __isValid(x, y, playersTurn):
                     isValid = True
 
 
-            print(isValid)
-        elif  y<8 and board[x][y+1] == opponent:
+            scan = 1
+        if  y<8 and board[x][y+1] == opponent:
             while board[x][y+scan] == opponent and (y+scan <= 7): 
                 scan += 1
                 currentIndex = board[x][y+scan]
@@ -96,8 +96,7 @@ def __isValid(x, y, playersTurn):
                 
             scan = 1       
             
-        elif x>1 and board[x-1][y] == opponent:
-            print("x,y" + str(x) + str(y))
+        if x>1 and board[x-1][y] == opponent:
            
             while board[x-scan][y] == opponent and (x-scan >= 2):
                 scan += 1
@@ -109,7 +108,7 @@ def __isValid(x, y, playersTurn):
             scan = 1
         
 
-        elif  x<8 and board[x+1][y] == opponent:
+        if  x<8 and board[x+1][y] == opponent:
            
             while board[x+scan][y] == opponent and (x+scan <= 7):
                 scan += 1
@@ -120,8 +119,8 @@ def __isValid(x, y, playersTurn):
             
             scan = 1
        
-        elif x>1 and y>1 and board[x-1][y-1] == opponent :
-           
+        if x>1 and y>1 and board[x-1][y-1] == opponent :
+            
             while board[x-scan][y-scan] == opponent and (x-scan >= 2 and y-scan >= 2):
                 scan += 1
                 currentIndex = board[x-scan][y-scan]
@@ -131,7 +130,7 @@ def __isValid(x, y, playersTurn):
             
             scan = 1
             
-        elif  x>1 and y<8 and board[x-1][y+1] == opponent:
+        if  x>1 and y<8 and board[x-1][y+1] == opponent:
            
             while board[x-scan][y+scan] == opponent and (x-scan >= 2 and y+scan <= 7): 
                 scan += 1
@@ -142,9 +141,9 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
             
-        elif  x<8 and y<1 and board[x+1][y-1] == opponent:
+        if  x<8 and y>2 and board[x+1][y-1] == opponent:
          
-            while board[x+scan][y-scan] == opponent and (x+scan <= 8 and y-scan >= 2):    
+            while board[x+scan][y-scan] == opponent and (x+scan <= 7 and y-scan >= 2):    
                 scan += 1
                 currentIndex = board[x+scan][y-scan]
        
@@ -153,9 +152,9 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
             
-        elif  x<8 and y<8 and board[x+1][y+1] == opponent:
+        if  x<8 and y<8 and board[x+1][y+1] == opponent:
 
-            while board[x+scan][y+scan] == opponent and (x+scan <= 8 and y+scan <= 7):  
+            while board[x+scan][y+scan] == opponent and (x+scan <= 7 and y+scan <= 7):  
                 scan+=1
                 currentIndex = board[x+scan][y+scan]
         
@@ -182,8 +181,8 @@ def __flipPieces(x, y, playersTurn):
         player = 1
         opponent = 2
     else:
-        player = 1
-        opponent = 2
+        player = 2
+        opponent = 1
     scan = 1
     
     if y>=1 and board[x][y-1] == opponent:
@@ -194,11 +193,8 @@ def __flipPieces(x, y, playersTurn):
                 
             if currentIndex == player:
                 
-                for i in range(y-scan, y):
-                    board [x][i] = player
-                    print(x)
-                    print(i)
-                    print(board[x][i])
+                for i in range(0, scan):
+                    board[x][y-i] = player
                     
         scan = 1 
  
@@ -211,22 +207,22 @@ def __flipPieces(x, y, playersTurn):
                 
             if currentIndex == player:
                 
-                for i in range(y, y+scan):
-                    board[x][i] = player
+                for i in range(0, scan):
+                    board[x][y+i] = player
 
                 
         scan = 1       
             
     if x>1 and board[x-1][y] == opponent:
 
-        while board[x-scan][y] == opponent and (y+scan <= 7): 
+        while board[x-scan][y] == opponent and (x-scan >= 2): 
             scan += 1
             currentIndex = board[x-scan][y]
                 
             if currentIndex == player:
                 
-                for i in range(x-scan, x):
-                    board [i][y] = player       
+                   for i in range(0, scan):
+                    board[x-i][y] = player      
 
        
         scan = 1
@@ -237,10 +233,10 @@ def __flipPieces(x, y, playersTurn):
         while board[x+scan][y] == opponent and (x+scan <= 7):
             scan += 1
             currentIndex = board[x+scan][y]
-                
+            
             if currentIndex == player:
-                for i in range(x, x+scan):
-                    board [i][y] = player
+                for i in range(0, scan):
+                    board[x+i][y] = player
 
             
         scan = 1
@@ -251,11 +247,9 @@ def __flipPieces(x, y, playersTurn):
             scan += 1
             currentIndex = board[x-scan][y-scan]
                 
-            if currentIndex == player:
-                
-                for i in range(x-scan, x):
-                    for j in range(y-scan, y):
-                        board [i][j] = player
+            if currentIndex == player:  
+                for i in range(0, scan):
+                    board[x-i][y-i] = player
 
             
         scan = 1
@@ -268,14 +262,13 @@ def __flipPieces(x, y, playersTurn):
        
             if currentIndex == player:
                 
-                for i in range(x-scan, x):
-                    for j in  range(y, y+scan):
-                        board [i][j] = player
+                for i in range(0, scan):
+                    board[x-i][y+i] = player
 
 
         scan = 1
             
-    if  x<8 and y<1 and board[x+1][y-1] == opponent:
+    if  x<8 and y>2 and board[x+1][y-1] == opponent:
          
         while board[x+scan][y-scan] == opponent and (x+scan <= 7 and y-scan >= 2):    
             scan += 1
@@ -283,24 +276,22 @@ def __flipPieces(x, y, playersTurn):
        
             if currentIndex == player:
                 
-                for i in range(x, x+scan):
-                    for j in range(y-scan, y):  
-                        board [i][j] = player
+                for i in range(0, scan):
+                    board[x+i][y-i] = player
 
 
         scan = 1
             
     if  x<8 and y<8 and board[x+1][y+1] == opponent:
 
-        while board[x+scan][y+scan] == opponent and (x+scan <= 8 and y+scan <= 7):  
+        while board[x+scan][y+scan] == opponent and (x+scan <= 7 and y+scan <= 7):  
             scan+=1
             currentIndex = board[x+scan][y+scan]
         
             if currentIndex == player:
                 
-                for i in range(x, x+scan):
-                    for j in range(y, y+scan):
-                        board [i][y] = player
+                for i in range(0, scan):
+                    board[x+i][y+i] = player
 
         scan = 1
         
