@@ -47,7 +47,8 @@ def __findValids(player):
                 
                 validMoves[x][y] = 0
     printBoard(validMoves)
-    return validMoves
+    retArray = validMoves[:]
+    return retArray
 #END _findValids
 """     
 Determines if a given square is a valid move.  
@@ -396,14 +397,16 @@ newboard must be an 2D integer array storing values in indexes 0 to 8 on both ax
     Containing only 0, 1 or 2
 """ 
 def writeboard (newBoard):
-        board = newBoard
+    global board
+    board = newBoard
  #END Writeboard
 
 """
 Used to pass the board array to other files as needed.
 """
 def getBoard():
-    return board;
+    retArray = board[:]
+    return retArray;
 #END getboard
 
 if __name__ == "__main__":
