@@ -167,27 +167,28 @@ def graphicalOverlayClicked(inputX, inputY):
 
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
-        if (copy.deepcopy(backend.__findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
-            # Feeds the backend with the user's inputted piece Row & Column values
-            backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
+        if calculatedCoordinates[0] <= 8 and calculatedCoordinates[0] > 0 and calculatedCoordinates[1] <= 8 and calculatedCoordinates[1] > 0:
+            if (copy.deepcopy(backend.__findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
+                # Feeds the backend with the user's inputted piece Row & Column values
+                backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
 
-            # Updates the board's pieces based on the newly populated board provided from the backend
-            updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+                # Updates the board's pieces based on the newly populated board provided from the backend
+                updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
 
-            # Removes the now outdated ghost pieces from the board
-            ghostPieceTurtle.clear()
+                # Removes the now outdated ghost pieces from the board
+                ghostPieceTurtle.clear()
 
-            # Stores the current board's status (to keep track of updated pieces)
-            oldBoardState = copy.deepcopy(backend.getBoard())
+                # Stores the current board's status (to keep track of updated pieces)
+                oldBoardState = copy.deepcopy(backend.getBoard())
 
-            # Calls the function that will allow the AI to now perform its turn
-            backend.aiMove()
+                # Calls the function that will allow the AI to now perform its turn
+                backend.aiMove()
 
-            # Updates the board's pieces based on the newly populated board provided from the backend
-            updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+                # Updates the board's pieces based on the newly populated board provided from the backend
+                updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
 
-            # Adds updated ghost pieces onto the board
-            addGhostPiecesToBoard(ghostPieceTurtle)
+                # Adds updated ghost pieces onto the board
+                addGhostPiecesToBoard(ghostPieceTurtle)
 
     elif numberOfValidMoves[1] > 0:
         # Removes the now outdated ghost pieces from the board
@@ -202,7 +203,19 @@ def graphicalOverlayClicked(inputX, inputY):
         # Adds updated ghost pieces onto the board
         addGhostPiecesToBoard(ghostPieceTurtle)
     elif numberOfValidMoves[0] == 0 and numberOfValidMoves[1] == 0:
-        endGame()
+        pieceCount = [0, 0]
+        for rowCounter in range(1, 9):
+            for columnCounter in range(1, 9):
+                if backend.getBoard()[rowCounter][columnCounter] == 1:
+                    pieceCount[0] += 1
+                elif backend.getBoard()[rowCounter][columnCounter] == 2:
+                    pieceCount[1] += 1
+        if pieceCount[0] > pieceCount[1]:
+            endGame("Player Has Won By " + str(pieceCount[0] - pieceCount[1]) + " Pieces!")
+        elif pieceCount[1] > pieceCount[0]:
+            endGame("AI Has Won By " + str(pieceCount[1] - pieceCount[0]) + " Pieces!")
+        elif pieceCount[0] == pieceCount[1]:
+            endGame("Draw, No One Has Won!")
 
 
 # Function to teleport and add the defined colour piece to the board and to the board matrix
@@ -230,7 +243,7 @@ def addGhostPiecesToBoard(inputTurtle):
 
 
 # Function to export the game's current state to a file
-def saveGameStateToFile(gameBoard, moveCount):
+def saveGameStateToFile(gameBoard):
     # Initialize a save game file & the save game file writer utility (overwrites any existing file) & specifies that it is to be written to
     saveGameFile = open("Reversi Save Game", "w")
 
@@ -238,7 +251,6 @@ def saveGameStateToFile(gameBoard, moveCount):
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
             saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
-    saveGameFile.write(str(moveCount))
 
     # Closes the save game file writer utility
     saveGameFile.close()
@@ -275,8 +287,8 @@ def updateBoardPieces(inputNewBoardMatrix, inputTurtle, inputOldBoardMatrix = [[
 
 
 # Function to handle the end of the game
-def endGame():
-    userGameRestartPrompt = displayOut.textinput("Game Has Ended!", "Would You Like To Restart? (Yes / No): ")
+def endGame(inputEndDialogue):
+    userGameRestartPrompt = displayOut.textinput(inputEndDialogue, "Would You Like To Restart? (Yes / No): ")
     if userGameRestartPrompt is None or userGameRestartPrompt.lower() != "yes":
         print("Restart game prompt closed")
     elif userGameRestartPrompt.lower() == "yes":
@@ -336,6 +348,8 @@ def performInitialSetup():
         elif userSaveGamePrompt.lower() == "yes":
             backend.writeboard(importGameStateFromFile())
             updateBoardPieces(backend.getBoard(), pieceTurtle)
+            ghostPieceTurtle.clear()
+            addGhostPiecesToBoard(ghostPieceTurtle)
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
     displayOut.onclick(graphicalOverlayClicked)
@@ -347,7 +361,7 @@ def main():
     # Call initial setup, then wait for user action, then loop though wait for user action
     performInitialSetup()
     displayOut.mainloop()
-    saveGameStateToFile(backend.getBoard(), 9)
+    saveGameStateToFile(backend.getBoard())
 
 
 # Calls the main function if the file is called directly
