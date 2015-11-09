@@ -160,7 +160,7 @@ def graphicalOverlayClicked(inputX, inputY):
     calculatedCoordinates = coordinatesCalculateTile(inputX, inputY)
 
     # Gets the number of valid moves possible for the player & the AI
-    numberOfValidMoves = checkForRemainingValidMoves(copy.deepcopy(backend.__findValids(True)), copy.deepcopy(backend.__findValids(False)))
+    numberOfValidMoves = checkForRemainingValidMoves(copy.deepcopy(backend.findValids(True)), copy.deepcopy(backend.findValids(False)))
 
     # Stores the current board's status (to keep track of updated pieces)
     oldBoardState = copy.deepcopy(backend.getBoard())
@@ -168,7 +168,7 @@ def graphicalOverlayClicked(inputX, inputY):
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
         if calculatedCoordinates[0] <= 8 and calculatedCoordinates[0] > 0 and calculatedCoordinates[1] <= 8 and calculatedCoordinates[1] > 0:
-            if (copy.deepcopy(backend.__findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
+            if (copy.deepcopy(backend.findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
                 # Feeds the backend with the user's inputted piece Row & Column values
                 backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
 
@@ -230,7 +230,7 @@ def teleAddPieceToBoard(inputRow, inputColumn, playerNumber, inputTurtle):
 # Function to teleport and add the ghost pieces onto the board
 def addGhostPiecesToBoard(inputTurtle):
     # Gets the array containing all the valid moves the player can perform
-    playerValidMoves = backend.__findValids(True)
+    playerValidMoves = backend.findValids(True)
 
     # Gets the array containing the current board pieces
     currentBoardState = backend.getBoard()
@@ -290,7 +290,7 @@ def updateBoardPieces(inputNewBoardMatrix, inputTurtle, inputOldBoardMatrix = [[
 def endGame(inputEndDialogue):
     userGameRestartPrompt = displayOut.textinput(inputEndDialogue, "Would You Like To Restart? (Yes / No): ")
     if userGameRestartPrompt is None or userGameRestartPrompt.lower() != "yes":
-        print("Restart game prompt closed")
+        pass
     elif userGameRestartPrompt.lower() == "yes":
         performInitialSetup()
 
@@ -310,7 +310,7 @@ def performInitialSetup():
     blankBoard[4][5] = 2
     blankBoard[5][4] = 2
     blankBoard[5][5] = 1
-    backend.writeboard(blankBoard)
+    backend.writeBoard(blankBoard)
 
     displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
     displayOut.title("Reversi By Group 22")
@@ -344,9 +344,9 @@ def performInitialSetup():
         # Prompts the user for whether or not to import the save game file (Pop Up Box)
         userSaveGamePrompt = displayOut.textinput("Load Save Game", "Save File Found! Load It? (Yes / No): ")
         if userSaveGamePrompt is None or userSaveGamePrompt.lower() != "yes":
-            print("Save game load aborted")
+            pass
         elif userSaveGamePrompt.lower() == "yes":
-            backend.writeboard(importGameStateFromFile())
+            backend.writeBoard(importGameStateFromFile())
             updateBoardPieces(backend.getBoard(), pieceTurtle)
             ghostPieceTurtle.clear()
             addGhostPiecesToBoard(ghostPieceTurtle)
