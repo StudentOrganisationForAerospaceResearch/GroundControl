@@ -133,6 +133,23 @@ def addPieceToBoard(playerNumber, inputTurtle):
     inputTurtle.end_fill()
 
 
+# Function to loop through and see if there are any valid moves remaining for either the player or the AI (will be used to determine if the game has ended / turns)
+# Params:
+#   playerArrayInput - move validity array input for the player
+#   aiArrayInput - move validity array input for the AI
+def checkForRemainingValidMoves(playerArrayInput, aiArrayInput):
+    # Index 0 = number of valid moves for the player
+    # Index 1 = number of valid moves for the AI
+    validMovesCount = [0, 0]
+    for rowCounter in range(9):
+        for columnCounter in range(9):
+            if playerArrayInput[rowCounter][columnCounter] == 1:
+                validMovesCount[0] += 1
+            if aiArrayInput[rowCounter][columnCounter] == 1:
+                validMovesCount[1] += 1
+    return validMovesCount
+
+
 # Function to run and call other functions when the GUI is clicked
 # Params:
 #   inputX - raw x coordinate in numerical value
@@ -141,21 +158,46 @@ def graphicalOverlayClicked(inputX, inputY):
     # Calculate tile clicked
     calculatedCoordinates = coordinatesCalculateTile(inputX, inputY)
 
-    # Feeds the backend with the user's inputted piece Row & Column values
-    backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
-    # Updates the board's pieces based on the newly populated board provided from the backend
-    updateBoardPieces(backend.getBoard(), pieceTurtle)
+    # Gets the number of valid moves possible for the player & the AI
+    numberOfValidMoves = checkForRemainingValidMoves(backend.__findValids(True), backend.__findValids(False))
 
-    # Removes the now outdated ghost pieces from the board
-    ghostPieceTurtle.clear()
+    # Stores the current board's status (to keep track of updated pieces)
+    oldBoardState = backend.getBoard()
 
-    # Calls the function that will allow the AI to now perform its turn
-    backend.aiMove()
-    # Updates the board's pieces based on the newly populated board provided from the backend
-    updateBoardPieces(backend.getBoard(), pieceTurtle)
+    # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
+    if numberOfValidMoves[0] > 0:
+        # Feeds the backend with the user's inputted piece Row & Column values
+        backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
 
-    # Adds updated ghost pieces onto the board
-    addGhostPiecesToBoard(ghostPieceTurtle)
+        # Updates the board's pieces based on the newly populated board provided from the backend
+        updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+
+        # Removes the now outdated ghost pieces from the board
+        ghostPieceTurtle.clear()
+
+        # Calls the function that will allow the AI to now perform its turn
+        backend.aiMove()
+
+        # Updates the board's pieces based on the newly populated board provided from the backend
+        updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+
+        # Adds updated ghost pieces onto the board
+        addGhostPiecesToBoard(ghostPieceTurtle)
+
+    elif numberOfValidMoves[1] > 0:
+        # Removes the now outdated ghost pieces from the board
+        ghostPieceTurtle.clear()
+
+        # Calls the function that will allow the AI to now perform its turn
+        backend.aiMove()
+
+        # Updates the board's pieces based on the newly populated board provided from the backend
+        updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+
+        # Adds updated ghost pieces onto the board
+        addGhostPiecesToBoard(ghostPieceTurtle)
+    elif numberOfValidMoves[0] == 0 and numberOfValidMoves[1] == 0:
+        endGame()
 
 
 # Function to teleport and add the defined colour piece to the board and to the board matrix
@@ -219,17 +261,18 @@ def importGameStateFromFile():
 
 
 # Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
-def updateBoardPieces(inputBoardMatrix, inputTurtle):
+def updateBoardPieces(inputNewBoardMatrix, inputTurtle, inputOldBoardMatrix = [[0 for i in range(9)] for i in range(9)]):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
     for rowCounter in range(1, 9):
         for columnCounter in range(1, 9):
-            teleAddPieceToBoard(rowCounter, columnCounter, int(inputBoardMatrix[rowCounter][columnCounter]), inputTurtle)
+            if inputOldBoardMatrix[rowCounter][columnCounter] != inputNewBoardMatrix[rowCounter][columnCounter]:
+                teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]), inputTurtle)
 
 
 # Function to handle the end of the game
 def endGame():
     userGameRestartPrompt = displayOut.textinput("Game Has Ended!", "Would You Like To Restart? (Yes / No): ")
-    if userGameRestartPrompt == None or userGameRestartPrompt.lower() != "yes":
+    if userGameRestartPrompt is None or userGameRestartPrompt.lower() != "yes":
         print("Restart game prompt closed")
     elif userGameRestartPrompt.lower() == "yes":
         performInitialSetup()
@@ -243,6 +286,14 @@ def performInitialSetup():
     pieceTurtle.reset()
     ghostPieceTurtle.reset()
     displayOut.onclick(None)
+    blankBoard = [[0 for i in range(9)] for i in range(9)]
+
+    # Populates the board with the initial starting pieces & sends it off to the backend
+    blankBoard[4][4] = 1
+    blankBoard[4][5] = 2
+    blankBoard[5][4] = 2
+    blankBoard[5][5] = 1
+    backend.writeboard(blankBoard)
 
     displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
     displayOut.title("Reversi By Group 22")
@@ -266,10 +317,7 @@ def performInitialSetup():
     printOutTable(pieceTurtle)
 
     # Adds The Default Tiles To The Board
-    teleAddPieceToBoard(4, 4, 1, pieceTurtle)
-    teleAddPieceToBoard(4, 5, 2, pieceTurtle)
-    teleAddPieceToBoard(5, 4, 2, pieceTurtle)
-    teleAddPieceToBoard(5, 5, 1, pieceTurtle)
+    updateBoardPieces(backend.getBoard(), pieceTurtle)
 
     # Adds the ghost pieces to the board
     addGhostPiecesToBoard(ghostPieceTurtle)
@@ -278,10 +326,11 @@ def performInitialSetup():
     if os.path.isfile("Reversi Save Game"):
         # Prompts the user for whether or not to import the save game file (Pop Up Box)
         userSaveGamePrompt = displayOut.textinput("Load Save Game", "Save File Found! Load It? (Yes / No): ")
-        if userSaveGamePrompt == None or userSaveGamePrompt.lower() != "yes":
+        if userSaveGamePrompt is None or userSaveGamePrompt.lower() != "yes":
             print("Save game load aborted")
         elif userSaveGamePrompt.lower() == "yes":
-            updateBoardPieces(importGameStateFromFile(), pieceTurtle)
+            backend.writeboard(importGameStateFromFile())
+            updateBoardPieces(backend.getBoard(), pieceTurtle)
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
     displayOut.onclick(graphicalOverlayClicked)
