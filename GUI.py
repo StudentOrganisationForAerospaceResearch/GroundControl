@@ -14,6 +14,7 @@ import turtle
 import time
 import math
 import os.path
+import copy
 from ASCII import printOutASCII
 import ReversiBoard
 
@@ -159,30 +160,34 @@ def graphicalOverlayClicked(inputX, inputY):
     calculatedCoordinates = coordinatesCalculateTile(inputX, inputY)
 
     # Gets the number of valid moves possible for the player & the AI
-    numberOfValidMoves = checkForRemainingValidMoves(backend.__findValids(True), backend.__findValids(False))
+    numberOfValidMoves = checkForRemainingValidMoves(copy.deepcopy(backend.__findValids(True)), copy.deepcopy(backend.__findValids(False)))
 
     # Stores the current board's status (to keep track of updated pieces)
-    oldBoardState = backend.getBoard()
+    oldBoardState = copy.deepcopy(backend.getBoard())
 
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
-        # Feeds the backend with the user's inputted piece Row & Column values
-        backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
+        if (copy.deepcopy(backend.__findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
+            # Feeds the backend with the user's inputted piece Row & Column values
+            backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
 
-        # Updates the board's pieces based on the newly populated board provided from the backend
-        updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+            # Updates the board's pieces based on the newly populated board provided from the backend
+            updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
 
-        # Removes the now outdated ghost pieces from the board
-        ghostPieceTurtle.clear()
+            # Removes the now outdated ghost pieces from the board
+            ghostPieceTurtle.clear()
 
-        # Calls the function that will allow the AI to now perform its turn
-        backend.aiMove()
+            # Stores the current board's status (to keep track of updated pieces)
+            oldBoardState = copy.deepcopy(backend.getBoard())
 
-        # Updates the board's pieces based on the newly populated board provided from the backend
-        updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+            # Calls the function that will allow the AI to now perform its turn
+            backend.aiMove()
 
-        # Adds updated ghost pieces onto the board
-        addGhostPiecesToBoard(ghostPieceTurtle)
+            # Updates the board's pieces based on the newly populated board provided from the backend
+            updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
+
+            # Adds updated ghost pieces onto the board
+            addGhostPiecesToBoard(ghostPieceTurtle)
 
     elif numberOfValidMoves[1] > 0:
         # Removes the now outdated ghost pieces from the board
