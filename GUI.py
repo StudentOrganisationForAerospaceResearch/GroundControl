@@ -37,10 +37,10 @@ ghostPieceTurtle = turtle.Turtle()
 
 # Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
-    teleportToTile(6, 1)
-    pieceTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
+    teleportToTile(6, 1, boardTurtle)
+    boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
     time.sleep(5)
-    pieceTurtle.clear()
+    boardTurtle.clear()
 
 
 # Function to print out the reversi table. Clears display before printing and sets color to contrast BG
@@ -74,16 +74,17 @@ def printOutTable():
 # Params:
 #   inputRow - row number in numerical value
 #   inputColumn - column number in numerical value
-def teleportToTile(inputRow, inputColumn):
-    pieceTurtle.up()
+#   inputTurtle - the global turtle that will be being teleported
+def teleportToTile(inputRow, inputColumn, inputTurtle):
+    inputTurtle.up()
     # Takes the floored values of the inputted column (to prevent moving to anywhere inside of a tile besides its center) and subtract 0.5 from it to make sure the turtle will teleport to the tile's center
     # Then Calculates the size of each tile on the board by taking half the board's width and dividing it by 4 (there are 4 tiles of each half of the board)
     # Then the two calculated values are multiplied together to get the raw X coordinate of where that tile would be on the board
     # Then the newly calculated value is taken and subtracted from half the width of the board to get the distance from the vertex to that tile
     # Performs the same calculation for the raw Y coordinate & half the board's height to get the raw Y coordinate however the floored input value is unnecessary due to the turtle resting on the horizontal line all the time
-    pieceTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn) - 0.5) * (HALF_BOARD_WIDTH / 4))),
+    inputTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn) - 0.5) * (HALF_BOARD_WIDTH / 4))),
                  (HALF_BOARD_HEIGHT - (math.floor(inputRow) * (HALF_BOARD_HEIGHT / 4))))
-    pieceTurtle.down()
+    inputTurtle.down()
 
 
 # Function to calculate the tile requested by the coordinates given (Used to convert raw click data)
@@ -106,31 +107,53 @@ def coordinatesCalculateTile(inputX, inputY):
 
 # Function to add a piece to the board in the current tile the turtle is located in (To be used with alongside the teleportToTile function)
 # Params:
-#   playerNumber - the numerical value of the move number
+#   playerNumber - the numerical value of the player
 def addPieceToBoard(playerNumber):
-    # Sets the default colour to transparent to prevent accidental fills
-    pieceTurtle.fillcolor("")
-    pieceTurtle.color("")
-
-    # Starts the fill method to fill the printed circle
-    pieceTurtle.begin_fill()
-
-    # If provided 1, fill piece with PLAYER_1_COLOUR
-    # If provided 2, fill piece with PLAYER_2_COLOUR
-    # If provided 3, fill piece with BOARD_BACKGROUND_COLOUR
+    # If provided 1, fill piece with PLAYER_1_COLOUR (Human)
+    # If provided 2, fill piece with PLAYER_2_COLOUR (AI)
+    # If provided 3, fill piece with BOARD_BACKGROUND_COLOUR (Ghost Piece)
     if playerNumber == 1:
+        # Sets the default colour to transparent to prevent accidental fills
+        pieceTurtle.fillcolor("")
+        pieceTurtle.color("")
+
+        # Starts the fill method to fill the printed circle
+        pieceTurtle.begin_fill()
+
         pieceTurtle.color("black")
         pieceTurtle.fillcolor(PLAYER_1_COLOUR)
+
+        # Print out circle with radius of 1/16 of board and end fill method
+        pieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
+        pieceTurtle.end_fill()
     elif playerNumber == 2:
+        # Sets the default colour to transparent to prevent accidental fills
+        pieceTurtle.fillcolor("")
+        pieceTurtle.color("")
+
+        # Starts the fill method to fill the printed circle
+        pieceTurtle.begin_fill()
+
         pieceTurtle.color("black")
         pieceTurtle.fillcolor(PLAYER_2_COLOUR)
-    elif playerNumber == 3:
-        pieceTurtle.color("black")
-        pieceTurtle.fillcolor(BOARD_BACKGROUND_COLOUR)
 
-    # Print out circle with radius of 1/16 of board and end fill method
-    pieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
-    pieceTurtle.end_fill()
+        # Print out circle with radius of 1/16 of board and end fill method
+        pieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
+        pieceTurtle.end_fill()
+    elif playerNumber == 3:
+        # Sets the default colour to transparent to prevent accidental fills
+        ghostPieceTurtle.fillcolor("")
+        ghostPieceTurtle.color("")
+
+        # Starts the fill method to fill the printed circle
+        ghostPieceTurtle.begin_fill()
+
+        ghostPieceTurtle.color("black")
+        ghostPieceTurtle.fillcolor(BOARD_BACKGROUND_COLOUR)
+
+        # Print out circle with radius of 1/16 of board and end fill method
+        ghostPieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
+        ghostPieceTurtle.end_fill()
 
 
 # Function to loop through and see if there are any valid moves remaining for either the player or the AI (will be used to determine if the game has ended / turns)
@@ -221,9 +244,14 @@ def graphicalOverlayClicked(inputX, inputY):
 # Params:
 #   inputRow - row value in numerical value
 #   inputColumn - column value coordinate in numerical value
+#   playerNumber - numerical value to represent whether it is the AI or Human (value = 1 OR 2) whose piece will be put down or a ghost piece (value = 3)
 def teleAddPieceToBoard(inputRow, inputColumn, playerNumber):
-    teleportToTile(inputRow, inputColumn)
-    addPieceToBoard(playerNumber)
+    if playerNumber == 1 or playerNumber == 2:
+        teleportToTile(inputRow, inputColumn, pieceTurtle)
+        addPieceToBoard(playerNumber)
+    elif playerNumber == 3:
+        teleportToTile(inputRow, inputColumn, ghostPieceTurtle)
+        addPieceToBoard(playerNumber)
 
 
 # Function to teleport and add the ghost pieces onto the board
