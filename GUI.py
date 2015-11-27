@@ -13,7 +13,6 @@ This part of the game is in charge of prompting the user for input & displaying 
 import turtle
 import time
 import math
-import copy
 from ASCII import printOutASCII
 import ReversiBoard
 
@@ -173,6 +172,58 @@ def checkForRemainingValidMoves(playerArrayInput, aiArrayInput):
     return validMovesCount
 
 
+# Function to take an input list and perform a deep copy upon it and return it back (Only capable of deepcopying on 1D or 2D lists, aliasing would occur on deeper lists)
+# Params:
+#   inputList - (MANDATORY) Takes in a list input (1D or 2D) that will be deepcopied
+#   finalList - (RECURSIVE PARAM) Takes in the currently populated finalList and uses it to add onto until fully copied
+#   hasBeenFullyCopied - (RECURSIVE PARAM) Takes in a boolean that determines whether or not to stop the recursive process (will end in returning the finalList)
+#   upperListCounter - (RECURSIVE PARAM) Takes in the current upper list position that is currently being read
+#   lowerListCounter - (RECURSIVE PARAM) Takes in the current sublist position that is currently being read
+def recursiveListDeepCopy(inputList, finalList = None, hasBeenFullyCopied = False, upperListCounter = 0, lowerListCounter = 0):
+    # Check to see whether or not the recursion should stop and send back the list
+    if hasBeenFullyCopied == False:
+        # Sets the default finalList parameter to be an empty list if nothing was passed (settings a default in the function call itself would lead to aliasing problems due to lists being mutable otherwise)
+        if finalList == None:
+            finalList = []
+
+        # Creates a simple list that matches the size of the input array (only looks at the upper list)
+        if len(finalList) < len(inputList):
+            for counter in range(len(inputList)):
+                finalList.append([])
+        # Returns an emtpy list only if it was provided with an empty list
+        elif len(inputList) == 0:
+            return recursiveListDeepCopy(inputList, finalList, True, upperListCounter, lowerListCounter)
+
+        # Only run if the entire input list has not been iterated across
+        if upperListCounter < len(inputList):
+            try:
+                # Checks to see if the current upper list entry has a sublist or not (Causes the except to be called if there is no sublist under the current spot)
+                if len(inputList[upperListCounter]) >= 1:
+                    # Check to see if the list has fully been iterated across & copied (updates the end recursion boolean)
+                    if (len(inputList) - 1) == upperListCounter and len(inputList[len(inputList) - 1]) == lowerListCounter:
+                        return recursiveListDeepCopy(inputList, finalList, True, upperListCounter, lowerListCounter)
+                    # Check to see if all the sublist entries have been hit for the current upperlist entry (moves onto the next upperlist entry)
+                    elif lowerListCounter == len(inputList[upperListCounter]):
+                        return recursiveListDeepCopy(inputList, finalList, hasBeenFullyCopied, upperListCounter + 1, 0)
+                    # Adds the current sublist value into the final list and calls the recursive method again upon the next sublist entry
+                    else:
+                        finalList[upperListCounter].append(inputList[upperListCounter][lowerListCounter])
+                        return recursiveListDeepCopy(inputList, finalList, hasBeenFullyCopied, upperListCounter, lowerListCounter + 1)
+                # Moves onto the next position in the upper list if the current entry did not have any sublist (needed for sublisted empty lists)
+                elif len(inputList) != upperListCounter:
+                    return recursiveListDeepCopy(inputList, finalList, False, upperListCounter + 1, lowerListCounter)
+            # Catches TypeError that comes from attempting to read / check for a sublist when none exists (stores the current upper list entry and moves onto the next)
+            except TypeError:
+                finalList[upperListCounter] = inputList[upperListCounter]
+                return recursiveListDeepCopy(inputList, finalList, hasBeenFullyCopied, upperListCounter + 1, lowerListCounter)
+        # Check to see whether all the upper lists have been hit and updates the end recursion boolean (needed in case the last entry was only consisting of an upper but no sublists)
+        else:
+            return recursiveListDeepCopy(inputList, finalList, True, upperListCounter, lowerListCounter)
+    # Sends back the newly copied list only when the boolean mentions that the recursive tasks are complete
+    elif hasBeenFullyCopied == True:
+        return finalList
+
+
 # Function to run and call other functions when the GUI is clicked
 # Params:
 #   inputX - raw x coordinate in numerical value
@@ -182,15 +233,15 @@ def graphicalOverlayClicked(inputX, inputY):
     calculatedCoordinates = coordinatesCalculateTile(inputX, inputY)
 
     # Gets the number of valid moves possible for the player & the AI
-    numberOfValidMoves = checkForRemainingValidMoves(copy.deepcopy(backend.findValids(True)), copy.deepcopy(backend.findValids(False)))
+    numberOfValidMoves = checkForRemainingValidMoves(recursiveListDeepCopy(backend.findValids(True)), recursiveListDeepCopy(backend.findValids(False)))
 
     # Stores the current board's status (to keep track of updated pieces)
-    oldBoardState = copy.deepcopy(backend.getBoard())
+    oldBoardState = recursiveListDeepCopy(backend.getBoard())
 
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
         if calculatedCoordinates[0] <= 8 and calculatedCoordinates[0] > 0 and calculatedCoordinates[1] <= 8 and calculatedCoordinates[1] > 0:
-            if (copy.deepcopy(backend.findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
+            if (recursiveListDeepCopy(backend.findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
                 # Feeds the backend with the user's inputted piece Row & Column values
                 backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
 
@@ -201,7 +252,7 @@ def graphicalOverlayClicked(inputX, inputY):
                 ghostPieceTurtle.clear()
 
                 # Stores the current board's status (to keep track of updated pieces)
-                oldBoardState = copy.deepcopy(backend.getBoard())
+                oldBoardState = recursiveListDeepCopy(backend.getBoard())
 
                 # Calls the function that will allow the AI to now perform its turn
                 backend.aiMove()
