@@ -19,42 +19,27 @@ import AI
 global validMoves
 global board
 artInt = AI.AI
-board = [[0 for i in range(9)] for i in range(9)]
-validMoves = [[0 for i in range(9)] for i in range(9)]
+board = [[0 for i in range(8)] for i in range(8)]
+validMoves = [[0 for i in range(8)] for i in range(8)]
 
-# Sets the four center squares to their start of game states.
-board[4][4] = 1
-board[5][5] = 1
-board[4][5] = 2
-board[5][4] = 2
-
+# TODO : should be declared locally
 # To be used later to take player inputs.
-boardX = 1
-boardY = 1
-
-
-def main():
-    print("No Code currently in main")
-# Used for bugtesting
-
-# END main
-
+boardX = 0
+boardY = 0
 
 # Modifies the validMoves Array, placing a 1 in every place the defined player can legally place a move.
 # PARAMS:
-#     player - The player to play (1 or 0)
-def findValids(player):
-    for x in range(1, 9):
-        for y in range(1, 9):
-            if __isValid(x, y, player):
+#     userTurn - The player to play
+def findValids(userTurn):
+    for x in range(0, 8):
+        for y in range(0, 8):
+            if __isValid(x, y, userTurn):
                 validMoves[x][y] = 1
 
             else:
                 validMoves[x][y] = 0
-
-    # printBoard(validMoves)
+				
     return validMoves
-# END _findValids
 
 
 # Determines if a given square is a valid move.
@@ -65,11 +50,11 @@ def findValids(player):
 #
 # RETURN:
 #     Boolean, true when the direction searched finds a valid move.
-def __isValid(x, y, playersTurn):
+def __isValid(x, y, userTurn):
     isValid = False
     scan = 1
 
-    if playersTurn:
+    if userTurn:
         player = 1
         opponent = 2
     else:
@@ -77,8 +62,8 @@ def __isValid(x, y, playersTurn):
         opponent = 1
 
     if board[x][y] == 0:
-        if y >= 1 and board[x][y - 1] == opponent:
-            while board[x][y - scan] == opponent and (y - scan >= 2):
+        if y >= 0 and board[x][y - 1] == opponent:
+            while board[x][y - scan] == opponent and (y - scan >= 1):
                 scan += 1
                 currentIndex = board[x][y - scan]
 
@@ -86,8 +71,8 @@ def __isValid(x, y, playersTurn):
                     isValid = True
 
             scan = 1
-        if y < 8 and board[x][y + 1] == opponent:
-            while board[x][y + scan] == opponent and (y + scan <= 7):
+        if y < 7 and board[x][y + 1] == opponent:
+            while board[x][y + scan] == opponent and (y + scan <= 6):
                 scan += 1
                 currentIndex = board[x][y + scan]
 
@@ -96,8 +81,8 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x > 1 and board[x - 1][y] == opponent:
-            while board[x - scan][y] == opponent and (x - scan >= 2):
+        if x > 0 and board[x - 1][y] == opponent:
+            while board[x - scan][y] == opponent and (x - scan >= 1):
                 scan += 1
                 currentIndex = board[x - scan][y]
 
@@ -106,8 +91,8 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x < 8 and board[x + 1][y] == opponent:
-            while board[x + scan][y] == opponent and (x + scan <= 7):
+        if x < 7 and board[x + 1][y] == opponent:
+            while board[x + scan][y] == opponent and (x + scan <= 6):
                 scan += 1
                 currentIndex = board[x + scan][y]
 
@@ -116,8 +101,8 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x > 1 and y > 1 and board[x - 1][y - 1] == opponent:
-            while board[x - scan][y - scan] == opponent and (x - scan >= 2 and y - scan >= 2):
+        if x > 0 and y > 0 and board[x - 1][y - 1] == opponent:
+            while board[x - scan][y - scan] == opponent and (x - scan >= 1 and y - scan >= 1):
                 scan += 1
                 currentIndex = board[x - scan][y - scan]
 
@@ -126,8 +111,8 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x > 1 and y < 8 and board[x - 1][y + 1] == opponent:
-            while board[x - scan][y + scan] == opponent and (x - scan >= 2 and y + scan <= 7):
+        if x > 0 and y < 7 and board[x - 1][y + 1] == opponent:
+            while board[x - scan][y + scan] == opponent and (x - scan >= 1 and y + scan <= 6):
                 scan += 1
                 currentIndex = board[x - scan][y + scan]
 
@@ -136,8 +121,8 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x < 8 and y > 2 and board[x + 1][y - 1] == opponent:
-            while board[x + scan][y - scan] == opponent and (x + scan <= 7 and y - scan >= 2):
+        if x < 7 and y > 1 and board[x + 1][y - 1] == opponent:
+            while board[x + scan][y - scan] == opponent and (x + scan <= 6 and y - scan >= 1):
                 scan += 1
                 currentIndex = board[x + scan][y - scan]
 
@@ -146,22 +131,20 @@ def __isValid(x, y, playersTurn):
 
             scan = 1
 
-        if x < 8 and y < 8 and board[x + 1][y + 1] == opponent:
-            while board[x + scan][y + scan] == opponent and (x + scan <= 7 and y + scan <= 7):
+        if x < 7 and y < 7 and board[x + 1][y + 1] == opponent:
+            while board[x + scan][y + scan] == opponent and (x + scan <= 6 and y + scan <= 6):
                 scan += 1
                 currentIndex = board[x + scan][y + scan]
 
                 if currentIndex == player:
                     isValid = True
     return isValid
-# END __checkFlips
-
 
 # Flips opponent's pieces to the current player's pieces.
 # PARAMS:
-# x - x coordinate of the placed piece.
-# y - y coordinate of the placed piece
-# playersTurn - Boolean, true when it is the player's Turn.
+# 		x - x coordinate of the placed piece.
+# 		y - y coordinate of the placed piece
+# 		playersTurn - Boolean, true when it is the player's Turn.
 def __flipPieces(x, y, playersTurn):
     if playersTurn:
         player = 1
@@ -171,8 +154,8 @@ def __flipPieces(x, y, playersTurn):
         opponent = 1
     scan = 1
 
-    if y >= 1 and board[x][y - 1] == opponent:
-        while board[x][y - scan] == opponent and (y - scan >= 2):
+    if y >= 0 and board[x][y - 1] == opponent:
+        while board[x][y - scan] == opponent and (y - scan >= 1):
             scan += 1
             currentIndex = board[x][y - scan]
 
@@ -181,8 +164,8 @@ def __flipPieces(x, y, playersTurn):
                     board[x][y - i] = player
         scan = 1
 
-    if y < 8 and board[x][y + 1] == opponent:
-        while board[x][y + scan] == opponent and (y + scan <= 7):
+    if y < 7 and board[x][y + 1] == opponent:
+        while board[x][y + scan] == opponent and (y + scan <= 6):
             scan += 1
             currentIndex = board[x][y + scan]
 
@@ -191,9 +174,9 @@ def __flipPieces(x, y, playersTurn):
                     board[x][y + i] = player
         scan = 1
 
-    if x > 1 and board[x - 1][y] == opponent:
+    if x > 0 and board[x - 1][y] == opponent:
 
-        while board[x - scan][y] == opponent and (x - scan >= 2):
+        while board[x - scan][y] == opponent and (x - scan >= 1):
             scan += 1
             currentIndex = board[x - scan][y]
 
@@ -203,8 +186,8 @@ def __flipPieces(x, y, playersTurn):
                     board[x - i][y] = player
         scan = 1
 
-    if x < 8 and board[x + 1][y] == opponent:
-        while board[x + scan][y] == opponent and (x + scan <= 7):
+    if x < 7 and board[x + 1][y] == opponent:
+        while board[x + scan][y] == opponent and (x + scan <= 6):
             scan += 1
             currentIndex = board[x + scan][y]
 
@@ -213,8 +196,8 @@ def __flipPieces(x, y, playersTurn):
                     board[x + i][y] = player
         scan = 1
 
-    if x > 1 and y > 1 and board[x - 1][y - 1] == opponent:
-        while board[x - scan][y - scan] == opponent and (x - scan >= 2 and y - scan >= 2):
+    if x > 0 and y > 0 and board[x - 1][y - 1] == opponent:
+        while board[x - scan][y - scan] == opponent and (x - scan >= 1 and y - scan >= 1):
             scan += 1
             currentIndex = board[x - scan][y - scan]
 
@@ -223,8 +206,8 @@ def __flipPieces(x, y, playersTurn):
                     board[x - i][y - i] = player
         scan = 1
 
-    if x > 1 and y < 8 and board[x - 1][y + 1] == opponent:
-        while board[x - scan][y + scan] == opponent and (x - scan >= 2 and y + scan <= 7):
+    if x > 0 and y < 7 and board[x - 1][y + 1] == opponent:
+        while board[x - scan][y + scan] == opponent and (x - scan >= 1 and y + scan <= 6):
             scan += 1
             currentIndex = board[x - scan][y + scan]
 
@@ -233,8 +216,8 @@ def __flipPieces(x, y, playersTurn):
                     board[x - i][y + i] = player
         scan = 1
 
-    if x < 8 and y > 2 and board[x + 1][y - 1] == opponent:
-        while board[x + scan][y - scan] == opponent and (x + scan <= 7 and y - scan >= 2):
+    if x < 7 and y > 1 and board[x + 1][y - 1] == opponent:
+        while board[x + scan][y - scan] == opponent and (x + scan <= 6 and y - scan >= 1):
             scan += 1
             currentIndex = board[x + scan][y - scan]
 
@@ -243,9 +226,9 @@ def __flipPieces(x, y, playersTurn):
                     board[x + i][y - i] = player
         scan = 1
 
-    if x < 8 and y < 8 and board[x + 1][y + 1] == opponent:
+    if x < 7 and y < 7 and board[x + 1][y + 1] == opponent:
 
-        while board[x + scan][y + scan] == opponent and (x + scan <= 7 and y + scan <= 7):
+        while board[x + scan][y + scan] == opponent and (x + scan <= 6 and y + scan <= 6):
             scan += 1
             currentIndex = board[x + scan][y + scan]
 
@@ -254,43 +237,11 @@ def __flipPieces(x, y, playersTurn):
                     board[x + i][y + i] = player
 
 
-# Prints the board out in an ASCII display.
-# Used to aid debugging
-# PARAMS:
-# toPrint - The board to be printed
-def printBoard(toPrint):
-    # Increments within the loop, used to print the correct board coordinate.
-    printY = 1
-
-    # Loops once for every row of the board.
-    for y in range(1, 9):
-
-        # Prints a spaces to improve board readability.
-        # print("-----------------")
-
-        nextLine = "|"
-
-        printX = 1
-
-        # Loops once for every column of the board.
-        for x in range(1, 9):
-            nextLine = nextLine + str(toPrint[printX][printY]) + "|"
-
-            # Increments printX for use in the next run of the loop.
-            printX += 1
-
-        # print(nextLine)
-        printY += 1
-        # print()
-# END printBoard
-
-
 # Calls AI for it's next move, pushes that move to __getMove
-def aiMove():
+def getAiMove():
     validMoves = findValids(False)
-    coords = artInt.easy(validMoves)
+    coords = artInt.getMove(validMoves)
     __getMove(coords[0], coords[1], False)
-# END aiMove
 
 
 # Called by GUI to pass players move to __getMove, then calls the AI's move.
@@ -310,7 +261,6 @@ def playerMove(X, Y):
 #     Y - Move's Y coordinate
 #     playerTurn - True denotes a player move (1), False denotes an AI move (2)
 def __getMove(x, y, playersTurn):
-    printBoard(board)
     boardX = x
     boardY = y
     if playersTurn == True:
@@ -341,7 +291,6 @@ def writeBoard(newBoard):
 def getBoard():
     retArray = board
     return retArray
-# END getboard
 
 if __name__ == "__main__":
     main()

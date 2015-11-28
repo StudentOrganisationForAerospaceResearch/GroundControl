@@ -16,7 +16,7 @@ import math
 import os.path
 import copy
 from ASCII import printOutASCII
-import ReversiBoard
+import ReversiBoard as backend
 
 # Initialize global constants (necessary for when functions are called from a different file)
 HALF_BOARD_WIDTH = -250.0
@@ -25,9 +25,6 @@ BOARD_OUTLINE_COLOUR = "White"
 BOARD_BACKGROUND_COLOUR = "Brown"
 PLAYER_1_COLOUR = "White"
 PLAYER_2_COLOUR = "Black"
-
-# Initialize global mutable object from ReversiBoard
-backend = ReversiBoard
 
 # Initialize the global mutable display out & mutable turtles for the board, pieces, and ghost pieces
 displayOut = turtle.Screen()
@@ -142,8 +139,8 @@ def checkForRemainingValidMoves(playerArrayInput, aiArrayInput):
     # Index 0 = number of valid moves for the player
     # Index 1 = number of valid moves for the AI
     validMovesCount = [0, 0]
-    for rowCounter in range(9):
-        for columnCounter in range(9):
+    for rowCounter in range(8):
+        for columnCounter in range(8):
             if playerArrayInput[rowCounter][columnCounter] == 1:
                 validMovesCount[0] += 1
             if aiArrayInput[rowCounter][columnCounter] == 1:
@@ -182,7 +179,7 @@ def graphicalOverlayClicked(inputX, inputY):
                 oldBoardState = copy.deepcopy(backend.getBoard())
 
                 # Calls the function that will allow the AI to now perform its turn
-                backend.aiMove()
+                backend.getAiMove()
 
                 # Updates the board's pieces based on the newly populated board provided from the backend
                 updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
@@ -195,7 +192,7 @@ def graphicalOverlayClicked(inputX, inputY):
         ghostPieceTurtle.clear()
 
         # Calls the function that will allow the AI to now perform its turn
-        backend.aiMove()
+        backend.getAiMove()
 
         # Updates the board's pieces based on the newly populated board provided from the backend
         updateBoardPieces(backend.getBoard(), pieceTurtle, oldBoardState)
@@ -204,12 +201,14 @@ def graphicalOverlayClicked(inputX, inputY):
         addGhostPiecesToBoard(ghostPieceTurtle)
     elif numberOfValidMoves[0] == 0 and numberOfValidMoves[1] == 0:
         pieceCount = [0, 0]
-        for rowCounter in range(1, 9):
-            for columnCounter in range(1, 9):
+        
+        for rowCounter in range(0, 8):
+            for columnCounter in range(0, 8):
                 if backend.getBoard()[rowCounter][columnCounter] == 1:
                     pieceCount[0] += 1
                 elif backend.getBoard()[rowCounter][columnCounter] == 2:
                     pieceCount[1] += 1
+                    
         if pieceCount[0] > pieceCount[1]:
             endGame("Player Has Won By " + str(pieceCount[0] - pieceCount[1]) + " Pieces!")
         elif pieceCount[1] > pieceCount[0]:
@@ -236,37 +235,44 @@ def addGhostPiecesToBoard(inputTurtle):
     currentBoardState = backend.getBoard()
 
     # Adds the ghost pieces to the board where there is a valid move opportunity
-    for rowCounter in range(9):
-        for columnCounter in range(9):
+    for rowCounter in range(8):
+        for columnCounter in range(8):
             if playerValidMoves[rowCounter][columnCounter] == 1 and currentBoardState[rowCounter][columnCounter] == 0:
                 teleAddPieceToBoard(rowCounter, columnCounter, 3, inputTurtle)
 
 
 # Function to export the game's current state to a file
+# PARAMS:
+#        gameBoard - 2D array of current board state
 def saveGameStateToFile(gameBoard):
     # Initialize a save game file & the save game file writer utility (overwrites any existing file) & specifies that it is to be written to
     saveGameFile = open("Reversi Save Game", "w")
 
     # Loops through the entire board matrix & writes it to the file
-    for rowCounter in range(1, 9):
-        for columnCounter in range(1, 9):
+    for rowCounter in range(0, 8):
+        for columnCounter in range(0, 8):
             saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
 
+    # Saves turn that gameplay was on to last place in file
+    saveGameFile.write()
+    
     # Closes the save game file writer utility
     saveGameFile.close()
+    
+    return
 
 
 # Function to import the game's state from a file
 def importGameStateFromFile():
     # Initialize a new list & the save game file reader utility & specifies that it is to be imported from
     saveGameFile = open("Reversi Save Game", "r")
-    importedBoard = [[0 for importedMatrixIndex in range(9)] for importedMatrixIndex in range(9)]
+    importedBoard = [[0 for importedMatrixIndex in range(8)] for importedMatrixIndex in range(8)]
     currentIndex = 0
     fileData = saveGameFile.read()
 
     # Loops through the entire file & imports it into the temp board matrix
-    for rowCounter in range(1, 9):
-        for columnCounter in range(1, 9):
+    for rowCounter in range(0, 8):
+        for columnCounter in range(0, 8):
             importedBoard[rowCounter][columnCounter] = int(fileData[currentIndex:currentIndex + 1])
             currentIndex += 1
 
@@ -278,10 +284,10 @@ def importGameStateFromFile():
 
 
 # Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
-def updateBoardPieces(inputNewBoardMatrix, inputTurtle, inputOldBoardMatrix = [[0 for i in range(9)] for i in range(9)]):
+def updateBoardPieces(inputNewBoardMatrix, inputTurtle, inputOldBoardMatrix = [[0 for i in range(8)] for i in range(8)]):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
-    for rowCounter in range(1, 9):
-        for columnCounter in range(1, 9):
+    for rowCounter in range(0, 8):
+        for columnCounter in range(0, 8):
             if inputOldBoardMatrix[rowCounter][columnCounter] != inputNewBoardMatrix[rowCounter][columnCounter]:
                 teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]), inputTurtle)
 
@@ -303,13 +309,13 @@ def performInitialSetup():
     pieceTurtle.reset()
     ghostPieceTurtle.reset()
     displayOut.onclick(None)
-    blankBoard = [[0 for i in range(9)] for i in range(9)]
+    blankBoard = [[0 for i in range(8)] for i in range(8)]
 
     # Populates the board with the initial starting pieces & sends it off to the backend
+    blankBoard[3][3] = 1
+    blankBoard[3][4] = 2
+    blankBoard[4][3] = 2
     blankBoard[4][4] = 1
-    blankBoard[4][5] = 2
-    blankBoard[5][4] = 2
-    blankBoard[5][5] = 1
     backend.writeBoard(blankBoard)
 
     displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
@@ -350,7 +356,10 @@ def performInitialSetup():
             updateBoardPieces(backend.getBoard(), pieceTurtle)
             ghostPieceTurtle.clear()
             addGhostPiecesToBoard(ghostPieceTurtle)
-
+    
+	#TODO : pass this through to the getAiMove call
+    gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard, 4 = Recursive) ")
+    
     # Sets The Function That Will Be Called When The User Clicks On The Screen & A Listener For It
     displayOut.onclick(graphicalOverlayClicked)
     displayOut.listen()
