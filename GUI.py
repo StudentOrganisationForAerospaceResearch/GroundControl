@@ -13,6 +13,7 @@ This part of the game is in charge of prompting the user for input & displaying 
 import turtle
 import time
 import math
+import random
 from ASCII import printOutASCII
 import ReversiBoard
 
@@ -27,17 +28,17 @@ PLAYER_2_COLOUR = "Black"
 # Initialize global mutable object from ReversiBoard
 backend = ReversiBoard
 
-# Initialize the global mutable display out & mutable turtles for the board, pieces, and ghost pieces
+# Initialize the global display out & turtles for the board, pieces, and ghost pieces
 displayOut = turtle.Screen()
 boardTurtle = turtle.Turtle()
 pieceTurtle = turtle.Turtle()
 ghostPieceTurtle = turtle.Turtle()
 
 
-# Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
+# Function to print out the ASCII intro to the display overlay & waits 5 seconds before running the program
 def printOutIntro():
-    teleportToTile(6, 1, boardTurtle)
-    boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
+    teleportToTile(8, 1, boardTurtle)
+    boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 30)))
     time.sleep(5)
     boardTurtle.clear()
 
@@ -377,6 +378,19 @@ def updateBoardPieces(inputNewBoardMatrix, inputOldBoardMatrix = [[0 for i in ra
                 teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]))
 
 
+# Function that randomly determines whether to allow the AI to make the first move in the game or the player
+def performFirstMove():
+    # Stores a randomly generated number (either 1 or 2)
+    randomPlayerGeneration = random.randrange(1, 3)
+
+    # If the generated number is 1 does nothing (Human is automatically given the first turn when the GUI starts taking in clicks)
+    if randomPlayerGeneration == 1:
+        pass
+    # If the generated number is 2 performs an AI move
+    elif randomPlayerGeneration == 2:
+        backend.aiMove()
+
+
 # Function to handle the end of the game
 def endGame(inputEndDialogue):
     userGameRestartPrompt = displayOut.textinput(inputEndDialogue, "Would You Like To Restart? (Yes / No): ")
@@ -425,6 +439,9 @@ def performInitialSetup():
     # Calls The Functions To Print Out The Intro & Board
     printOutIntro()
     printOutTable()
+
+    # Calls The Function To Randomly Determine & Allows Either The Human Or The AI To Play The First Piece
+    performFirstMove()
 
     # Adds The Default Tiles To The Board
     updateBoardPieces(backend.getBoard())
