@@ -33,7 +33,7 @@ ghostPieceTurtle = turtle.Turtle()
 
 # Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
-    teleportToTile(6, 1, boardTurtle)
+    teleportToTile(5, 0, boardTurtle)
     boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 25)))
     time.sleep(5)
     boardTurtle.clear()
@@ -65,7 +65,7 @@ def printOutTable():
 
     boardTurtle.color("Black")
 
-
+    
 # Function to teleport the turtle to a different tile on the board without leaving a trail (Calculates X & Y coordinates provided tile numbers)
 # Params:
 #   inputRow - row number in numerical value
@@ -78,11 +78,11 @@ def teleportToTile(inputRow, inputColumn, inputTurtle):
     # Then the two calculated values are multiplied together to get the raw X coordinate of where that tile would be on the board
     # Then the newly calculated value is taken and subtracted from half the width of the board to get the distance from the vertex to that tile
     # Performs the same calculation for the raw Y coordinate & half the board's height to get the raw Y coordinate however the floored input value is unnecessary due to the turtle resting on the horizontal line all the time
-    inputTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn) - 0.5) * (HALF_BOARD_WIDTH / 4))),
-                 (HALF_BOARD_HEIGHT - (math.floor(inputRow) * (HALF_BOARD_HEIGHT / 4))))
+    inputTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn + 1) - 0.5) * (HALF_BOARD_WIDTH / 4))),
+                 (HALF_BOARD_HEIGHT - (math.floor(inputRow + 1) * (HALF_BOARD_HEIGHT / 4))))
     inputTurtle.down()
 
-
+    
 # Function to calculate the tile requested by the coordinates given (Used to convert raw click data)
 # Params:
 #   inputX - raw X coordinate in decimal value
@@ -332,6 +332,7 @@ def saveGameStateToFile():
         for rowCounter in range(0, 8):
             for columnCounter in range(0, 8):
                 saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
+        saveGameFile.write(backend.getDifficulty())
 
         # Closes the save game file writer utility
         saveGameFile.close()
@@ -348,12 +349,15 @@ def importGameStateFromFile():
         currentIndex = 0
         fileData = saveGameFile.read()
 
-        # Loops through the entire file & imports it into the temp board matrix
+        # Loops through the entire file except last spot & imports it into the temp board matrix
         for rowCounter in range(0, 8):
             for columnCounter in range(0, 8):
                 importedBoard[rowCounter][columnCounter] = int(fileData[currentIndex:currentIndex + 1])
                 currentIndex += 1
-
+        
+        #get and set game difficulty
+        backend.setDifficulty(int(fileData[len(filedata)-1]))
+        
         # Closes the save game file reader utility
         saveGameFile.close()
 
@@ -431,8 +435,12 @@ def performInitialSetup():
     # Adds the ghost pieces to the board
     addGhostPiecesToBoard()
 	
-	#TODO : pass this through to the getAiMove call
-    gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard, 4 = Recursive) ")
+	#get game difficulty
+    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    
+    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
+        gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    backend.setDifficulty(gameDifficulty)
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen + For When L Is Pressed + For When S Is Pressed & Listeners For Them
     displayOut.onkey(importGameStateFromFile, "l")

@@ -10,7 +10,7 @@ Sharjeel Junaid
 Description:
 This part of the game is in charge of handing all the data & handling all move related functions and calls to the AI
 """
-import AI
+from AI import AI
 
 # initializes the 8x8 reversi board and assigns a value of 0 to every square.
 # 0 = Empty square
@@ -18,9 +18,11 @@ import AI
 # 2 = black piece
 global validMoves
 global board
-artInt = AI.AI
 board = [[0 for i in range(8)] for i in range(8)]
 validMoves = [[0 for i in range(8)] for i in range(8)]
+
+#set the game difficulty with a default of easy
+game_difficulty = 1
 
 # TODO : should be declared locally
 # To be used later to take player inputs.
@@ -38,7 +40,7 @@ def findValids(userTurn):
 
             else:
                 validMoves[x][y] = 0
-				
+                
     return validMoves
 
 
@@ -142,9 +144,9 @@ def __isValid(x, y, userTurn):
 
 # Flips opponent's pieces to the current player's pieces.
 # PARAMS:
-# 		x - x coordinate of the placed piece.
-# 		y - y coordinate of the placed piece
-# 		playersTurn - Boolean, true when it is the player's Turn.
+#         x - x coordinate of the placed piece.
+#         y - y coordinate of the placed piece
+#         playersTurn - Boolean, true when it is the player's Turn.
 def __flipPieces(x, y, playersTurn):
     if playersTurn:
         player = 1
@@ -240,7 +242,7 @@ def __flipPieces(x, y, playersTurn):
 # Calls AI for it's next move, pushes that move to __getMove
 def getAiMove():
     validMoves = findValids(False)
-    coords = artInt.getMove(validMoves)
+    coords = AI.getMove(validMoves, game_difficulty)
     __getMove(coords[0], coords[1], False)
 
 
@@ -291,6 +293,10 @@ def writeBoard(newBoard):
 def getBoard():
     retArray = board
     return retArray
-
-if __name__ == "__main__":
-    main()
+    
+def getDifficulty():
+    return game_difficulty
+    
+def setDifficulty(difficulty):
+    game_difficulty = difficulty
+    return
