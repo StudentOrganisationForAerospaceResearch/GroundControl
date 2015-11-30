@@ -66,7 +66,7 @@ def printOutTable():
 
     boardTurtle.color("Black")
 
-    
+
 # Function to teleport the turtle to a different tile on the board without leaving a trail (Calculates X & Y coordinates provided tile numbers)
 # Params:
 #   inputRow - row number in numerical value
@@ -80,10 +80,10 @@ def teleportToTile(inputRow, inputColumn, inputTurtle):
     # Then the newly calculated value is taken and subtracted from half the width of the board to get the distance from the vertex to that tile
     # Performs the same calculation for the raw Y coordinate & half the board's height to get the raw Y coordinate however the floored input value is unnecessary due to the turtle resting on the horizontal line all the time
     inputTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn + 1) - 0.5) * (HALF_BOARD_WIDTH / 4))),
-                 (HALF_BOARD_HEIGHT - (math.floor(inputRow + 1) * (HALF_BOARD_HEIGHT / 4))))
+                     (HALF_BOARD_HEIGHT - (math.floor(inputRow + 1) * (HALF_BOARD_HEIGHT / 4))))
     inputTurtle.down()
 
-    
+
 # Function to calculate the tile requested by the coordinates given (Used to convert raw click data)
 # Params:
 #   inputX - raw X coordinate in decimal value
@@ -91,12 +91,12 @@ def teleportToTile(inputRow, inputColumn, inputTurtle):
 def coordinatesCalculateTile(inputX, inputY):
     # Calculates row and column based on input
     # Takes the inputted raw Y coordinate and subtracts it from half the board's height to get its current row position on the board
-    # Then it calculates the height of each tile by taking half the board's height & dividing it by 4, but adding 1 into it due to grid's boundary being considered otherwise
+    # Then it calculates the height of each tile by taking half the board's height & dividing it by 4
     # Then divides the two calculated values and absolutes them to make sure the resultant value is a positive value
     # Then floors the resultant value to prevent the calculation returning a value that would be partway in a tile
     # Performs the same calculation using the raw X coordinate & half the board's width to get the column value
-    calculatedRow = math.floor(abs(((inputY - HALF_BOARD_HEIGHT) / (HALF_BOARD_HEIGHT / 4))) + 1)
-    calculatedColumn = math.floor(abs(((inputX - HALF_BOARD_WIDTH) / (HALF_BOARD_WIDTH / 4))) + 1)
+    calculatedRow = math.floor(abs(((inputY - HALF_BOARD_HEIGHT) / (HALF_BOARD_HEIGHT / 4))))
+    calculatedColumn = math.floor(abs(((inputX - HALF_BOARD_WIDTH) / (HALF_BOARD_WIDTH / 4))))
 
     # Returns the calculated row & column
     return [calculatedRow, calculatedColumn]
@@ -238,7 +238,7 @@ def graphicalOverlayClicked(inputX, inputY):
 
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
-        if calculatedCoordinates[0] <= 8 and calculatedCoordinates[0] > 0 and calculatedCoordinates[1] <= 8 and calculatedCoordinates[1] > 0:
+        if calculatedCoordinates[0] <= 7 and calculatedCoordinates[0] >= 0 and calculatedCoordinates[1] <= 7 and calculatedCoordinates[1] >= 0:
             if (recursiveListDeepCopy(backend.findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
                 # Feeds the backend with the user's inputted piece Row & Column values
                 backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
@@ -275,14 +275,14 @@ def graphicalOverlayClicked(inputX, inputY):
         addGhostPiecesToBoard()
     elif numberOfValidMoves[0] == 0 and numberOfValidMoves[1] == 0:
         pieceCount = [0, 0]
-        
-        for rowCounter in range(0, 8):
-            for columnCounter in range(0, 8):
+
+        for rowCounter in range(8):
+            for columnCounter in range(8):
                 if backend.getBoard()[rowCounter][columnCounter] == 1:
                     pieceCount[0] += 1
                 elif backend.getBoard()[rowCounter][columnCounter] == 2:
                     pieceCount[1] += 1
-                    
+
         if pieceCount[0] > pieceCount[1]:
             endGame("Player Has Won By " + str(pieceCount[0] - pieceCount[1]) + " Pieces!")
         elif pieceCount[1] > pieceCount[0]:
@@ -330,8 +330,8 @@ def saveGameStateToFile():
         saveGameFile = open("Reversi Save Game", "w")
 
         # Loops through the entire board matrix & writes it to the file
-        for rowCounter in range(0, 8):
-            for columnCounter in range(0, 8):
+        for rowCounter in range(8):
+            for columnCounter in range(8):
                 saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
         saveGameFile.write(backend.getDifficulty())
 
@@ -351,14 +351,14 @@ def importGameStateFromFile():
         fileData = saveGameFile.read()
 
         # Loops through the entire file except last spot & imports it into the temp board matrix
-        for rowCounter in range(0, 8):
-            for columnCounter in range(0, 8):
+        for rowCounter in range(8):
+            for columnCounter in range(8):
                 importedBoard[rowCounter][columnCounter] = int(fileData[currentIndex:currentIndex + 1])
                 currentIndex += 1
-        
-        #get and set game difficulty
-        backend.setDifficulty(int(fileData[len(filedata)-1]))
-        
+
+        # get and set game difficulty
+        backend.setDifficulty(int(fileData[len(fileData) - 1]))
+
         # Closes the save game file reader utility
         saveGameFile.close()
 
@@ -375,8 +375,8 @@ def importGameStateFromFile():
 # Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
 def updateBoardPieces(inputNewBoardMatrix, inputOldBoardMatrix = [[0 for i in range(8)] for i in range(8)]):
     # Loops through the entire board matrix, comparing entries & adding in changed pieces
-    for rowCounter in range(0, 8):
-        for columnCounter in range(0, 8):
+    for rowCounter in range(8):
+        for columnCounter in range(8):
             if inputOldBoardMatrix[rowCounter][columnCounter] != inputNewBoardMatrix[rowCounter][columnCounter]:
                 teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]))
 
@@ -391,7 +391,7 @@ def performFirstMove():
         pass
     # If the generated number is 2 performs an AI move
     elif randomPlayerGeneration == 2:
-        backend.aiMove()
+        backend.getAiMove()
 
 
 # Function to handle the end of the game
@@ -451,13 +451,12 @@ def performInitialSetup():
 
     # Adds the ghost pieces to the board
     addGhostPiecesToBoard()
-	
-	#get game difficulty
-    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    
-    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
-        gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    backend.setDifficulty(gameDifficulty)
+
+    # Gets and only sets the game difficulty when a valid number is entered (prompts forever otherwise)
+    gameDifficulty = "0"
+    while gameDifficulty != "1" and gameDifficulty != "2" and gameDifficulty != "3" or gameDifficulty is None:
+        gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) ")
+    backend.setDifficulty(int(gameDifficulty))
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen + For When L Is Pressed + For When S Is Pressed & Listeners For Them
     displayOut.onkey(importGameStateFromFile, "l")
