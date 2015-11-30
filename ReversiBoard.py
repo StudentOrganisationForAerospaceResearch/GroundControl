@@ -21,13 +21,9 @@ global board
 board = [[0 for i in range(8)] for i in range(8)]
 validMoves = [[0 for i in range(8)] for i in range(8)]
 
-#set the game difficulty with a default of easy
-game_difficulty = 1
+# set the game difficulty with a default of easy
+global game_difficulty
 
-# TODO : should be declared locally
-# To be used later to take player inputs.
-boardX = 0
-boardY = 0
 
 # Modifies the validMoves Array, placing a 1 in every place the defined player can legally place a move.
 # PARAMS:
@@ -40,7 +36,7 @@ def findValids(userTurn):
 
             else:
                 validMoves[x][y] = 0
-                
+
     return validMoves
 
 
@@ -141,6 +137,7 @@ def __isValid(x, y, userTurn):
                 if currentIndex == player:
                     isValid = True
     return isValid
+
 
 # Flips opponent's pieces to the current player's pieces.
 # PARAMS:
@@ -253,6 +250,8 @@ def getAiMove():
 def playerMove(X, Y):
     findValids(True)
     __getMove(X, Y, True)
+
+
 # END playerMove
 
 
@@ -277,6 +276,8 @@ def __getMove(x, y, playersTurn):
     else:
         pass
         # print("Sorry, that is not a valid move.")
+
+
 # END __getMove
 
 
@@ -293,10 +294,13 @@ def writeBoard(newBoard):
 def getBoard():
     retArray = board
     return retArray
-    
+
+
 def getDifficulty():
     return game_difficulty
-    
+
+
 def setDifficulty(difficulty):
+    global game_difficulty
     game_difficulty = difficulty
     return
