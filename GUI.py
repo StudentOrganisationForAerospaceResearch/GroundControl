@@ -334,8 +334,6 @@ def saveGameStateToFile():
             for columnCounter in range(0, 8):
                 saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
         saveGameFile.write(backend.getDifficulty())
-
-        # Closes the save game file writer utility
         saveGameFile.close()
     except Exception as e:
         pass
@@ -391,7 +389,15 @@ def performFirstMove():
         pass
     # If the generated number is 2 performs an AI move
     elif randomPlayerGeneration == 2:
-        backend.aiMove()
+        backend.getAiMove()
+        
+def getGameDifficulty():
+    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    
+    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
+        gameDifficulty = int(displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    
+    return gameDifficulty
 
 
 # Function to handle the end of the game
@@ -442,7 +448,10 @@ def performInitialSetup():
     # Calls The Functions To Print Out The Intro & Board
     printOutIntro()
     printOutTable()
-
+    
+    #get game difficulty
+    backend.setDifficulty(getGameDifficulty())
+    
     # Calls The Function To Randomly Determine & Allows Either The Human Or The AI To Play The First Piece
     performFirstMove()
 
@@ -451,13 +460,6 @@ def performInitialSetup():
 
     # Adds the ghost pieces to the board
     addGhostPiecesToBoard()
-	
-	#get game difficulty
-    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    
-    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
-        gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    backend.setDifficulty(gameDifficulty)
 
     # Sets The Function That Will Be Called When The User Clicks On The Screen + For When L Is Pressed + For When S Is Pressed & Listeners For Them
     displayOut.onkey(importGameStateFromFile, "l")
@@ -465,7 +467,7 @@ def performInitialSetup():
     displayOut.onclick(graphicalOverlayClicked)
     displayOut.listen()
 
-
+    
 # Main function to run the GUI separate from other files
 def main():
     # Call initial setup, then wait for user action, then loop though wait for user action
