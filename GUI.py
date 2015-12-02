@@ -8,7 +8,7 @@ Nathan Meulenbroek
 Sharjeel Junaid
 
 Description:
-This part of the game is in charge of prompting the user for input & displaying it out on a graphical overlay while allowing user input
+This part of the game is in charge of handling user input & ai responses to display it out on a graphical overlay
 """
 import turtle
 import time
@@ -25,7 +25,7 @@ BOARD_BACKGROUND_COLOUR = "Brown"
 PLAYER_1_COLOUR = "White"
 PLAYER_2_COLOUR = "Black"
 
-# Initialize the global mutable display out & mutable turtles for the board, pieces, and ghost pieces
+# Initialize the global display out & turtles for the board, pieces, and ghost pieces
 displayOut = turtle.Screen()
 boardTurtle = turtle.Turtle()
 pieceTurtle = turtle.Turtle()
@@ -38,15 +38,14 @@ def printOutIntro():
     boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 30)))
     time.sleep(5)
     boardTurtle.clear()
+    return
 
 
-# Function to print out the reversi table. Clears display before printing and sets color to contrast BG
-# Takes no params, accesses global variable BOARD_OUTLINE_COLOUR
+# Function to print out the Reversi table. Clears display before printing and sets color to contrast background
 def printOutTable():
     boardTurtle.clear()
     boardTurtle.color(BOARD_OUTLINE_COLOUR)
-
-    # For loop to teleport the turtle through generating the board. Starts top left
+    # Teleport the turtle across the display overlay generating the board (Starts in the top left corner)
     for indexCounter in range(9):
         # Lift turtle and teleport to left hand side of the following row, top left if first row
         # Then draw line
@@ -56,104 +55,109 @@ def printOutTable():
         boardTurtle.forward(-HALF_BOARD_WIDTH * 2)
 
         # Turn turtle to print column line, follows same steps as above
-        # Then turns the turtle back to the horizontal for the next row
+        # Then turns the turtle back to the face the original direction for the next row
         boardTurtle.right(90)
         boardTurtle.up()
         boardTurtle.goto(HALF_BOARD_WIDTH - indexCounter * HALF_BOARD_WIDTH / 4, HALF_BOARD_HEIGHT)
         boardTurtle.down()
         boardTurtle.forward(HALF_BOARD_HEIGHT * 2)
         boardTurtle.left(90)
-
     boardTurtle.color("Black")
+    return
+
+
+# Function to calculate the tile on the board given the raw display overlay coordinates (Used to convert raw click data)
+# Params:
+#   inputX - raw X coordinate in decimal value
+#   inputY - raw Y coordinate in decimal value
+def coordinatesCalculateTile(inputX, inputY):
+    # Takes the provided raw Y coordinate and subtracts it from half the board's height to get its current row position on the board
+    # Then calculates the height of each tile by taking half the board's height & dividing it by 4
+    # Then divides the two calculated values and absolutes them to make sure the resultant value is a positive value
+    # Then floors the resultant value to prevent the calculation returning a value that would be partway in a tile
+    # Performs the same calculation using the raw X coordinate & half the board's width to get the column value
+    calculatedRow = math.floor(abs(((inputY - HALF_BOARD_HEIGHT) / (HALF_BOARD_HEIGHT / 4))))
+    calculatedColumn = math.floor(abs(((inputX - HALF_BOARD_WIDTH) / (HALF_BOARD_WIDTH / 4))))
+    return [calculatedRow, calculatedColumn]
 
 
 # Function to teleport the turtle to a different tile on the board without leaving a trail (Calculates X & Y coordinates provided tile numbers)
 # Params:
 #   inputRow - row number in numerical value
 #   inputColumn - column number in numerical value
-#   inputTurtle - the global turtle that will be being teleported
+#   inputTurtle - the global turtle that will be teleported
 def teleportToTile(inputRow, inputColumn, inputTurtle):
     inputTurtle.up()
-    # Takes the floored values of the inputted column (to prevent moving to anywhere inside of a tile besides its center) and subtract 0.5 from it to make sure the turtle will teleport to the tile's center
-    # Then Calculates the size of each tile on the board by taking half the board's width and dividing it by 4 (there are 4 tiles of each half of the board)
+    # Takes the floored values of the provided column (to prevent moving to anywhere inside of a tile besides its center) and subtracts 0.5 from it to make sure the turtle will teleport to the tile's center
+    # Then calculates the size of each tile on the board by taking half the board's width and dividing it by 4 (there are 4 tiles on each half side of the board)
     # Then the two calculated values are multiplied together to get the raw X coordinate of where that tile would be on the board
     # Then the newly calculated value is taken and subtracted from half the width of the board to get the distance from the vertex to that tile
     # Performs the same calculation for the raw Y coordinate & half the board's height to get the raw Y coordinate however the floored input value is unnecessary due to the turtle resting on the horizontal line all the time
     inputTurtle.goto((HALF_BOARD_WIDTH - ((math.floor(inputColumn + 1) - 0.5) * (HALF_BOARD_WIDTH / 4))),
                      (HALF_BOARD_HEIGHT - (math.floor(inputRow + 1) * (HALF_BOARD_HEIGHT / 4))))
     inputTurtle.down()
+    return
 
 
-# Function to calculate the tile requested by the coordinates given (Used to convert raw click data)
+# Function to add a piece to the board in the current tile the turtle is located in (To be used alongside the teleportToTile function)
 # Params:
-#   inputX - raw X coordinate in decimal value
-#   inputY - raw Y coordinate in decimal value
-def coordinatesCalculateTile(inputX, inputY):
-    # Calculates row and column based on input
-    # Takes the inputted raw Y coordinate and subtracts it from half the board's height to get its current row position on the board
-    # Then it calculates the height of each tile by taking half the board's height & dividing it by 4
-    # Then divides the two calculated values and absolutes them to make sure the resultant value is a positive value
-    # Then floors the resultant value to prevent the calculation returning a value that would be partway in a tile
-    # Performs the same calculation using the raw X coordinate & half the board's width to get the column value
-    calculatedRow = math.floor(abs(((inputY - HALF_BOARD_HEIGHT) / (HALF_BOARD_HEIGHT / 4))))
-    calculatedColumn = math.floor(abs(((inputX - HALF_BOARD_WIDTH) / (HALF_BOARD_WIDTH / 4))))
-
-    # Returns the calculated row & column
-    return [calculatedRow, calculatedColumn]
-
-
-# Function to add a piece to the board in the current tile the turtle is located in (To be used with alongside the teleportToTile function)
-# Params:
-#   playerNumber - the numerical value of the player
+#   playerNumber - the numerical value to define which player's tiles are being put down
 def addPieceToBoard(playerNumber):
     # If provided 1, fill piece with PLAYER_1_COLOUR (Human)
     # If provided 2, fill piece with PLAYER_2_COLOUR (AI)
     # If provided 3, fill piece with BOARD_BACKGROUND_COLOUR (Ghost Piece)
     if playerNumber == 1:
-        # Sets the default colour to transparent to prevent accidental fills
         pieceTurtle.fillcolor("")
         pieceTurtle.color("")
 
-        # Starts the fill method to fill the printed circle
         pieceTurtle.begin_fill()
 
         pieceTurtle.color("black")
         pieceTurtle.fillcolor(PLAYER_1_COLOUR)
 
-        # Print out circle with radius of 1/16 of board and end fill method
         pieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
         pieceTurtle.end_fill()
     elif playerNumber == 2:
-        # Sets the default colour to transparent to prevent accidental fills
         pieceTurtle.fillcolor("")
         pieceTurtle.color("")
 
-        # Starts the fill method to fill the printed circle
         pieceTurtle.begin_fill()
 
         pieceTurtle.color("black")
         pieceTurtle.fillcolor(PLAYER_2_COLOUR)
 
-        # Print out circle with radius of 1/16 of board and end fill method
         pieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
         pieceTurtle.end_fill()
     elif playerNumber == 3:
-        # Sets the default colour to transparent to prevent accidental fills
         ghostPieceTurtle.fillcolor("")
         ghostPieceTurtle.color("")
 
-        # Starts the fill method to fill the printed circle
         ghostPieceTurtle.begin_fill()
 
         ghostPieceTurtle.color("black")
         ghostPieceTurtle.fillcolor(BOARD_BACKGROUND_COLOUR)
 
-        # Print out circle with radius of 1/16 of board and end fill method
         ghostPieceTurtle.circle(abs(HALF_BOARD_WIDTH / 8))
         ghostPieceTurtle.end_fill()
+    return
 
 
-# Function to loop through and see if there are any valid moves remaining for either the player or the AI (will be used to determine if the game has ended / turns)
+# Function to teleport and add the defined colour piece to the board and to the board matrix
+# Params:
+#   inputRow - row value in numerical value
+#   inputColumn - column value coordinate in numerical value
+#   playerNumber - numerical value to represent whether it is the AI or Human (value = 1 OR 2) whose piece will be put down or a ghost piece (value = 3)
+def teleAddPieceToBoard(inputRow, inputColumn, playerNumber):
+    if playerNumber == 1 or playerNumber == 2:
+        teleportToTile(inputRow, inputColumn, pieceTurtle)
+        addPieceToBoard(playerNumber)
+    elif playerNumber == 3:
+        teleportToTile(inputRow, inputColumn, ghostPieceTurtle)
+        addPieceToBoard(playerNumber)
+    return
+
+
+# Function to loop through and see if there are any valid moves remaining for either the player or the AI (will be used to determine turn skipping / if the game has ended)
 # Params:
 #   playerArrayInput - move validity array input for the player
 #   aiArrayInput - move validity array input for the AI
@@ -170,28 +174,48 @@ def checkForRemainingValidMoves(playerArrayInput, aiArrayInput):
     return validMovesCount
 
 
-# Function to take an input list and perform a deep copy upon it and return it back (Only capable of deepcopying on 1D or 2D lists, aliasing would occur on deeper lists)
+# Function to teleport and add the ghost pieces onto the board
+def addGhostPiecesToBoard():
+    # Gets the array containing all the valid moves the player can perform, and the board array, and adds ghost pieces into unoccupied valid move spots
+    playerValidMoves = backend.findValids(True)
+    currentBoardState = backend.getBoard()
+    for rowCounter in range(8):
+        for columnCounter in range(8):
+            if playerValidMoves[rowCounter][columnCounter] == 1 and currentBoardState[rowCounter][columnCounter] == 0:
+                teleAddPieceToBoard(rowCounter, columnCounter, 3)
+    return
+
+
+# Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
+def updateBoardPieces(inputNewBoardMatrix, inputOldBoardMatrix = [[0 for i in range(8)] for i in range(8)]):
+    # Loops through the entire board matrix, comparing entries & adding in changed pieces
+    for rowCounter in range(8):
+        for columnCounter in range(8):
+            if inputOldBoardMatrix[rowCounter][columnCounter] != inputNewBoardMatrix[rowCounter][columnCounter]:
+                teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]))
+    return
+
+
+# Function to take an input list and perform a deep copy upon it and returns the newly copied list back (Only capable of deepcopying on 1D or 2D lists, aliasing would occur on deeper lists)
 # Params:
-#   inputList - (MANDATORY) Takes in a list input (1D or 2D) that will be deepcopied
+#   inputList - (MANDATORY PARAM) Takes in a list input (1D or 2D) that will be deepcopied
 #   finalList - (RECURSIVE PARAM) Takes in the currently populated finalList and uses it to add onto until fully copied
 #   hasBeenFullyCopied - (RECURSIVE PARAM) Takes in a boolean that determines whether or not to stop the recursive process (will end in returning the finalList)
 #   upperListCounter - (RECURSIVE PARAM) Takes in the current upper list position that is currently being read
 #   lowerListCounter - (RECURSIVE PARAM) Takes in the current sublist position that is currently being read
 def recursiveListDeepCopy(inputList, finalList = None, hasBeenFullyCopied = False, upperListCounter = 0, lowerListCounter = 0):
     # Check to see whether or not the recursion should stop and send back the list
-    if hasBeenFullyCopied == False:
-        # Sets the default finalList parameter to be an empty list if nothing was passed (settings a default in the function call itself would lead to aliasing problems due to lists being mutable otherwise)
-        if finalList == None:
+    if not hasBeenFullyCopied:
+        # Sets the default finalList parameter to be an empty list if nothing was passed (setting a default in the function call itself would lead to aliasing problems due to lists being mutable otherwise)
+        if finalList is None:
             finalList = []
-
         # Creates a simple list that matches the size of the input array (only looks at the upper list)
         if len(finalList) < len(inputList):
             for counter in range(len(inputList)):
                 finalList.append([])
-        # Returns an emtpy list only if it was provided with an empty list
+        # Returns an empty list only if it was provided with an empty list
         elif len(inputList) == 0:
             return recursiveListDeepCopy(inputList, finalList, True, upperListCounter, lowerListCounter)
-
         # Only run if the entire input list has not been iterated across
         if upperListCounter < len(inputList):
             try:
@@ -210,15 +234,15 @@ def recursiveListDeepCopy(inputList, finalList = None, hasBeenFullyCopied = Fals
                 # Moves onto the next position in the upper list if the current entry did not have any sublist (needed for sublisted empty lists)
                 elif len(inputList) != upperListCounter:
                     return recursiveListDeepCopy(inputList, finalList, False, upperListCounter + 1, lowerListCounter)
-            # Catches TypeError that comes from attempting to read / check for a sublist when none exists (stores the current upper list entry and moves onto the next)
+            # Catches TypeError that comes from attempting to read / check for a sublist when none exists (stores the current upperlist entry and moves onto the next)
             except TypeError:
                 finalList[upperListCounter] = inputList[upperListCounter]
                 return recursiveListDeepCopy(inputList, finalList, hasBeenFullyCopied, upperListCounter + 1, lowerListCounter)
-        # Check to see whether all the upper lists have been hit and updates the end recursion boolean (needed in case the last entry was only consisting of an upper but no sublists)
+        # Check to see whether all the upperlists have been hit and updates the end recursion boolean (needed in case the last entry was only consisting of an upperlist but no sublists)
         else:
             return recursiveListDeepCopy(inputList, finalList, True, upperListCounter, lowerListCounter)
     # Sends back the newly copied list only when the boolean mentions that the recursive tasks are complete
-    elif hasBeenFullyCopied == True:
+    elif hasBeenFullyCopied:
         return finalList
 
 
@@ -227,117 +251,45 @@ def recursiveListDeepCopy(inputList, finalList = None, hasBeenFullyCopied = Fals
 #   inputX - raw x coordinate in numerical value
 #   inputY - raw y coordinate in numerical value
 def graphicalOverlayClicked(inputX, inputY):
-    # Calculate tile clicked
+    # Calculates the tile clicked, gets the number of valid moves possible for the player & the AI, and stores the current board's status (to keep track of updated pieces)
     calculatedCoordinates = coordinatesCalculateTile(inputX, inputY)
-
-    # Gets the number of valid moves possible for the player & the AI
     numberOfValidMoves = checkForRemainingValidMoves(recursiveListDeepCopy(backend.findValids(True)), recursiveListDeepCopy(backend.findValids(False)))
-
-    # Stores the current board's status (to keep track of updated pieces)
     oldBoardState = recursiveListDeepCopy(backend.getBoard())
-
     # Checks to see if the human can perform a move, otherwise skips to the AI, otherwise runs the end game function
     if numberOfValidMoves[0] > 0:
         if calculatedCoordinates[0] <= 7 and calculatedCoordinates[0] >= 0 and calculatedCoordinates[1] <= 7 and calculatedCoordinates[1] >= 0:
             if (recursiveListDeepCopy(backend.findValids(True))[calculatedCoordinates[0]][calculatedCoordinates[1]]) == 1:
-                # Feeds the backend with the user's inputted piece Row & Column values
+                # Feeds the backend with the user's inputted piece row & column values, and updates the board's pieces, while removing the now outdated ghost pieces
                 backend.playerMove(calculatedCoordinates[0], calculatedCoordinates[1])
-
-                # Updates the board's pieces based on the newly populated board provided from the backend
                 updateBoardPieces(backend.getBoard(), oldBoardState)
-
-                # Removes the now outdated ghost pieces from the board
                 ghostPieceTurtle.clear()
 
-                # Stores the current board's status (to keep track of updated pieces)
+                # Stores the current board's status (to keep track of updated pieces), allows the AI to make a move, and updates the board based on the changes, and adds new ghost pieces
                 oldBoardState = recursiveListDeepCopy(backend.getBoard())
-
-                # Calls the function that will allow the AI to now perform its turn
                 backend.getAiMove()
-
-                # Updates the board's pieces based on the newly populated board provided from the backend
                 updateBoardPieces(backend.getBoard(), oldBoardState)
-
-                # Adds updated ghost pieces onto the board
                 addGhostPiecesToBoard()
-
     elif numberOfValidMoves[1] > 0:
-        # Removes the now outdated ghost pieces from the board
+        # Removes the current ghost pieces, allows the AI to make a move, and updates the board based on the changes, and adds new ghost pieces
         ghostPieceTurtle.clear()
-
-        # Calls the function that will allow the AI to now perform its turn
         backend.getAiMove()
-
-        # Updates the board's pieces based on the newly populated board provided from the backend
         updateBoardPieces(backend.getBoard(), oldBoardState)
-
-        # Adds updated ghost pieces onto the board
         addGhostPiecesToBoard()
     elif numberOfValidMoves[0] == 0 and numberOfValidMoves[1] == 0:
         pieceCount = [0, 0]
-
         for rowCounter in range(8):
             for columnCounter in range(8):
                 if backend.getBoard()[rowCounter][columnCounter] == 1:
                     pieceCount[0] += 1
                 elif backend.getBoard()[rowCounter][columnCounter] == 2:
                     pieceCount[1] += 1
-
         if pieceCount[0] > pieceCount[1]:
             endGame("Player Has Won By " + str(pieceCount[0] - pieceCount[1]) + " Pieces!")
         elif pieceCount[1] > pieceCount[0]:
             endGame("AI Has Won By " + str(pieceCount[1] - pieceCount[0]) + " Pieces!")
         elif pieceCount[0] == pieceCount[1]:
             endGame("Draw, No One Has Won!")
-
-
-# Function to teleport and add the defined colour piece to the board and to the board matrix
-# Params:
-#   inputRow - row value in numerical value
-#   inputColumn - column value coordinate in numerical value
-#   playerNumber - numerical value to represent whether it is the AI or Human (value = 1 OR 2) whose piece will be put down or a ghost piece (value = 3)
-def teleAddPieceToBoard(inputRow, inputColumn, playerNumber):
-    if playerNumber == 1 or playerNumber == 2:
-        teleportToTile(inputRow, inputColumn, pieceTurtle)
-        addPieceToBoard(playerNumber)
-    elif playerNumber == 3:
-        teleportToTile(inputRow, inputColumn, ghostPieceTurtle)
-        addPieceToBoard(playerNumber)
-
-
-# Function to teleport and add the ghost pieces onto the board
-def addGhostPiecesToBoard():
-    # Gets the array containing all the valid moves the player can perform
-    playerValidMoves = backend.findValids(True)
-
-    # Gets the array containing the current board pieces
-    currentBoardState = backend.getBoard()
-
-    # Adds the ghost pieces to the board where there is a valid move opportunity
-    for rowCounter in range(8):
-        for columnCounter in range(8):
-            if playerValidMoves[rowCounter][columnCounter] == 1 and currentBoardState[rowCounter][columnCounter] == 0:
-                teleAddPieceToBoard(rowCounter, columnCounter, 3)
-
-
-# Function to export the game's current state to a file
-def saveGameStateToFile():
-    try:
-        # Gets the board from the backend and stores a local copy
-        gameBoard = backend.getBoard()
-
-        # Initialize a save game file & the save game file writer utility (overwrites any existing file) & specifies that it is to be written to
-        saveGameFile = open("Reversi Save Game", "w")
-
-        # Loops through the entire board matrix & writes it to the file
-        for rowCounter in range(8):
-            for columnCounter in range(8):
-                saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
-
-        saveGameFile.write(str(backend.getDifficulty()))
-        saveGameFile.close()
-    except Exception:
-        pass
+    return
 
 
 # Function to import the game's state from a file
@@ -348,19 +300,13 @@ def importGameStateFromFile():
         importedBoard = [[0 for importedMatrixIndex in range(8)] for importedMatrixIndex in range(8)]
         currentIndex = 0
         fileData = saveGameFile.read()
-
-        # Loops through the entire file except last spot & imports it into the temp board matrix
+        # Loops through the entire file except last spot & imports it into the temp board matrix, then sets the game difficulty and closes the save file reader
         for rowCounter in range(8):
             for columnCounter in range(8):
                 importedBoard[rowCounter][columnCounter] = int(fileData[currentIndex:currentIndex + 1])
                 currentIndex += 1
-
-        # get and set game difficulty
         backend.setDifficulty(int(fileData[len(fileData) - 1]))
-
-        # Closes the save game file reader utility
         saveGameFile.close()
-
         # Sends the newly populated game board to the backend and updates the GUI's game state as well by first resetting the current board's pieces
         backend.writeBoard(importedBoard)
         pieceTurtle.clear()
@@ -369,51 +315,47 @@ def importGameStateFromFile():
         addGhostPiecesToBoard()
     except Exception:
         pass
+    return
 
 
-# Function to rewrite the changed board pieces based on the provided array & comparing + modifying to the original
-def updateBoardPieces(inputNewBoardMatrix, inputOldBoardMatrix = [[0 for i in range(8)] for i in range(8)]):
-    # Loops through the entire board matrix, comparing entries & adding in changed pieces
-    for rowCounter in range(8):
-        for columnCounter in range(8):
-            if inputOldBoardMatrix[rowCounter][columnCounter] != inputNewBoardMatrix[rowCounter][columnCounter]:
-                teleAddPieceToBoard(rowCounter, columnCounter, int(inputNewBoardMatrix[rowCounter][columnCounter]))
+# Function to export the game's current state to a file
+def saveGameStateToFile():
+    try:
+        # Gets the board from the backend, initializes a new save file to write to (overwrites any existing one), and loops through the board matrix and writes it to the file
+        gameBoard = backend.getBoard()
+        saveGameFile = open("Reversi Save Game", "w")
+        for rowCounter in range(8):
+            for columnCounter in range(8):
+                saveGameFile.write(str(gameBoard[rowCounter][columnCounter]))
+        saveGameFile.write(str(backend.getDifficulty()))
+        saveGameFile.close()
+    except Exception:
+        pass
+    return
+
+
+# Function to get the difficulty of the AI from the player
+def getGameDifficulty():
+    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
+        gameDifficulty = int(displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
+    return gameDifficulty
 
 
 # Function that randomly determines whether to allow the AI to make the first move in the game or the player
 def performFirstMove():
-    # Stores a randomly generated number (either 1 or 2)
+    # Stores a randomly generated number (either 1 or 2), and if it is 1 skips to the human's turn otherwise allows the AI to make a move
     randomPlayerGeneration = random.randrange(1, 3)
-
-    # If the generated number is 1 does nothing (Human is automatically given the first turn when the GUI starts taking in clicks)
     if randomPlayerGeneration == 1:
         pass
-    # If the generated number is 2 performs an AI move
     elif randomPlayerGeneration == 2:
         backend.getAiMove()
-
-		
-def getGameDifficulty():
-    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    
-    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
-        gameDifficulty = int(displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    
-    return gameDifficulty
-
-
-# Function to handle the end of the game
-def endGame(inputEndDialogue):
-    userGameRestartPrompt = displayOut.textinput(inputEndDialogue, "Would You Like To Restart? (Yes / No): ")
-    if userGameRestartPrompt is None or userGameRestartPrompt.lower() != "yes":
-        pass
-    elif userGameRestartPrompt.lower() == "yes":
-        performInitialSetup()
+    return
 
 
 # Function to perform initial setup for the GUI
 def performInitialSetup():
-    # Resets The Display Overlay & All The Turtles & The Click Listeners & The Piece Data & The Board Matrix
+    # Resets the display overlay & all the turtles & the click listeners & the piece data & the board matrix
     displayOut.reset()
     boardTurtle.reset()
     pieceTurtle.reset()
@@ -421,6 +363,8 @@ def performInitialSetup():
     displayOut.onclick(None)
     displayOut.onkey(None, "l")
     displayOut.onkey(None, "s")
+    displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
+    displayOut.title("Reversi By Group 22")
     blankBoard = [[0 for i in range(8)] for i in range(8)]
 
     # Populates the board with the initial starting pieces & sends it off to the backend
@@ -430,15 +374,14 @@ def performInitialSetup():
     blankBoard[4][4] = 1
     backend.writeBoard(blankBoard)
 
-    displayOut.bgcolor(BOARD_BACKGROUND_COLOUR)
-    displayOut.title("Reversi By Group 22")
-    # Takes Half the width of the board (global constant) and multiplies it by 2 to get the entire board's width
+    # Scales the display overlay window based on the specified size of the board
+    # Takes half the width of the board (global constant) and multiplies it by 2 to get the entire board's width
     # Then calculates 1/8th of the board's width and subtracts it from the total width to provide some empty space on the sides
     # Then does the same calculation for the board's height
     displayOut.setup(abs(((HALF_BOARD_WIDTH * 2) + (HALF_BOARD_WIDTH * 0.25))),
                      abs(((HALF_BOARD_HEIGHT * 2) + (HALF_BOARD_HEIGHT * 0.25))))
 
-    # Hides The Turtles & Makes The Animation Speed / Delay Instantaneous
+    # Hides the turtles & makes the animation speed / delay instantaneous
     pieceTurtle.hideturtle()
     pieceTurtle.speed(0)
     boardTurtle.hideturtle()
@@ -447,32 +390,37 @@ def performInitialSetup():
     ghostPieceTurtle.speed(0)
     displayOut.delay(0)
 
-    # Calls The Functions To Print Out The Intro & Board
+    # Calls the functions to print out the intro & board
     printOutIntro()
     printOutTable()
 
-    #get game difficulty
+    # Gets the game's difficulty, determine and performs the first random move, and updates the board's pieces & ghost pieces
     backend.setDifficulty(getGameDifficulty())
-
-    # Calls The Function To Randomly Determine & Allows Either The Human Or The AI To Play The First Piece
     performFirstMove()
-
-    # Adds The Default Tiles To The Board
     updateBoardPieces(backend.getBoard())
-
-    # Adds the ghost pieces to the board
     addGhostPiecesToBoard()
 
-    # Sets The Function That Will Be Called When The User Clicks On The Screen + For When L Is Pressed + For When S Is Pressed & Listeners For Them
+    # Sets the function that will be called when the user clicks on the screen + for when L is pressed + for when S is pressed & listeners for them
     displayOut.onkey(importGameStateFromFile, "l")
     displayOut.onkey(saveGameStateToFile, "s")
     displayOut.onclick(graphicalOverlayClicked)
     displayOut.listen()
 
-    
-# Main function to run the GUI separate from other files
+
+# Function to handle the end of the game
+# Params:
+#   inputEndDialogue - the text that will be shown to the user when the game ends
+def endGame(inputEndDialogue):
+    userGameRestartPrompt = displayOut.textinput(inputEndDialogue, "Would You Like To Restart? (Yes / No): ")
+    if userGameRestartPrompt is None or userGameRestartPrompt.lower() != "yes":
+        pass
+    elif userGameRestartPrompt.lower() == "yes":
+        performInitialSetup()
+    return
+
+
+# Main function to run the Reversi game
 def main():
-    # Call initial setup, then wait for user action, then loop though wait for user action
     performInitialSetup()
     displayOut.mainloop()
 
