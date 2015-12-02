@@ -21,9 +21,13 @@ global board
 board = [[0 for i in range(8)] for i in range(8)]
 validMoves = [[0 for i in range(8)] for i in range(8)]
 
-# set the game difficulty with a default of easy
-global game_difficulty
+#set the game difficulty with a default of easy
+game_difficulty = 1
 
+# TODO : should be declared locally
+# To be used later to take player inputs.
+boardX = 0
+boardY = 0
 
 # Modifies the validMoves Array, placing a 1 in every place the defined player can legally place a move.
 # PARAMS:
@@ -49,57 +53,94 @@ def findValids(userTurn):
 # RETURN:
 #     Boolean, true when the direction searched finds a valid move.
 def __isValid(x, y, userTurn):
+    isValid = False
+    scan = 1
+
     if userTurn:
-      player = 1
-      opponent = 2
+        player = 1
+        opponent = 2
     else:
-      player = 2
-      opponent = 1
-      
-    if board[x][y] == 0 and findValidAllDirections(x, y, player, opponent):
-      return True
-    else:
-      return False
-    
-#A funtion that will call checkValid for all directions - returns boolean
-#Params:
-# x - int - x coordinate of current place
-# y - int - y coordinate of current place
-# player - int - player piece value
-# opponent - int - opponent piece values
-def findValidAllDirections(x, y, player, opponent):
-  upLeft = checkValid(x, y, -1, -1, player, opponent, getBoard(), False) # up left
-  up = checkValid(x, y, 0, -1, player, opponent, getBoard(), False) # up
-  upRight = checkValid(x, y, 1, -1, player, opponent, getBoard(), False) # up right
-  left = checkValid(x, y, -1, 0, player, opponent, getBoard(), False) # left
-  right = checkValid(x, y, 1, 0, player, opponent, getBoard(), False) # right
-  downLeft = checkValid(x, y, -1, 1, player, opponent, getBoard(), False) # down left
-  down = checkValid(x, y, 0, 1, player, opponent, getBoard(), False) # down
-  downRight = checkValid(x, y, 1, 1, player, opponent, getBoard(), False) # down right
-  return upLeft or up or upRight or left or right or downLeft or down or downRight
+        player = 2
+        opponent = 1
 
-#A funtion to check in one direction if this position is valid - returns boolean
-#Params:
-# x - int - current x coordinate
-# y - int - current y coordinate
-# stepx - int - amount you wish to step with each depth in the x direction
-# stepy - int - amount you wish to step with each depth in the y direction
-# player - int - value of the player's pieces on the board
-# opponent - int - value of the opponent's pieces on the board
-# board - 2d list - current board state
-# lastPieceOpponent - boolean - if at last recursive depth the piece was the opponent's
-def checkValid(x, y, stepx, stepy, player, opponent, board, lastPieceOpponent):
-  if x < 0 or x > 7 or y > 7 or y < 0:
-    return False
-  elif board[x][y] == opponent:
-    return checkValid(x + stepx, y + stepy, stepx, stepy, player, opponent, board, True)
-  elif board[x][y] == 0:
-    return False
-  elif not lastPiecePlayer:
-    return False
-  else:
-    return True
+    if board[x][y] == 0:
+        if y >= 0 and board[x][y - 1] == opponent:
+            while board[x][y - scan] == opponent and (y - scan >= 1):
+                scan += 1
+                currentIndex = board[x][y - scan]
 
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+        if y < 7 and board[x][y + 1] == opponent:
+            while board[x][y + scan] == opponent and (y + scan <= 6):
+                scan += 1
+                currentIndex = board[x][y + scan]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x > 0 and board[x - 1][y] == opponent:
+            while board[x - scan][y] == opponent and (x - scan >= 1):
+                scan += 1
+                currentIndex = board[x - scan][y]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x < 7 and board[x + 1][y] == opponent:
+            while board[x + scan][y] == opponent and (x + scan <= 6):
+                scan += 1
+                currentIndex = board[x + scan][y]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x > 0 and y > 0 and board[x - 1][y - 1] == opponent:
+            while board[x - scan][y - scan] == opponent and (x - scan >= 1 and y - scan >= 1):
+                scan += 1
+                currentIndex = board[x - scan][y - scan]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x > 0 and y < 7 and board[x - 1][y + 1] == opponent:
+            while board[x - scan][y + scan] == opponent and (x - scan >= 1 and y + scan <= 6):
+                scan += 1
+                currentIndex = board[x - scan][y + scan]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x < 7 and y > 1 and board[x + 1][y - 1] == opponent:
+            while board[x + scan][y - scan] == opponent and (x + scan <= 6 and y - scan >= 1):
+                scan += 1
+                currentIndex = board[x + scan][y - scan]
+
+                if currentIndex == player:
+                    isValid = True
+
+            scan = 1
+
+        if x < 7 and y < 7 and board[x + 1][y + 1] == opponent:
+            while board[x + scan][y + scan] == opponent and (x + scan <= 6 and y + scan <= 6):
+                scan += 1
+                currentIndex = board[x + scan][y + scan]
+
+                if currentIndex == player:
+                    isValid = True
+    return isValid
 
 # Flips opponent's pieces to the current player's pieces.
 # PARAMS:
@@ -107,57 +148,102 @@ def checkValid(x, y, stepx, stepy, player, opponent, board, lastPieceOpponent):
 #         y - y coordinate of the placed piece
 #         playersTurn - Boolean, true when it is the player's Turn.
 def __flipPieces(x, y, playersTurn):
-  if playersTurn:
-    player = 1
-    opponent = 2
-  else:
-    player = 2
-    opponent = 1
-  
-  flipAllDirections(x, y, player, opponent)
-  return
+    if playersTurn:
+        player = 1
+        opponent = 2
+    else:
+        player = 2
+        opponent = 1
+    scan = 1
 
-#A funtion that will call flipPieces for all directions - returns none
-#Params:
-# x - int - x coordinate of current place
-# y - int - y coordinate of current place
-# player - int - player piece value
-# opponent - int - opponent piece values
-def flipAllDirections(x, y, player, opponent):
-  flipPieces(x, y, -1, -1, player, opponent, getBoard()) #up left
-  flipPieces(x, y, 0, -1, player, opponent, getBoard()) # up
-  flipPieces(x, y, 1, -1, player, opponent, getBoard()) # up right
-  flipPieces(x, y, -1, 0, player, opponent, getBoard()) # left
-  flipPieces(x, y, 1, 0, player, opponent, getBoard()) # right
-  flipPieces(x, y, -1, 1, player, opponent, getBoard()) #down left
-  flipPieces(x, y, 0, 1, player, opponent, getBoard()) # down
-  flipPieces(x, y, 1, 1, player, opponent, getBoard()) #down right
-  return
+    if y >= 0 and board[x][y - 1] == opponent:
+        while board[x][y - scan] == opponent and (y - scan >= 1):
+            scan += 1
+            currentIndex = board[x][y - scan]
 
-#A funtion to flip the pieces in one direction - returns none
-#Params:
-# x - int - current x coordinate
-# y - int - current y coordinate
-# stepx - int - amount you wish to step with each depth in the x direction
-# stepy - int - amount you wish to step with each depth in the y direction
-# player - int - value of the player's pieces on the board
-# opponent - int - value of the opponent's pieces on the board
-# board - 2d list - current board state
-def flipPieces(x, y, stepx, stepy, player, opponent, board):
-  if x < 0 or x > 7 or y > 7 or y < 0:
-    return
-  elif board[x][y] == opponent:
-    board[x][y] = player
-    return countPieces(x + stepx, y + stepy, stepx, stepy, player, opponent, board)
-  else:
-    return
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x][y - i] = player
+        scan = 1
+
+    if y < 7 and board[x][y + 1] == opponent:
+        while board[x][y + scan] == opponent and (y + scan <= 6):
+            scan += 1
+            currentIndex = board[x][y + scan]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x][y + i] = player
+        scan = 1
+
+    if x > 0 and board[x - 1][y] == opponent:
+
+        while board[x - scan][y] == opponent and (x - scan >= 1):
+            scan += 1
+            currentIndex = board[x - scan][y]
+
+            if currentIndex == player:
+
+                for i in range(0, scan):
+                    board[x - i][y] = player
+        scan = 1
+
+    if x < 7 and board[x + 1][y] == opponent:
+        while board[x + scan][y] == opponent and (x + scan <= 6):
+            scan += 1
+            currentIndex = board[x + scan][y]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x + i][y] = player
+        scan = 1
+
+    if x > 0 and y > 0 and board[x - 1][y - 1] == opponent:
+        while board[x - scan][y - scan] == opponent and (x - scan >= 1 and y - scan >= 1):
+            scan += 1
+            currentIndex = board[x - scan][y - scan]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x - i][y - i] = player
+        scan = 1
+
+    if x > 0 and y < 7 and board[x - 1][y + 1] == opponent:
+        while board[x - scan][y + scan] == opponent and (x - scan >= 1 and y + scan <= 6):
+            scan += 1
+            currentIndex = board[x - scan][y + scan]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x - i][y + i] = player
+        scan = 1
+
+    if x < 7 and y > 1 and board[x + 1][y - 1] == opponent:
+        while board[x + scan][y - scan] == opponent and (x + scan <= 6 and y - scan >= 1):
+            scan += 1
+            currentIndex = board[x + scan][y - scan]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x + i][y - i] = player
+        scan = 1
+
+    if x < 7 and y < 7 and board[x + 1][y + 1] == opponent:
+
+        while board[x + scan][y + scan] == opponent and (x + scan <= 6 and y + scan <= 6):
+            scan += 1
+            currentIndex = board[x + scan][y + scan]
+
+            if currentIndex == player:
+                for i in range(0, scan):
+                    board[x + i][y + i] = player
+
 
 # Calls AI for it's next move, pushes that move to __getMove
 def getAiMove():
     validMoves = findValids(False)
     coords = AI.getMove(validMoves, game_difficulty)
     __getMove(coords[0], coords[1], False)
-    return
 
 
 # Called by GUI to pass players move to __getMove, then calls the AI's move.
@@ -167,8 +253,6 @@ def getAiMove():
 def playerMove(X, Y):
     findValids(True)
     __getMove(X, Y, True)
-
-
 # END playerMove
 
 
@@ -193,8 +277,6 @@ def __getMove(x, y, playersTurn):
     else:
         pass
         # print("Sorry, that is not a valid move.")
-
-
 # END __getMove
 
 
@@ -212,12 +294,9 @@ def getBoard():
     retArray = board
     return retArray
 
-
 def getDifficulty():
     return game_difficulty
 
-
 def setDifficulty(difficulty):
-    global game_difficulty
     game_difficulty = difficulty
     return
