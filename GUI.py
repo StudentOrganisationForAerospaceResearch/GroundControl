@@ -45,7 +45,7 @@ def printOutIntro():
 def printOutTable():
     boardTurtle.clear()
     boardTurtle.color(BOARD_OUTLINE_COLOUR)
-    # Teleport the turtle across the display overlay generating the board (Starts in the top left corner)
+    # Teleport the turtle across the display overlay generating the board (starts in the top left corner)
     for indexCounter in range(9):
         # Lift turtle and teleport to left hand side of the following row, top left if first row
         # Then draw line
@@ -81,7 +81,7 @@ def coordinatesCalculateTile(inputX, inputY):
     return [calculatedRow, calculatedColumn]
 
 
-# Function to teleport the turtle to a different tile on the board without leaving a trail (Calculates X & Y coordinates provided tile numbers)
+# Function to teleport the turtle to a different tile on the board without leaving a trail (calculates x & y coordinates provided tile numbers)
 # Params:
 #   inputRow - row number in numerical value
 #   inputColumn - column number in numerical value
@@ -99,7 +99,7 @@ def teleportToTile(inputRow, inputColumn, inputTurtle):
     return
 
 
-# Function to add a piece to the board in the current tile the turtle is located in (To be used alongside the teleportToTile function)
+# Function to add a piece to the board in the current tile the turtle is located in (to be used alongside the teleportToTile function)
 # Params:
 #   playerNumber - the numerical value to define which player's tiles are being put down
 def addPieceToBoard(playerNumber):
@@ -196,7 +196,7 @@ def updateBoardPieces(inputNewBoardMatrix, inputOldBoardMatrix = [[0 for i in ra
     return
 
 
-# Function to take an input list and perform a deep copy upon it and returns the newly copied list back (Only capable of deepcopying on 1D or 2D lists, aliasing would occur on deeper lists)
+# Function to take an input list and perform a deep copy upon it and returns the newly copied list back (only capable of deepcopying on 1D or 2D lists, aliasing would occur on deeper lists)
 # Params:
 #   inputList - (MANDATORY PARAM) Takes in a list input (1D or 2D) that will be deepcopied
 #   finalList - (RECURSIVE PARAM) Takes in the currently populated finalList and uses it to add onto until fully copied
@@ -219,7 +219,7 @@ def recursiveListDeepCopy(inputList, finalList = None, hasBeenFullyCopied = Fals
         # Only run if the entire input list has not been iterated across
         if upperListCounter < len(inputList):
             try:
-                # Checks to see if the current upper list entry has a sublist or not (Causes the except to be called if there is no sublist under the current spot)
+                # Checks to see if the current upper list entry has a sublist or not (causes the except to be called if there is no sublist under the current spot)
                 if len(inputList[upperListCounter]) >= 1:
                     # Check to see if the list has fully been iterated across & copied (updates the end recursion boolean)
                     if (len(inputList) - 1) == upperListCounter and len(inputList[len(inputList) - 1]) == lowerListCounter:
@@ -336,10 +336,10 @@ def saveGameStateToFile():
 
 # Function to get the difficulty of the AI from the player
 def getGameDifficulty():
-    gameDifficulty = int(displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    while gameDifficulty != 1 and gameDifficulty != 2 and gameDifficulty != 3:
-        gameDifficulty = int(displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) "))
-    return gameDifficulty
+    gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) ")
+    while gameDifficulty != "1" and gameDifficulty != "2" and gameDifficulty != "3" or gameDifficulty is None:
+        gameDifficulty = displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) ")
+    return int(gameDifficulty)
 
 
 # Function that randomly determines whether to allow the AI to make the first move in the game or the player
