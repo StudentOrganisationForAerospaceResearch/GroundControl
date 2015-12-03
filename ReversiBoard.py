@@ -24,7 +24,6 @@ validMoves = [[0 for i in range(8)] for i in range(8)]
 #set the game difficulty with a default of easy
 game_difficulty = 1
 
-# TODO : should be declared locally
 # To be used later to take player inputs.
 boardX = 0
 boardY = 0

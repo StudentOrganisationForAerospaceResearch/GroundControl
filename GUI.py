@@ -18,7 +18,7 @@ from ASCII import printOutASCII
 import ReversiBoard as backend
 
 # Initialize global constants (necessary for when functions are called from a different file)
-HALF_BOARD_WIDTH = -250.0
+HALF_BOARD_WIDTH = -450.0
 HALF_BOARD_HEIGHT = -HALF_BOARD_WIDTH
 BOARD_OUTLINE_COLOUR = "White"
 BOARD_BACKGROUND_COLOUR = "Brown"
@@ -336,9 +336,9 @@ def saveGameStateToFile():
 
 # Function to get the difficulty of the AI from the player
 def getGameDifficulty():
-    gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) ")
-    while gameDifficulty != "1" and gameDifficulty != "2" and gameDifficulty != "3" or gameDifficulty is None:
-        gameDifficulty = displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Hard) ")
+    gameDifficulty = displayOut.textinput("Difficulty", "How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Agressive, 4 = Extreme) ")
+    while gameDifficulty != "1" and gameDifficulty != "2" and gameDifficulty != "3" and gameDifficulty != "4" or gameDifficulty is None:
+        gameDifficulty = displayOut.textinput("Difficulty", "That is not a valid entry. \n How hard would you like the game to be? (1 = Easy, 2 = Moderate, 3 = Agressive, 4 = Extreme) ")
     return int(gameDifficulty)
 
 

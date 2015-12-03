@@ -21,7 +21,7 @@ def printOutASCII():
      |_|_\___|\_/\___|_| /__/_|
                                
     """ + "\n" +
-    "In this game you will be able to..." + "\n" +
+    "In this game you won't be able to..." + "\n" +
     """
       _____                                   _   _    _           
      |_   _|  _ _ __  ___   ___ ___ _ __  ___| |_| |_ (_)_ _  __ _ 
@@ -29,8 +29,9 @@ def printOutASCII():
        |_| \_, | .__/\___| /__/\___/_|_|_\___|\__|_||_|_|_||_\__, |
            |__/|_|                                           |___/ 
     """+ "\n" +
-    "You will eventually be able to click on the tile where you want to play your piece, " + "\n" +
-    "but for now, please input coordinates. The point of the game is as follows:"+ "\n" +
+    "Click squares to play your pieces. You are by default white. " + "\n" +
+    "You will have a choice of AIs to play against. Please choose the one that you would like."+ "\n" +
+    "Try to get as many pieces as possible in your colour. That's it."+ "\n" +
     """
        ___     _                                     ___ _               
       / __|___| |_   __ _ ___  _ __  __ _ _ _ _  _  | _ (_)___ __ ___ ___
