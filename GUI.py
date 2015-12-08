@@ -15,7 +15,6 @@ import random
 import time
 import turtle
 import ReversiBoard as backend
-from ASCII import printOutASCII
 
 # Initialize global constants (necessary for when functions are called from a different file)
 HALF_BOARD_WIDTH = -250.0
@@ -32,11 +31,25 @@ pieceTurtle = turtle.Turtle()
 ghostPieceTurtle = turtle.Turtle()
 
 
-# Function to print out the ASCII intro to the display overlay & waits 5 seconds before running the program
+# Function to print out the ASCII intro to the display overlay & waits 10 seconds before running the program
 def printOutIntro():
-    teleportToTile(7, 0, boardTurtle)
-    boardTurtle.write(printOutASCII(), align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 30)))
-    time.sleep(5)
+    teleportToTile(4, 0, boardTurtle)
+    boardTurtle.write("""
+                                Welcome to Reversi!
+
+    Click squares to play your pieces. You are by default white.
+
+    You will have a choice of AIs to play against.
+
+    Please choose the one that you would like.
+
+    Try to get as many pieces as possible in your colour to win.
+
+    Press "S" to save the current game state from the save file
+
+    Press "L" to load the saved game state from the save file
+    """, align="Left", font=("Arial", int(abs(HALF_BOARD_WIDTH) * 1 / 20)))
+    time.sleep(10)
     boardTurtle.clear()
 
 
