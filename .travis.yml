@@ -1,8 +1,0 @@
-language: python
-python:
-  - "3.4.3"
-  - "3.4"
-  - "3.3"
-cache: pip
-script:
-  - python GUI.py
