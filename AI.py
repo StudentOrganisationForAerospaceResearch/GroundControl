@@ -10,9 +10,6 @@ Sharjeel Junaid
 Description:
 This part of the game is in charge of handling the calls from the backend for AI responses
 """
-import ReversiBoard
-
-
 class AI:
     # Assign board places static values based on their strategic value. Differs by level of difficulty
     STATICBOARDVALUESEASY = [[100, 50, 50, 50, 50, 50, 50, 100], [50, 10, 10, 10, 10, 10, 10, 50],
@@ -33,13 +30,13 @@ class AI:
     #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates.
     #        Does not matter the size of the board
     #       level - int - desired level of play
-    def getMove(validMoves, level):
+    def getMove(validMoves, level, board):
         if level == 1:
             return AI.easy(validMoves)
         elif level == 2:
             return AI.medium(validMoves)
         elif level == 3:
-            return AI.aggressive(validMoves)
+            return AI.aggressive(validMoves, board)
         elif level == 4:
             return AI.extreme(validMoves)
 
@@ -96,7 +93,7 @@ class AI:
     # PARAMS:
     #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates.
     #        Does not matter the size of the board
-    def aggressive(validMoves):
+    def aggressive(validMoves, board):
         dynamicBoard = [[0 for i in range(8)] for i in range(8)]
         finalBoard = [[0 for i in range(8)] for i in range(8)]
         coords = [0, 0]
@@ -105,7 +102,7 @@ class AI:
         # Dynamically generate board values for how many pieces each spot will flip
         for x in range(len(validMoves)):
             for y in range(len(validMoves[1])):
-                dynamicBoard[x][y] = AI.countAllDirections(x, y)
+                dynamicBoard[x][y] = AI.countAllDirections(x, y, board)
 
         # Create final board by adding static board values with how many pieces that move would flip
         for x in range(len(validMoves)):
@@ -124,15 +121,15 @@ class AI:
     # PARAMS:
     #       x - int - x coordinate
     #       y - int - y coordinate
-    def countAllDirections(x, y):
-        upLeft = AI.countPieces(x, y, -1, -1, ReversiBoard.getBoard())
-        up = AI.countPieces(x, y, 0, -1, ReversiBoard.getBoard())
-        upRight = AI.countPieces(x, y, 1, -1, ReversiBoard.getBoard())
-        left = AI.countPieces(x, y, -1, 0, ReversiBoard.getBoard())
-        right = AI.countPieces(x, y, 1, 0, ReversiBoard.getBoard())
-        downLeft = AI.countPieces(x, y, -1, 1, ReversiBoard.getBoard())
-        down = AI.countPieces(x, y, 0, 1, ReversiBoard.getBoard())
-        downRight = AI.countPieces(x, y, 1, 1, ReversiBoard.getBoard())
+    def countAllDirections(x, y, board):
+        upLeft = AI.countPieces(x, y, -1, -1, board)
+        up = AI.countPieces(x, y, 0, -1,  board)
+        upRight = AI.countPieces(x, y, 1, -1,  board)
+        left = AI.countPieces(x, y, -1, 0,  board)
+        right = AI.countPieces(x, y, 1, 0,  board)
+        downLeft = AI.countPieces(x, y, -1, 1,  board)
+        down = AI.countPieces(x, y, 0, 1,  board)
+        downRight = AI.countPieces(x, y, 1, 1,  board)
 
         return up + upLeft + upRight + right + left + downLeft + down + downRight
 
