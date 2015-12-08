@@ -9,6 +9,7 @@ class AI():
     #Function that will return a move from the AI. Returns only the coordinates, does not play the piece itself
     #PARAMS:
     #        validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates. Does not matter the size of the board
+    #        level - int - desired level of play
     def getMove(validMoves, level):
         if level == 1:
             return AI.easy(validMoves)
@@ -18,7 +19,11 @@ class AI():
             return AI.agressive(validMoves)
         elif level == 4:
             return AI.extreme(validMoves)
-        
+    
+
+    #Funtion to return move of easy AI
+    #PARAMS:
+    #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates. Does not matter the size of the board
     def easy(validMoves):
         coords = [0,0]
         value = 0
@@ -30,7 +35,10 @@ class AI():
                     coords = [x,y]
         
         return coords
-        
+
+    #Funtion to return move of medium AI
+    #PARAMS:
+    #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates. Does not matter the size of the board
     def medium(validMoves):
         coords = [0,0]
         value = 0
@@ -43,7 +51,10 @@ class AI():
         
         return coords
 
-    def medium(validMoves):
+    #Funtion to return move of extreme AI
+    #PARAMS:
+    #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates. Does not matter the size of the board
+    def extreme(validMoves):
         coords = [0,0]
         value = 0
         
@@ -54,7 +65,10 @@ class AI():
                     coords = [x,y]
         
         return coords
-        
+
+    #Funtion to return move of aggressive AI. Is recursively checking in all directions to find how many pieces the board will flip.
+    #PARAMS:
+    #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates. Does not matter the size of the board
     def agressive(validMoves):
         dynamicBoard = [[0 for i in range(8)] for i in range(8)]
         finalBoard = [[0 for i in range(8)] for i in range(8)]
@@ -79,6 +93,10 @@ class AI():
         
         return coords
         
+    #A function that counts in all the possible directions away from a piece recursively
+    #PARAMS:
+    #       x - int - x coordinate
+    #       y - int - y coordinate
     def countAllDirections(x, y):
       upLeft = AI.countPieces(x, y, -1, -1, ReversiBoard.getBoard())
       up = AI.countPieces(x, y, 0, -1, ReversiBoard.getBoard())
@@ -90,12 +108,20 @@ class AI():
       downRight = AI.countPieces(x, y, 1, 1, ReversiBoard.getBoard())
     
       return up + upLeft + upRight + right + left + downLeft + down + downRight
-        
+    
+    #A function that counts in one direction and returns how many pieces it flips
+    #PARAMS:
+    #       x - int - x coordinate
+    #       y - int - y coordinate
+    #       stepx - int - step in x direction
+    #       stepy - int - step in y direction
+    #       board - 2d list of current board state
     def countPieces(x, y, stepx, stepy, board):
         if x < 0 or x > 7 or y > 7 or y < 0:
             return 0
         elif board[x][y] == 2:
-            return AI.countPieces(x + stepx, y + stepy, stepx, stepy, board) + 1
+            #if board piece is player's, increment and look at the next piece
+            return 1 + AI.countPieces(x + stepx, y + stepy, stepx, stepy, board)
         else:
             return 0
         
