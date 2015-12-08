@@ -251,7 +251,7 @@ def __flipPieces(x, y, playersTurn):
 # Calls AI for it's next move, pushes that move to __getMove
 def getAiMove():
     validMoves = findValids(False)
-    coords = AI.getMove(validMoves, game_difficulty)
+    coords = AI.getMove(validMoves, game_difficulty, board)
     __getMove(coords[0], coords[1], False)
 
 

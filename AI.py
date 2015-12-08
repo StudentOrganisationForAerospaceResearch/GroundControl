@@ -10,6 +10,8 @@ Sharjeel Junaid
 Description:
 This part of the game is in charge of handling the calls from the backend for AI responses
 """
+
+
 class AI:
     # Assign board places static values based on their strategic value. Differs by level of difficulty
     STATICBOARDVALUESEASY = [[100, 50, 50, 50, 50, 50, 50, 100], [50, 10, 10, 10, 10, 10, 10, 50],
@@ -30,6 +32,7 @@ class AI:
     #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates.
     #        Does not matter the size of the board
     #       level - int - desired level of play
+    #       board - 2D list of current board state
     def getMove(validMoves, level, board):
         if level == 1:
             return AI.easy(validMoves)
@@ -78,7 +81,7 @@ class AI:
     #        Does not matter the size of the board
     def extreme(validMoves):
         coords = [0, 0]
-        value = 0
+        value = -50
 
         # Loop through valid moves board looking for most strategic available location
         for x in range(len(validMoves)):
@@ -93,11 +96,12 @@ class AI:
     # PARAMS:
     #       validMoves - 2D array that contains all the valid moves on the board as a 1 in the specific coordinates.
     #        Does not matter the size of the board
+    #       board - 2D list of current board state
     def aggressive(validMoves, board):
         dynamicBoard = [[0 for i in range(8)] for i in range(8)]
         finalBoard = [[0 for i in range(8)] for i in range(8)]
         coords = [0, 0]
-        value = 0
+        value = -50
 
         # Dynamically generate board values for how many pieces each spot will flip
         for x in range(len(validMoves)):
@@ -112,7 +116,7 @@ class AI:
         # Loop through valid moves board looking for most strategic available location
         for x in range(len(finalBoard)):
             for y in range(len(finalBoard[1])):
-                if validMoves[x][y] == 1 and finalBoard[x - 1][y - 1] > value:
+                if validMoves[x][y] == 1 and finalBoard[x][y] > value:
                     coords = [x, y]
 
         return coords
@@ -121,6 +125,7 @@ class AI:
     # PARAMS:
     #       x - int - x coordinate
     #       y - int - y coordinate
+    #       board - 2D list of current board state
     def countAllDirections(x, y, board):
         upLeft = AI.countPieces(x, y, -1, -1, board)
         up = AI.countPieces(x, y, 0, -1,  board)
