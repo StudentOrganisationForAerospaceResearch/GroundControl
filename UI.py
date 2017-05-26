@@ -5,6 +5,8 @@ Canada
 
 Developers:
     Nathan Meulenbroek
+	Sean Habermiller
+	Ilyes Kabouch
     
 Description:
 
