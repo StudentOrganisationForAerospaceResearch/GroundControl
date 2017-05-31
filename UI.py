@@ -5,7 +5,7 @@ Canada
 
 Developers:
     Nathan Meulenbroek
-    
+    Sean Habermiller
 Description:
 
 """
@@ -17,7 +17,8 @@ import random
 import matplotlib
 # Make sure that we are using QT5
 matplotlib.use('Qt5Agg')
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
+
 
 from numpy import arange, sin, pi
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -35,11 +36,12 @@ class MyMplCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111)
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
+        
 
         self.compute_initial_figure()
-
+       
         #
-        FigureCanvas.__init__(self, fig)
+        FigureCanvas.__init__(self,fig)
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
@@ -57,7 +59,11 @@ class MyStaticMplCanvas(MyMplCanvas):
     def compute_initial_figure(self):
         t = arange(0.0, 3.0, 0.01)
         s = sin(2*pi*t)
-        self.axes.plot(t, s)
+        for i in range(0,2):
+            self.axes.plot(t+i, s)
+            self.axes.set_title('FittingTitle')
+            self.axes.set_xlabel('XLabel')
+            self.axes.set_ylabel('YLabel')
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
@@ -71,26 +77,53 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
     def compute_initial_figure(self):
         self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+        self.axes.set_title('FittingTitle')
+        self.axes.set_xlabel('XLabel')
+        self.axes.set_ylabel('YLabel')
 
     def update_figure(self):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
         l = [random.randint(0, 10) for i in range(4)]
-
+        w = [random.randint(0, 10) for i in range(4)]
+		
         self.axes.plot([0, 1, 2, 3], l, 'r')
+        self.axes.set_title('FittingTitle')
+        self.axes.set_xlabel('XLabel')
+        self.axes.set_ylabel('YLabel')
         self.draw()
-
-
+class ResizeSlider(QtWidgets.QWidget):
+    def __init__(self, parent = None):
+        super(ResizeSlider, self).__init__(parent)
+		
+        layout = QtWidgets.QVBoxLayout()
+		
+        self.sl1 = QtWidgets.QSlider(0x1)
+        self.sl1.setMinimum(1)
+        self.sl1.setMaximum(10)
+        self.sl1.setValue(7)
+        self.sl1.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.sl1.setTickInterval(2)
+        
+        layout.addWidget(self.sl1)
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
-
+        self.width = 400
+        self.height = 650
+        self.resize(self.width,self.height)
         self.file_menu = QtWidgets.QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,
                                  QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
         self.menuBar().addMenu(self.file_menu)
 
+        self.options_menu = QtWidgets.QMenu('&Options', self)
+        self.menuBar().addSeparator()
+        self.menuBar().addMenu(self.options_menu)
+		
+        self.options_menu.addAction('&Resize', ResizeSlider)
+		
         self.help_menu = QtWidgets.QMenu('&Help', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.help_menu)
@@ -100,9 +133,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.main_widget)
-        sc = MyStaticMplCanvas(self.main_widget, width=5, height=4, dpi=100)
-        dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
+        sc = MyStaticMplCanvas(self.main_widget, width=7, height=6, dpi=80)
+        sc1 = MyStaticMplCanvas(self.main_widget, width=7, height=6, dpi=80)
+        dc = MyDynamicMplCanvas(self.main_widget, width=7, height=6, dpi=80)
         l.addWidget(sc)
+        l.addWidget(sc1)
         l.addWidget(dc)
 
         self.main_widget.setFocus()
@@ -112,13 +147,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def fileQuit(self):
         self.close()
-
+    def size(self):
+        QtWidgets.QSlider.size(Qt.Horizontal)	
     def closeEvent(self, ce):
         self.fileQuit()
-
     def about(self):
         QtWidgets.QMessageBox.about(self, "About",
                                     """# Ground Control Software
+								
 
 This software is intended to remotely communicate with and control the 
 avionics on the Atlantis-I rocket, developped in 2016/2017 by the Student
