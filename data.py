@@ -11,6 +11,8 @@ Description:
 
 """
 import datetime
+from tkinter import *
+from tkinter.filedialog import askopenfilename
 
 class Data():
     """
@@ -75,3 +77,18 @@ class Data():
         self.temperature.append(data[8])
         
         return 
+
+#Preliminary file reading function???
+#Not really clear on what we're doing
+#Authors: John and Courtney
+#Status: Confused
+	def getData(self):
+		root = Tk()
+		root.filename =  askopenfilename(initialdir = "E:/Images",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
+		fileName = root.filename
+		root.withdraw()
+		textFile = open(fileName, "r")
+		data = textFile.read()
+		return data	
+		
+		

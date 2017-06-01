@@ -5,7 +5,13 @@ Canada
 
 Developers:
     Nathan Meulenbroek
+<<<<<<< HEAD
     Sean Habermiller
+=======
+	Sean Habermiller
+	Ilyes Kabouch
+    
+>>>>>>> origin/master
 Description:
 
 """
