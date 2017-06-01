@@ -74,18 +74,26 @@ class MyStaticMplCanvas(MyMplCanvas):
 
 class MyDynamicMplCanvas(MyMplCanvas):
     """A canvas that updates itself every 1/10 seconds with a new plot."""
-
+    title = ''
+    xlabel = ''
+    ylabel = ''
+	
     def __init__(self, *args, **kwargs):
+        self.title = args[1]
+        self.xlabel = args[2]
+        self.ylabel = args[3] 
+
+        args = []
         MyMplCanvas.__init__(self, *args, **kwargs)
         timer = QtCore.QTimer(self)
         timer.timeout.connect(self.update_figure)
-        timer.start(1000)
+        timer.start(100)
 
     def compute_initial_figure(self):
         self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
-        self.axes.set_title('FittingTitle')
-        self.axes.set_xlabel('XLabel')
-        self.axes.set_ylabel('YLabel')
+        self.axes.set_title(self.title)
+        self.axes.set_xlabel(self.xlabel)
+        self.axes.set_ylabel(self.ylabel)
 
     def update_figure(self):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
@@ -93,17 +101,17 @@ class MyDynamicMplCanvas(MyMplCanvas):
         w = [random.randint(0, 10) for i in range(4)]
 		
         self.axes.plot([0, 1, 2, 3], l, 'r')
-        self.axes.set_title('FittingTitle')
-        self.axes.set_xlabel('XLabel')
-        self.axes.set_ylabel('YLabel')
+        self.axes.set_title(self.title)
+        self.axes.set_xlabel(self.xlabel)
+        self.axes.set_ylabel(self.ylabel)
         self.draw()
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
-        super(ResizeSlider, self).__init__(parent)
-		
+        super(ResizeSlider,self).__init__(parent)
         layout = QtWidgets.QVBoxLayout()
+        
 		
-        self.sl1 = QtWidgets.QSlider(0x1)
+        self.sl1 = QtWidgets.QSlider()
         self.sl1.setMinimum(1)
         self.sl1.setMaximum(10)
         self.sl1.setValue(7)
@@ -111,12 +119,13 @@ class ResizeSlider(QtWidgets.QWidget):
         self.sl1.setTickInterval(2)
         
         layout.addWidget(self.sl1)
+        self.setWindowTitle("Resize Window")        
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
-        self.width = 400
+        self.width = 500
         self.height = 650
         self.resize(self.width,self.height)
         self.file_menu = QtWidgets.QMenu('&File', self)
@@ -138,13 +147,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget(self)
 
-        l = QtWidgets.QVBoxLayout(self.main_widget)
-        sc = MyStaticMplCanvas(self.main_widget, width=7, height=6, dpi=80)
-        sc1 = MyStaticMplCanvas(self.main_widget, width=7, height=6, dpi=80)
-        dc = MyDynamicMplCanvas(self.main_widget, width=7, height=6, dpi=80)
-        l.addWidget(sc)
-        l.addWidget(sc1)
-        l.addWidget(dc)
+        l = QtWidgets.QGridLayout(self.main_widget)
+        Altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time(s)','Height(m)')
+        Acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time','Acceleration')
+        Gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','X','Y')
+        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','X','Y')
+        Diode = MyDynamicMplCanvas(self.main_widget,'Diode','X','Y')
+        l.addWidget(Altitude,0,0)
+        l.addWidget(Acceleration,0,1)
+        l.addWidget(Gyro,0,2)
+        l.addWidget(IMU,1,0)
+        l.addWidget(Diode,1,1)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
@@ -152,9 +165,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.statusBar().showMessage("All hail matplotlib!", 2000)
 
     def fileQuit(self):
-        self.close()
-    def size(self):
-        QtWidgets.QSlider.size(Qt.Horizontal)	
+        self.close()	
     def closeEvent(self, ce):
         self.fileQuit()
     def about(self):
@@ -183,6 +194,8 @@ Developer:
            4nathan@outlook.com"""
                                 )
 
+        
+		
 def __init__():
     qApp = QtWidgets.QApplication(sys.argv)
 
