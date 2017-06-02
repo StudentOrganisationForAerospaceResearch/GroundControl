@@ -11,8 +11,8 @@ Description:
 
 """
 import datetime
-from tkinter import *
 from tkinter.filedialog import askopenfilename
+import numpy as np
 
 class Data():
     """
@@ -78,17 +78,14 @@ class Data():
         
         return 
 
-#Preliminary file reading function???
+#Preliminary file reading function
 #Not really clear on what we're doing
 #Authors: John and Courtney
-#Status: Confused
+#Status: Unsure if this is what we have to do. I managed to get np working, and used it to get the filenames and all, and can confirm it can print the data.
+#Is this data extraction what we're looking for, and from here, what we need to implement in adding the data to the arrays above?
 	def getData(self):
-		root = Tk()
-		root.filename =  askopenfilename(initialdir = "E:/Images",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
-		fileName = root.filename
-		root.withdraw()
-		textFile = open(fileName, "r")
-		data = textFile.read()
+		fileName = askopenfilename(initialdir = "C:/",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
+		data = np.genfromtxt(fname = fileName, dtype = "float", delimiter = "|")
 		return data	
 		
 		
