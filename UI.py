@@ -5,13 +5,9 @@ Canada
 
 Developers:
     Nathan Meulenbroek
-<<<<<<< HEAD
-    Sean Habermiller
-=======
 	Sean Habermiller
 	Ilyes Kabouch
     
->>>>>>> origin/master
 Description:
 
 """
@@ -23,14 +19,14 @@ import random
 import matplotlib
 # Make sure that we are using QT5
 matplotlib.use('Qt5Agg')
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
 from numpy import arange, sin, pi
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-progname = os.path.basename(sys.argv[0])
+progname = os.path.basename('Atlantis I Ground Control System')
 progversion = "0.1"
 
 
@@ -105,6 +101,7 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.draw()
+        
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -119,14 +116,16 @@ class ResizeSlider(QtWidgets.QWidget):
         self.sl1.setTickInterval(2)
         
         layout.addWidget(self.sl1)
-        self.setWindowTitle("Resize Window")        
+        self.setWindowTitle("Resize Window")       
+        
 class ApplicationWindow(QtWidgets.QMainWindow):
+    
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
-        self.width = 500
-        self.height = 650
+        self.width = 1000
+        self.height = 900
         self.resize(self.width,self.height)
         self.file_menu = QtWidgets.QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,
@@ -147,17 +146,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget(self)
 
-        l = QtWidgets.QGridLayout(self.main_widget)
-        Altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time(s)','Height(m)')
-        Acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time','Acceleration')
-        Gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','X','Y')
-        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','X','Y')
-        Diode = MyDynamicMplCanvas(self.main_widget,'Diode','X','Y')
-        l.addWidget(Altitude,0,0)
-        l.addWidget(Acceleration,0,1)
-        l.addWidget(Gyro,0,2)
-        l.addWidget(IMU,1,0)
-        l.addWidget(Diode,1,1)
+        wrapper = QtWidgets.QGridLayout(self.main_widget)
+        Altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time (s)','Height (m)')
+        Acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time (s)','Acceleration $(m/s^2)$')
+        Gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)','Acceleration $(m/s^2)$')
+        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)','Angle from True (CentiDegrees)')
+        Diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)','Voltage (V)')
+        
+        wrapper.addWidget(Altitude,0,0)
+        wrapper.addWidget(Acceleration,0,1)
+        wrapper.addWidget(Gyro,0,2)
+        wrapper.addWidget(IMU,1,0)
+        wrapper.addWidget(Diode,1,1)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)

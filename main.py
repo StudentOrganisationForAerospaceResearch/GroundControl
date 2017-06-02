@@ -24,10 +24,10 @@ def main(test=False):
         print("Opening connection to remote...")
         s = stream.DataStream()
     else:
-        import tester
+        import tester as t
         
         print("Opening tester data stream...")
-        s = tester.start()
+        s = t.Tester()
     
     print("Initialising UI...")
     UI.__init__()
