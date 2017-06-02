@@ -109,20 +109,32 @@ class Data():
                 self.magnetic_field_y, self.magnetic_field_z,
                 self.pitch, self.yaw, self.roll, self.temperature)
         
-#Preliminary file reading function
-#Not really clear on what we're doing
-#Authors: John and Courtney
-#Status: Unsure if this is what we have to do. I managed to get np working, and used it to get the filenames and all, and can confirm it can print the data.
-#Is this data extraction what we're looking for, and from here, what we need to implement in adding the data to the arrays above?
+# read_file() Opens a gui asking for a text file to read, then sets
+# this object's attributes to the data within this text file.
+# This function assumes the data in the text file is properly
+# formatted for this method to read; if it is not, it can cause a
+# runtime error.
+# Authors: John and Courtney
+# Status: Needs testing to confirm it does what we want it to do.
+# Possible upgrade: Try catch to prevent runtime errors?
     def read_file(self):
+		#Opens a gui asking for the file to read.
         fileName = askopenfilename(initialdir = "C:/",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
-        data = np.genfromtxt(fname = fileName, dtype = "float", delimiter = "|")
-        return data
-        
-        # What still needs to happen is that when you import the file above, you assign all of the arrays above.
-        # The method you used will parse all of the columns as arrays, which you can then throw into the respective variables.
-        # Assume that the data will be in the same order as above (so column 1 would be Altitude and so on)
-        # This method doesn't need to return anything, only set the arrays
-
-		
-		
+		#Reads this file, then assigns the values found in this file to this object's attributes.
+        data = np.genfromtxt(fname = fileName, dtype = "float", delimiter = "	")
+        self.altitude =[data[0]]
+        self.pressure = [data[1]]
+        self.acceleration_x = [data[2]]
+        self.acceleration_y = [data[3]]
+        self.acceleration_z = [data[4]]
+        self.ang_acceleration_x = [data[5]]
+        self.ang_acceleration_y = [data[6]]
+        self.ang_acceleration_z = [data[7]]
+        self.magnetic_field_x = [data[8]]
+        self.magnetic_field_y = [data[9]]
+        self.magnetic_field_z = [data[10]]
+        self.pitch = [data[11]]
+        self.yaw = [data[12]]
+        self.roll = [data[13]]
+        self.temperature = [data[14]]
+		return
