@@ -13,6 +13,7 @@ Description:
 import random
 import datetime
 from tkinter.filedialog import askopenfilename
+import numpy as np
 
 class Data():
     """
@@ -108,27 +109,20 @@ class Data():
                 self.magnetic_field_y, self.magnetic_field_z,
                 self.pitch, self.yaw, self.roll, self.temperature)
         
-#Preliminary file reading function???
+#Preliminary file reading function
 #Not really clear on what we're doing
 #Authors: John and Courtney
-#Status: Confused
+#Status: Unsure if this is what we have to do. I managed to get np working, and used it to get the filenames and all, and can confirm it can print the data.
+#Is this data extraction what we're looking for, and from here, what we need to implement in adding the data to the arrays above?
     def read_file(self):
-        #Removed unnessesary method calls
+        fileName = askopenfilename(initialdir = "C:/",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
+        data = np.genfromtxt(fname = fileName, dtype = "float", delimiter = "|")
+        return data
         
-        #This method call will open up a dialog which will ask for the location of the file to be imported
-        fileName =  askopenfilename(initialdir = "E:/Images",
-                                    title = "choose your file",
-                                    filetypes = (("Text Files","*.txt"),
-                                                 ("all files","*.*")))
-        
-        textFile = open(fileName, "r") #this opens the file
-        data = textFile.read() #this reads the first line of the file and then doesn't 
-        
-        # What still needs to happen is tha tyou import the file specified, and then assign all of the arrays above.
-        # You can use the method call I sent you in the sample code on slack to get the data from the file.
-        # The method call will parse all of the columns as arrays, which you can then throw into the respective variables.
+        # What still needs to happen is that when you import the file above, you assign all of the arrays above.
+        # The method you used will parse all of the columns as arrays, which you can then throw into the respective variables.
         # Assume that the data will be in the same order as above (so column 1 would be Altitude and so on)
-        
-        return data	
+        # This method doesn't need to return anything, only set the arrays
+
 		
 		
