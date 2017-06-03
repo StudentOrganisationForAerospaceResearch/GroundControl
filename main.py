@@ -11,34 +11,45 @@ Description:
     Main file. Run this to run the program.
 """
 
-import sys
-import UI
+#import sys
+#import UI
 import data
 
-
-
-def main(test=False):
-    if not test:
-        import dataStream as stream
+class Main:
+    window = None
+    s = None
+    
+    #TODO: Disable test when ready
+    def __init__(self, window, test=True):
+        print("Initialising UI...")
+        self.window = window
         
-        print("Opening connection to remote...")
-        s = stream.DataStream()
-    else:
-        import tester as t
+        if not test:
+            import dataStream as stream
+            
+            self.window.statusBar().showMessage("Opening connection to remote...", 2000)
+            print("Opening connection to remote...")
+            self.s = stream.DataStream()
+        else:
+            print('hello')
+            import tester as t
+            
+            self.window.statusBar().showMessage("Opening tester data stream...", 2000)
+            print("Opening tester data stream...")
+            self.s = t.Tester()
+            
+
+    def main(self):
         
-        print("Opening tester data stream...")
-        s = t.Tester()
-    
-    print("Initialising UI...")
-    UI.__init__()
-    
-    
-    while True:
-        temp_data = s.get_data()
+        temp_data = self.s.get_data()
         data.update_all(temp_data)
+            
+        self.arrays = data.get_arrays()
+        self.window.altitude.update_figure()
+        self.window.acceleration.update_figure()
         
-    
-    return
+        return
 
 if __name__=='__main__':
-    main(sys.argv[1])
+    temp = Main()
+    temp.main()

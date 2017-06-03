@@ -6,11 +6,11 @@ Canada
 
 Developers:
     Nathan Meulenbroek
+    John and Courtney
     
 Description:
 
 """
-import random
 import datetime
 from tkinter.filedialog import askopenfilename
 import numpy as np
@@ -54,54 +54,47 @@ class Data():
 #
 # Units: 
 # 
+#
+# Columns in order: 
                              """)
         return
     
-    def update_all(self, data):
+    def update_all(self, data_string):
         """
         Updates all data at once
         
         Params:
-            data - (string) data, separated with vertical lines
+            data_string - (string) data, separated with vertical lines
         """
-        
+        data = data_string.split('|')
         self.data_file.write('%s' % datetime.datetime.now())
         
         for item in data:
             self.data_file.write('{:30}'.format(item))
         
+        self.data_file.write('    %s' % datetime.datetime.now())
         self.data_file.write('\n')
         
         
         self.altitude.append(data[0])
         self.pressure.append(data[1])
-        self.acceleration.append(data[2])
-        self.ang_acceleration.append(data[3])
-        self.magnetic_field.append(data[4])
-        self.pitch.append(data[5])
-        self.yaw.append(data[6])
-        self.roll.append(data[7])
-        self.temperature.append(data[8])
+        self.acceleration_x.append(data[2])
+        self.acceleration_y.append(data[3])
+        self.acceleration_z.append(data[4])
+        self.ang_acceleration_x.append(data[5])
+        self.ang_acceleration_y.append(data[6])
+        self.ang_acceleration_z.append(data[7])
+        self.magnetic_field_x.append(data[8])
+        self.magnetic_field_y.append(data[9])
+        self.magnetic_field_z.append(data[10])
+        self.pitch.append(data[11])
+        self.yaw.append(data[12])
+        self.roll.append(data[13])
+        self.temperature.append(data[14])
         
         return 
 
-    def get_data(self):
-        self.altitude.append(random.randrange(0, 30, 1))
-        self.pressure.append(random.randrange(0, 30, 1))
-        self.acceleration_x.append(random.randrange(0, 30, 1))
-        self.acceleration_y.append(random.randrange(0, 30, 1))
-        self.acceleration_z.append(random.randrange(0, 30, 1))
-        self.ang_acceleration_x.append(random.randrange(0, 30, 1))
-        self.ang_acceleration_y.append(random.randrange(0, 30, 1))
-        self.ang_acceleration_z.append(random.randrange(0, 30, 1))
-        self.magnetic_field_x.append(random.randrange(0, 30, 1))
-        self.magnetic_field_y.append(random.randrange(0, 30, 1))
-        self.magnetic_field_z.append(random.randrange(0, 30, 1))
-        self.pitch.append(random.randrange(0, 30, 1))
-        self.yaw.append(random.randrange(0, 30, 1))
-        self.roll.append(random.randrange(0, 30, 1))
-        self.temperature.append(random.randrange(0, 30, 1))
-        
+    def get_arrays(self):        
         return (self.altitude, self.pressure, self.acceleration_x, 
                 self.acceleration_y, self.acceleration_z, 
                 self.ang_acceleration_x, self.ang_acceleration_y, 
@@ -109,20 +102,20 @@ class Data():
                 self.magnetic_field_y, self.magnetic_field_z,
                 self.pitch, self.yaw, self.roll, self.temperature)
         
-# read_file() Opens a gui asking for a text file to read, then sets
-# this object's attributes to the data within this text file.
-# This function assumes the data in the text file is properly
-# formatted for this method to read; if it is not, it can cause a
-# runtime error.
-# Authors: John and Courtney
-# Status: Needs testing to confirm it does what we want it to do.
-# Possible upgrade: Try catch to prevent runtime errors?
     def read_file(self):
-		#Opens a gui asking for the file to read.
+        """
+        Opens a gui asking for a text file to read, then sets
+        this object's attributes to the data within this text file.
+        This function assumes the data in the text file is properly
+        formatted for this method to read; if it is not, it can cause a
+        runtime error
+        """
+        
+		 #Opens a gui asking for the file to read.
         fileName = askopenfilename(initialdir = "C:/",title = "choose your file",filetypes = (("Text Files","*.txt"),("all files","*.*")))
-		#Reads this file, then assigns the values found in this file to this object's attributes.
+		 #Reads this file, then assigns the values found in this file to this object's attributes.
         data = np.genfromtxt(fname = fileName, dtype = "float", delimiter = "	")
-        self.altitude =[data[0]]
+        self.altitude = [data[0]]
         self.pressure = [data[1]]
         self.acceleration_x = [data[2]]
         self.acceleration_y = [data[3]]
@@ -137,4 +130,5 @@ class Data():
         self.yaw = [data[12]]
         self.roll = [data[13]]
         self.temperature = [data[14]]
-		return
+        
+        return
