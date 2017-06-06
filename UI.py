@@ -105,6 +105,45 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.draw()
+class MyTextBox(QtWidgets.QLabel):
+    def __init__(self, parent = None):
+        super(MyTextBox,self).__init__(parent)
+        self.Layout()
+        self.setlayout()
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(self.Layout)
+        timer.start(100)
+    def Layout(self):
+        a = random.randint(0,10)
+        b = random.randint(0,10)
+        c = random.randint(0,10)
+        d = random.randint(0,10)
+        l1 = "Temperature: "+str(a)
+        l2 = "RPM: "+str(b)
+        l3 = "Longitude: "+str(c)
+        l4 = "Latitude: "+str(d)
+        lay = QtWidgets.QGridLayout()
+        Temp = QtWidgets.QLabel()
+        RPM = QtWidgets.QLabel()
+        Lon = QtWidgets.QLabel()
+        Lat = QtWidgets.QLabel()
+        Temp.setText(l1)
+        RPM.setText(l2)
+        Lon.setText(l3)
+        Lat.setText(l4)
+        Temp.setAlignment(QtCore.Qt.AlignCenter)
+        RPM.setAlignment(QtCore.Qt.AlignCenter)
+        Lon.setAlignment(QtCore.Qt.AlignCenter)
+        Lat.setAlignment(QtCore.Qt.AlignCenter)
+        lay.addWidget(Temp,0,0)
+        lay.addWidget(RPM,1,0)
+        lay.addWidget(Lon,2,0)
+        lay.addWidget(Lat,3,0)
+        return(lay)
+    def setlayout(self):
+        lay = self.Layout()
+        self.setLayout(lay)
+
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -158,6 +197,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         l.addWidget(Gyro,0,2)
         l.addWidget(IMU,1,0)
         l.addWidget(Diode,1,1)
+        l.addWidget(MyTextBox(),1,2)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
