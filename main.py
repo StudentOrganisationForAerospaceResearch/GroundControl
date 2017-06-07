@@ -11,9 +11,11 @@ Description:
     Main file. Run this to run the program.
 """
 
-#import sys
-#import UI
+import sys
+import UI
 import data
+import tester
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 class Main:
     window = None
@@ -22,34 +24,33 @@ class Main:
     #TODO: Disable test when ready
     def __init__(self, window, test=True):
         print("Initialising UI...")
-        self.window = window
+        self.window = UI.__init__()
+
         
         if not test:
             import dataStream as stream
             
             self.window.statusBar().showMessage("Opening connection to remote...", 2000)
             print("Opening connection to remote...")
-            self.s = stream.DataStream()
+            s = stream.DataStream()
         else:
             print('hello')
-            import tester as t
             
             self.window.statusBar().showMessage("Opening tester data stream...", 2000)
             print("Opening tester data stream...")
-            self.s = t.Tester()
+          
             
 
     def main(self):
         
-        temp_data = self.s.get_data()
-        data.update_all(temp_data)
+        temp_data = tester.Tester.get_data(tester.Tester)
+        data.Data.update_all(data.Data,temp_data)
             
-        self.arrays = data.get_arrays()
-        self.window.altitude.update_figure()
-        self.window.acceleration.update_figure()
+        self.arrays = data.Data.get_arrays(data.Data)
+
         
         return
 
 if __name__=='__main__':
-    temp = Main()
+    temp = Main(Main.window)
     temp.main()

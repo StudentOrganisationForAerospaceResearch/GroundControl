@@ -52,13 +52,13 @@ class Tester():
         self.roll = random.randrange(0, 30, 1)
         self.temperature = random.randrange(0, 30, 1)
         #TODO: Cast to strings
-        return (self.altitude + '|' + self.pressure + '|' + self.acceleration_x 
-                + '|' + self.acceleration_y + '|' + self.acceleration_z + '|' + 
-                self.ang_acceleration_x + '|' + self.ang_acceleration_y + '|' + 
-                self.ang_acceleration_z + '|' + self.magnetic_field_x + '|' + 
-                self.magnetic_field_y + '|' + self.magnetic_field_z + '|' + 
-                self.pitch + '|' + self.yaw + '|' + self.roll + '|' + 
-                self.temperature)
+        return (str(self.altitude) + '|' + str(self.pressure) + '|' + str(self.acceleration_x) 
+                + '|' + str(self.acceleration_y) + '|' + str(self.acceleration_z) + '|' + 
+                str(self.ang_acceleration_x) + '|' + str(self.ang_acceleration_y) + '|' + 
+                str(self.ang_acceleration_z) + '|' + str(self.magnetic_field_x) + '|' + 
+                str(self.magnetic_field_y) + '|' + str(self.magnetic_field_z) + '|' + 
+                str(self.pitch) + '|' + str(self.yaw) + '|' + str(self.roll) + '|' + 
+                str(self.temperature))
    
 def __init__():
     temp = Tester()
@@ -67,6 +67,3 @@ def __init__():
         print(temp.get_data())
         
     return
-        
-if __name__=='__main__':
-    __init__()

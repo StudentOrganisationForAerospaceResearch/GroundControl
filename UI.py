@@ -19,7 +19,7 @@ import random
 import matplotlib
 # Make sure that we are using QT5
 matplotlib.use('Qt5Agg')
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 
 from numpy import arange, sin, pi
@@ -30,7 +30,6 @@ import main
 
 progname = os.path.basename('SOAR I Ground Control System')
 progversion = "0.1"
-
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -92,7 +91,9 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
         args = [args[0]]
         MyMplCanvas.__init__(self, *args, **kwargs)
-
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(self.update_figure)
+        timer.start(100)
 
     def compute_initial_figure(self):
         self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4])
@@ -109,7 +110,7 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.draw()
-<<<<<<< HEAD
+
 class MyTextBox(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super(MyTextBox,self).__init__(parent)
@@ -149,9 +150,6 @@ class MyTextBox(QtWidgets.QLabel):
         lay = self.Layout()
         self.setLayout(lay)
 
-=======
-        
->>>>>>> origin/master
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -174,6 +172,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     gyro = None
     IMU = None
     diode = None
+    data = None
     
     
     def __init__(self):
@@ -202,48 +201,34 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget(self)
 
-<<<<<<< HEAD
-        l = QtWidgets.QGridLayout(self.main_widget)
-        Altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time(s)','Height(m)')
-        Acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time','Acceleration')
-        Gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','X','Y')
-        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','X','Y')
-        Diode = MyDynamicMplCanvas(self.main_widget,'Diode','X','Y')
-        l.addWidget(Altitude,0,0)
-        l.addWidget(Acceleration,0,1)
-        l.addWidget(Gyro,0,2)
-        l.addWidget(IMU,1,0)
-        l.addWidget(Diode,1,1)
-        l.addWidget(MyTextBox(),1,2)
-=======
         wrapper = QtWidgets.QGridLayout(self.main_widget)
-        altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
                                       'Time (s)','Height (m)')
-        acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
                                           'Time (s)','Acceleration $(m/s^2)$')
-        gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
                                   'Acceleration $(m/s^2)$')
-        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
+        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
                                  'Angle from True (CentiDegrees)')
-        diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
+        self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
                                    'Voltage (V)')
-        
-        wrapper.addWidget(altitude,0,0)
-        wrapper.addWidget(acceleration,0,1)
-        wrapper.addWidget(gyro,0,2)
-        wrapper.addWidget(IMU,1,0)
-        wrapper.addWidget(diode,1,1)
->>>>>>> origin/master
+       
+        self.data = MyTextBox(self.main_widget) 
+
+        wrapper.addWidget(self.altitude,0,0)
+        wrapper.addWidget(self.acceleration,0,1)
+        wrapper.addWidget(self.gyro,0,2)
+        wrapper.addWidget(self.IMU,1,0)
+        wrapper.addWidget(self.diode,1,1)
+        wrapper.addWidget(self.data,1,2)
+
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
         self.statusBar().showMessage("All hail matplotlib!", 1000)
         
-        loop = main.Main(self)
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(loop.main())
-        timer.start(100)
+
 
     def fileQuit(self):
         self.close()	
@@ -275,7 +260,7 @@ Developer:
            4nathan@outlook.com""")
 
         
-		
+	
 def __init__():
     qApp = QtWidgets.QApplication(sys.argv)
 
@@ -285,6 +270,3 @@ def __init__():
     sys.exit(qApp.exec_())
     #qApp.exec_()
     return aw
-
-if __name__=='__main__':
-    __init__()
