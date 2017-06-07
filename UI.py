@@ -112,12 +112,13 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.draw()
 
 class MyTextBox(QtWidgets.QLabel):
+    lay = QtWidgets.QGridLayout()
     def __init__(self, parent = None):
         super(MyTextBox,self).__init__(parent)
         self.Layout()
         self.setlayout()
         timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.Layout)
+        timer.timeout.connect(self.updatetext)
         timer.start(100)
     def Layout(self):
         a = random.randint(0,10)
@@ -128,7 +129,6 @@ class MyTextBox(QtWidgets.QLabel):
         l2 = "RPM: "+str(b)
         l3 = "Longitude: "+str(c)
         l4 = "Latitude: "+str(d)
-        lay = QtWidgets.QGridLayout()
         Temp = QtWidgets.QLabel()
         RPM = QtWidgets.QLabel()
         Lon = QtWidgets.QLabel()
@@ -141,15 +141,16 @@ class MyTextBox(QtWidgets.QLabel):
         RPM.setAlignment(QtCore.Qt.AlignCenter)
         Lon.setAlignment(QtCore.Qt.AlignCenter)
         Lat.setAlignment(QtCore.Qt.AlignCenter)
-        lay.addWidget(Temp,0,0)
-        lay.addWidget(RPM,1,0)
-        lay.addWidget(Lon,2,0)
-        lay.addWidget(Lat,3,0)
-        return(lay)
+        self.lay.addWidget(Temp,0,0)
+        self.lay.addWidget(RPM,1,0)
+        self.lay.addWidget(Lon,0,1)
+        self.lay.addWidget(Lat,1,1)
     def setlayout(self):
-        lay = self.Layout()
-        self.setLayout(lay)
-
+        self.setLayout(self.lay)
+    def updatetext(self):
+        for i in reversed(range(self.lay.count())):
+            self.lay.itemAt(i).widget().deleteLater()
+        self.Layout()
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
