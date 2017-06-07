@@ -5,13 +5,9 @@ Canada
 
 Developers:
     Nathan Meulenbroek
-<<<<<<< HEAD
-    Sean Habermiller
-=======
 	Sean Habermiller
 	Ilyes Kabouch
     
->>>>>>> origin/master
 Description:
 
 """
@@ -23,14 +19,16 @@ import random
 import matplotlib
 # Make sure that we are using QT5
 matplotlib.use('Qt5Agg')
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
 from numpy import arange, sin, pi
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-progname = os.path.basename(sys.argv[0])
+import main
+
+progname = os.path.basename('SOAR I Ground Control System')
 progversion = "0.1"
 
 
@@ -61,15 +59,24 @@ class MyMplCanvas(FigureCanvas):
 
 class MyStaticMplCanvas(MyMplCanvas):
     """Simple canvas with a sine plot."""
+    title = ''
+    xlabel = ''
+    ylabel = ''
+	
+    def __init__(self, *args, **kwargs):
+        self.title = args[1]
+        self.xlabel = args[2]
+        self.ylabel = args[3] 
 
     def compute_initial_figure(self):
         t = arange(0.0, 3.0, 0.01)
         s = sin(2*pi*t)
+        
         for i in range(0,2):
             self.axes.plot(t+i, s)
-            self.axes.set_title('FittingTitle')
-            self.axes.set_xlabel('XLabel')
-            self.axes.set_ylabel('YLabel')
+            self.axes.set_title(self.title)
+            self.axes.set_xlabel(self.xlabel)
+            self.axes.set_ylabel(self.ylabel)
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
@@ -83,14 +90,12 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.xlabel = args[2]
         self.ylabel = args[3] 
 
-        args = []
+        args = [args[0]]
         MyMplCanvas.__init__(self, *args, **kwargs)
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.update_figure)
-        timer.start(100)
+
 
     def compute_initial_figure(self):
-        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4])
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
@@ -98,13 +103,13 @@ class MyDynamicMplCanvas(MyMplCanvas):
     def update_figure(self):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
         l = [random.randint(0, 10) for i in range(4)]
-        w = [random.randint(0, 10) for i in range(4)]
 		
-        self.axes.plot([0, 1, 2, 3], l, 'r')
+        self.axes.plot([0, 1, 2, 3], l)
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.draw()
+<<<<<<< HEAD
 class MyTextBox(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super(MyTextBox,self).__init__(parent)
@@ -144,6 +149,9 @@ class MyTextBox(QtWidgets.QLabel):
         lay = self.Layout()
         self.setLayout(lay)
 
+=======
+        
+>>>>>>> origin/master
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -158,14 +166,22 @@ class ResizeSlider(QtWidgets.QWidget):
         self.sl1.setTickInterval(2)
         
         layout.addWidget(self.sl1)
-        self.setWindowTitle("Resize Window")        
+        self.setWindowTitle("Resize Window")       
+        
 class ApplicationWindow(QtWidgets.QMainWindow):
+    altitude = None
+    acceleration = None
+    gyro = None
+    IMU = None
+    diode = None
+    
+    
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
-        self.width = 500
-        self.height = 650
+        self.width = 1000
+        self.height = 900
         self.resize(self.width,self.height)
         self.file_menu = QtWidgets.QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,
@@ -186,6 +202,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget(self)
 
+<<<<<<< HEAD
         l = QtWidgets.QGridLayout(self.main_widget)
         Altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time(s)','Height(m)')
         Acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time','Acceleration')
@@ -198,11 +215,35 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         l.addWidget(IMU,1,0)
         l.addWidget(Diode,1,1)
         l.addWidget(MyTextBox(),1,2)
+=======
+        wrapper = QtWidgets.QGridLayout(self.main_widget)
+        altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
+                                      'Time (s)','Height (m)')
+        acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
+                                          'Time (s)','Acceleration $(m/s^2)$')
+        gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
+                                  'Acceleration $(m/s^2)$')
+        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
+                                 'Angle from True (CentiDegrees)')
+        diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
+                                   'Voltage (V)')
+        
+        wrapper.addWidget(altitude,0,0)
+        wrapper.addWidget(acceleration,0,1)
+        wrapper.addWidget(gyro,0,2)
+        wrapper.addWidget(IMU,1,0)
+        wrapper.addWidget(diode,1,1)
+>>>>>>> origin/master
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
-        self.statusBar().showMessage("All hail matplotlib!", 2000)
+        self.statusBar().showMessage("All hail matplotlib!", 1000)
+        
+        loop = main.Main(self)
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(loop.main())
+        timer.start(100)
 
     def fileQuit(self):
         self.close()	
@@ -231,8 +272,7 @@ SOAR:
     
 Developer:
     Email: nathan.meulenbroek@ucalgary.ca
-           4nathan@outlook.com"""
-                                )
+           4nathan@outlook.com""")
 
         
 		
@@ -244,7 +284,7 @@ def __init__():
     aw.show()
     sys.exit(qApp.exec_())
     #qApp.exec_()
-    return
+    return aw
 
 if __name__=='__main__':
     __init__()
