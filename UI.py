@@ -20,9 +20,6 @@ import matplotlib
 # Make sure that we are using QT5
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
-
-
-from numpy import arange, sin, pi
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -66,14 +63,7 @@ class MyStaticMplCanvas(MyMplCanvas):
         self.ylabel = args[3] 
 
     def compute_initial_figure(self):
-        t = arange(0.0, 3.0, 0.01)
-        s = sin(2*pi*t)
-        
-        for i in range(0,2):
-            self.axes.plot(t+i, s)
-            self.axes.set_title(self.title)
-            self.axes.set_xlabel(self.xlabel)
-            self.axes.set_ylabel(self.ylabel)
+        pass
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
@@ -108,44 +98,53 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
 class MyTextBox(QtWidgets.QLabel):
     lay = QtWidgets.QGridLayout()
+    temperature = None
+    lon = None
+    lat = None
+    
     def __init__(self, parent = None):
         super(MyTextBox,self).__init__(parent)
         self.Layout()
         self.setlayout()
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.updatetext)
-        timer.start(100)
+        return
+        
     def Layout(self):
         a = random.randint(0,10)
-        b = random.randint(0,10)
         c = random.randint(0,10)
         d = random.randint(0,10)
+        
         l1 = "Temperature: "+str(a)
-        l2 = "RPM: "+str(b)
         l3 = "Longitude: "+str(c)
         l4 = "Latitude: "+str(d)
-        Temp = QtWidgets.QLabel()
-        RPM = QtWidgets.QLabel()
-        Lon = QtWidgets.QLabel()
-        Lat = QtWidgets.QLabel()
-        Temp.setText(l1)
-        RPM.setText(l2)
-        Lon.setText(l3)
-        Lat.setText(l4)
-        Temp.setAlignment(QtCore.Qt.AlignCenter)
-        RPM.setAlignment(QtCore.Qt.AlignCenter)
-        Lon.setAlignment(QtCore.Qt.AlignCenter)
-        Lat.setAlignment(QtCore.Qt.AlignCenter)
-        self.lay.addWidget(Temp,0,0)
-        self.lay.addWidget(RPM,1,0)
-        self.lay.addWidget(Lon,0,1)
-        self.lay.addWidget(Lat,1,1)
+        
+        self.temperature = QtWidgets.QLabel()
+        self.lon = QtWidgets.QLabel()
+        self.lat = QtWidgets.QLabel()
+        
+        self.temperature.setText(l1)
+        self.lon.setText(l3)
+        self.lat.setText(l4)
+        
+        self.temperature.setAlignment(QtCore.Qt.AlignCenter)
+        self.lon.setAlignment(QtCore.Qt.AlignCenter)
+        self.lat.setAlignment(QtCore.Qt.AlignCenter)
+        
+        self.lay.addWidget(self.temperature,0,0)
+        self.lay.addWidget(self.lon,1,0)
+        self.lay.addWidget(self.lat,1,1)
+        return 
+    
+    
     def setlayout(self):
         self.setLayout(self.lay)
+        return
+        
     def updatetext(self):
         for i in reversed(range(self.lay.count())):
             self.lay.itemAt(i).widget().deleteLater()
         self.Layout()
+        return
+        
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -213,9 +212,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.wrapper.addWidget(self.altitude,0,0)
         self.wrapper.addWidget(self.acceleration,0,1)
-        self.wrapper.addWidget(self.gyro,0,2)
+        self.wrapper.addWidget(self.gyro,1,1)
         self.wrapper.addWidget(self.IMU,1,0)
-        self.wrapper.addWidget(self.diode,1,1)
+        self.wrapper.addWidget(self.diode,0,2)
         self.wrapper.addWidget(self.data,1,2)
 
         self.main_widget.setFocus()
@@ -265,5 +264,6 @@ def __init__():
     return aw, qApp
 
 if __name__=='__main__':
-    __init__()
+    aw, qApp = __init__()
+    sys.exit(qApp.exec_())
 

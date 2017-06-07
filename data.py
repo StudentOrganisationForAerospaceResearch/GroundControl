@@ -20,7 +20,7 @@ class Data():
     Data from rocket.
     
     """
-    data_file = open('data_file.txt', 'w')
+    data_file = None
     altitude = []
     pressure = []
     acceleration_x = []
