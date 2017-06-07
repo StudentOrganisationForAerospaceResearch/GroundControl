@@ -88,9 +88,9 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
     def update_figure(self):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
-        l = [random.randint(0, 10) for i in range(4)]
+        l = [random.randint(0, 10) for i in range(random.randint(10,45))]
 		
-        self.axes.plot([0, 1, 2, 3], l)
+        self.axes.plot(l)
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
@@ -104,11 +104,10 @@ class MyTextBox(QtWidgets.QLabel):
     
     def __init__(self, parent = None):
         super(MyTextBox,self).__init__(parent)
-        self.Layout()
-        self.setlayout()
+        self.computeInitialLayout()
         return
         
-    def Layout(self):
+    def computeInitialLayout(self):
         a = random.randint(0,10)
         c = random.randint(0,10)
         d = random.randint(0,10)
@@ -132,17 +131,14 @@ class MyTextBox(QtWidgets.QLabel):
         self.lay.addWidget(self.temperature,0,0)
         self.lay.addWidget(self.lon,1,0)
         self.lay.addWidget(self.lat,1,1)
-        return 
-    
-    
-    def setlayout(self):
-        self.setLayout(self.lay)
-        return
         
-    def updatetext(self):
-        for i in reversed(range(self.lay.count())):
-            self.lay.itemAt(i).widget().deleteLater()
-        self.Layout()
+        self.setLayout(self.lay)
+        return 
+        
+    def updateText(self):
+        self.temperature.setText("Temperature: "+str(random.randint(0,10)))
+        self.lon.setText("Longitude: "+str(random.randint(0,10)))
+        self.lat.setText("Latitude: "+str(random.randint(0,10)))
         return
         
 class ResizeSlider(QtWidgets.QWidget):
@@ -167,7 +163,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     gyro = None
     IMU = None
     diode = None
-    data = None
+    text_boxes = None
     
     
     def __init__(self):
@@ -197,25 +193,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
         self.wrapper = QtWidgets.QGridLayout(self.main_widget)
 
-        self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
-                                      'Time (s)','Height (m)')
-        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
-                                          'Time (s)','Acceleration $(m/s^2)$')
-        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
-                                  'Acceleration $(m/s^2)$')
-        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
-                                 'Angle from True (CentiDegrees)')
-        self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
-                                   'Voltage (V)')
-       
-        self.data = MyTextBox(self.main_widget) 
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time (s)','Height (m)')
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time (s)','Acceleration $(m/s^2)$')
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)','Acceleration $(m/s^2)$')
+        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)','Angle from True (CentiDegrees)')
+        self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)','Voltage (V)')
+        self.text_boxes = MyTextBox(self.main_widget) 
 
         self.wrapper.addWidget(self.altitude,0,0)
         self.wrapper.addWidget(self.acceleration,0,1)
         self.wrapper.addWidget(self.gyro,1,1)
         self.wrapper.addWidget(self.IMU,1,0)
         self.wrapper.addWidget(self.diode,0,2)
-        self.wrapper.addWidget(self.data,1,2)
+        self.wrapper.addWidget(self.text_boxes,1,2)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)

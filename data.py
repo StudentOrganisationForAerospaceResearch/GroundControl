@@ -36,6 +36,9 @@ class Data():
     yaw = []
     roll = []
     temperature = []
+    longitude = []
+    latitude = []
+    #diode_voltage = []
     
     def __init__(self):
         self.data_file = open('data_file.txt', 'w+')
@@ -56,7 +59,8 @@ class Data():
 # 
 #
 # Columns in order w/(units): 
-                             """)
+                             
+""")
         return
     
     def update_all(self, data_string):
@@ -71,10 +75,10 @@ class Data():
         self.data_file.write('%s' % datetime.datetime.now())
         
         for item in data:
-            self.data_file.write('{:30}'.format(item))
+            self.data_file.write('{:20}'.format(item))
         
-        self.data_file.write('    %s' % datetime.datetime.now())
         self.data_file.write('\n')
+        self.data_file.flush()
         
         
         self.altitude.append(data[0])
@@ -92,6 +96,8 @@ class Data():
         self.yaw.append(data[12])
         self.roll.append(data[13])
         self.temperature.append(data[14])
+        self.longitude.append(data[15])
+        self.latitude.append(data[16])
         
         return 
 

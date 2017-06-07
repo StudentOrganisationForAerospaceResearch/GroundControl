@@ -13,16 +13,20 @@ Description:
 
 import sys
 import UI
-from threading import Thread
+#from threading import Thread
 import data
+from PyQt5.QtCore import QThread
 
-class Main:
+import time
+
+class Main(QThread):
     window = None
     s = None
     data_recorder = None
     
     #TODO: Disable test when ready
     def __init__(self, window, test=True):
+        QThread.__init__(self)
         self.window = window
         
         if not test:
@@ -40,33 +44,37 @@ class Main:
             
         self.data_recorder = data.Data()
         return
+    
+    def __del__(self):
+        self.wait()
             
-
-    def main_loop(self):
-        print("Main Loop Started")
+    def run(self):
+        print("Main loop started...")
         while True:
             temp_data = self.s.get_data()
-            print(temp_data)
+            #print(temp_data)
             self.data_recorder.update_all(temp_data)
                 
             self.arrays = self.data_recorder.get_arrays()
+            
             self.window.altitude.update_figure()
             self.window.acceleration.update_figure()
             self.window.IMU.update_figure()
             self.window.gyro.update_figure()
             self.window.diode.update_figure()
+            self.window.text_boxes.updateText()
+            
+            #self.emit(SIGNAL(''))
+            #time.sleep(0.5)
         
         return
 
 if __name__=='__main__':
     
     aw, qApp = UI.__init__()
-    temp = Main(aw)
-    
-    t = Thread(target=temp.main_loop)
+    thread = Main(aw)
     print("Initialising backend...")
-    t.daemon = True
-    t.start()
+    thread.start()
     
     print("Initialising UI...")
     sys.exit(qApp.exec_())

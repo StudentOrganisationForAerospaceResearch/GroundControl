@@ -31,6 +31,8 @@ class Tester():
     yaw = 0.0
     roll = 0.0
     temperature = 0.0
+    longitude = 0.0
+    latitude = 0.0
     
     def __init__(self, *args, **kwargs):
         return
@@ -51,6 +53,8 @@ class Tester():
         self.yaw = random.randrange(0, 30, 1)
         self.roll = random.randrange(0, 30, 1)
         self.temperature = random.randrange(0, 30, 1)
+        self.longitude = random.randrange(0, 30, 1)
+        self.latitude = random.randrange(0, 30, 1)
 
         return (str(self.altitude) + '|' + str(self.pressure) + '|' + 
                 str(self.acceleration_x) + '|' + str(self.acceleration_y) + '|' 
@@ -60,7 +64,8 @@ class Tester():
                 + '|' + str(self.magnetic_field_y) + '|' + 
                 str(self.magnetic_field_z) + '|' + str(self.pitch) + '|' + 
                 str(self.yaw) + '|' + str(self.roll) + '|' + 
-                str(self.temperature))
+                str(self.temperature) + '|' + str(self.longitude) + '|' + 
+                str(self.latitude))
    
 def __init__():
     temp = Tester()
