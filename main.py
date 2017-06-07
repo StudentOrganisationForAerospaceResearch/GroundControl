@@ -17,8 +17,6 @@ import UI
 import data
 from PyQt5.QtCore import QThread
 
-import time
-
 class Main(QThread):
     window = None
     s = None
@@ -52,20 +50,19 @@ class Main(QThread):
         print("Main loop started...")
         while True:
             temp_data = self.s.get_data()
-            #print(temp_data)
+            print(temp_data)
             self.data_recorder.update_all(temp_data)
                 
-            self.arrays = self.data_recorder.get_arrays()
+            arrays = self.data_recorder.get_arrays()
             
-            self.window.altitude.update_figure()
-            self.window.acceleration.update_figure()
-            self.window.IMU.update_figure()
-            self.window.gyro.update_figure()
-            self.window.diode.update_figure()
+            self.window.altitude.update_figure(arrays[0])
+            self.window.acceleration.update_figure(arrays[1])
+            self.window.IMU.update_figure(arrays[2])
+            self.window.gyro.update_figure(arrays[3])
+            self.window.diode.update_figure(arrays[4])
             self.window.text_boxes.updateText()
-            
-            #self.emit(SIGNAL(''))
-            #time.sleep(0.5)
+
+            self.window.repaint()
         
         return
 
