@@ -11,7 +11,7 @@ Description:
     Main file. Run this to run the program.
 """
 
-#import sys
+import sys
 import UI
 from threading import Thread
 import data
@@ -57,10 +57,9 @@ class Main:
 if __name__=='__main__':
     
     aw, qApp = UI.__init__()
-    print("Hello")
     temp = Main(aw)
     
-    t1 = Thread(target=qApp)
+    t1 = Thread(target=sys.exit(qApp.exec_))
     t2 = Thread(target=temp.main_loop)
     
     print("Initialising UI...")
