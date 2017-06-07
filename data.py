@@ -38,6 +38,7 @@ class Data():
     temperature = []
     
     def __init__(self):
+        self.data_file = open('data_file.txt', 'w+')
         
         self.data_file.write('# Data file initialised: %s' % datetime.datetime.now() + '\n#\n')
         
@@ -54,7 +55,7 @@ class Data():
 # Units: 
 # 
 #
-# Columns in order: 
+# Columns in order w/(units): 
                              """)
         return
     
@@ -65,7 +66,7 @@ class Data():
         Params:
             data_string - (string) data, separated with vertical lines
         """
-        print(self.data_file)
+        
         data = data_string.split('|')
         self.data_file.write('%s' % datetime.datetime.now())
         

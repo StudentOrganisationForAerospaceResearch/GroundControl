@@ -13,44 +13,64 @@ Description:
 
 import sys
 import UI
+from threading import Thread
 import data
-import tester
-from PyQt5 import QtCore, QtWidgets, QtGui
 
 class Main:
     window = None
     s = None
+    data_recorder = None
     
     #TODO: Disable test when ready
     def __init__(self, window, test=True):
-        print("Initialising UI...")
-        self.window = UI.__init__()
-
+        self.window = window
         
         if not test:
             import dataStream as stream
             
             self.window.statusBar().showMessage("Opening connection to remote...", 2000)
             print("Opening connection to remote...")
-            s = stream.DataStream()
+            self.s = stream.DataStream()
         else:
-            print('hello')
+            import tester as t
             
             self.window.statusBar().showMessage("Opening tester data stream...", 2000)
             print("Opening tester data stream...")
-          
+            self.s = t.Tester()
+            
+        self.data_recorder = data.Data()
+        return
             
 
-    def main(self):
-        
-        temp_data = tester.Tester.get_data(tester.Tester)
-        data.Data.update_all(data.Data,temp_data)
-            
-        self.arrays = data.Data.get_arrays(data.Data)
-
+    def main_loop(self):
+        print("Main Loop Started")
+        while True:
+            temp_data = self.s.get_data()
+            print(temp_data)
+            self.data_recorder.update_all(temp_data)
+                
+            self.arrays = self.data_recorder.get_arrays()
+            self.window.altitude.update_figure()
+            self.window.acceleration.update_figure()
+            self.window.IMU.update_figure()
+            self.window.gyro.update_figure()
+            self.window.diode.update_figure()
         
         return
 
 if __name__=='__main__':
-    temp = Main(Main.window)
-    temp.main()
+    
+    aw, qApp = UI.__init__()
+    temp = Main(aw)
+    
+    t = Thread(target=temp.main_loop)
+    print("Initialising backend...")
+    t.daemon = True
+    t.start()
+    
+    print("Initialising UI...")
+    sys.exit(qApp.exec_())
+    
+    
+    print("Done.")
+

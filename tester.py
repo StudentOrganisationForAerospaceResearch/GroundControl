@@ -51,13 +51,15 @@ class Tester():
         self.yaw = random.randrange(0, 30, 1)
         self.roll = random.randrange(0, 30, 1)
         self.temperature = random.randrange(0, 30, 1)
-        #TODO: Cast to strings
-        return (str(self.altitude) + '|' + str(self.pressure) + '|' + str(self.acceleration_x) 
-                + '|' + str(self.acceleration_y) + '|' + str(self.acceleration_z) + '|' + 
-                str(self.ang_acceleration_x) + '|' + str(self.ang_acceleration_y) + '|' + 
-                str(self.ang_acceleration_z) + '|' + str(self.magnetic_field_x) + '|' + 
-                str(self.magnetic_field_y) + '|' + str(self.magnetic_field_z) + '|' + 
-                str(self.pitch) + '|' + str(self.yaw) + '|' + str(self.roll) + '|' + 
+
+        return (str(self.altitude) + '|' + str(self.pressure) + '|' + 
+                str(self.acceleration_x) + '|' + str(self.acceleration_y) + '|' 
+                + str(self.acceleration_z) + '|' + str(self.ang_acceleration_x)
+                + '|' + str(self.ang_acceleration_y) + '|' + 
+                str(self.ang_acceleration_z) + '|' + str(self.magnetic_field_x)
+                + '|' + str(self.magnetic_field_y) + '|' + 
+                str(self.magnetic_field_z) + '|' + str(self.pitch) + '|' + 
+                str(self.yaw) + '|' + str(self.roll) + '|' + 
                 str(self.temperature))
    
 def __init__():
