@@ -52,7 +52,7 @@ class Tester():
         self.roll = random.randrange(0, 30, 1)
         self.temperature = random.randrange(0, 30, 1)
 
-        return (str(self.altitude) + '|' + str(self.pressure) + '|' + 
+        return ("$"+str(self.altitude) + '|' + str(self.pressure) + '|' + 
                 str(self.acceleration_x) + '|' + str(self.acceleration_y) + '|' 
                 + str(self.acceleration_z) + '|' + str(self.ang_acceleration_x)
                 + '|' + str(self.ang_acceleration_y) + '|' + 
@@ -60,7 +60,7 @@ class Tester():
                 + '|' + str(self.magnetic_field_y) + '|' + 
                 str(self.magnetic_field_z) + '|' + str(self.pitch) + '|' + 
                 str(self.yaw) + '|' + str(self.roll) + '|' + 
-                str(self.temperature))
+                str(self.temperature)+"*")
    
 def __init__():
     temp = Tester()
