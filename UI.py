@@ -5,8 +5,8 @@ Canada
 
 Developers:
     Nathan Meulenbroek
-	Sean Habermiller
-	Ilyes Kabouch
+    Sean Habermiller
+    Ilyes Kabouch
     
 Description:
 
@@ -25,8 +25,6 @@ from PyQt5 import QtCore, QtWidgets
 from numpy import arange, sin, pi
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-
-import main
 
 progname = os.path.basename('SOAR I Ground Control System')
 progversion = "0.1"
@@ -115,7 +113,6 @@ class ResizeSlider(QtWidgets.QWidget):
         super(ResizeSlider,self).__init__(parent)
         layout = QtWidgets.QVBoxLayout()
         
-		
         self.sl1 = QtWidgets.QSlider()
         self.sl1.setMinimum(1)
         self.sl1.setMaximum(10)
@@ -127,6 +124,7 @@ class ResizeSlider(QtWidgets.QWidget):
         self.setWindowTitle("Resize Window")       
         
 class ApplicationWindow(QtWidgets.QMainWindow):
+    wrapper = None
     altitude = None
     acceleration = None
     gyro = None
@@ -160,33 +158,35 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget(self)
 
-        wrapper = QtWidgets.QGridLayout(self.main_widget)
-        altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
+        self.wrapper = QtWidgets.QGridLayout(self.main_widget)
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
                                       'Time (s)','Height (m)')
-        acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
                                           'Time (s)','Acceleration $(m/s^2)$')
-        gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)',
                                   'Acceleration $(m/s^2)$')
-        IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
+        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)',
                                  'Angle from True (CentiDegrees)')
-        diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
+        self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
                                    'Voltage (V)')
         
-        wrapper.addWidget(altitude,0,0)
-        wrapper.addWidget(acceleration,0,1)
-        wrapper.addWidget(gyro,0,2)
-        wrapper.addWidget(IMU,1,0)
-        wrapper.addWidget(diode,1,1)
+        self.wrapper.addWidget(self.altitude,0,0)
+        self.wrapper.addWidget(self.acceleration,0,1)
+        self.wrapper.addWidget(self.gyro,0,2)
+        self.wrapper.addWidget(self.IMU,1,0)
+        self.wrapper.addWidget(self.diode,1,1)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
-
-        self.statusBar().showMessage("All hail matplotlib!", 1000)
         
-        loop = main.Main(self)
+        # Some really wacky 'threading'. Don't judge. It'll be fixed later.
+        # Also should probably be moved outside of this function
+        '''
         timer = QtCore.QTimer(self)
-        timer.timeout.connect(loop.main())
+        timer.timeout.connect(loop.main_loop)
         timer.start(100)
+        '''
+        return
 
     def fileQuit(self):
         self.close()	
@@ -221,13 +221,14 @@ Developer:
 		
 def __init__():
     qApp = QtWidgets.QApplication(sys.argv)
-
+    
     aw = ApplicationWindow()
     aw.setWindowTitle("%s" % progname)
     aw.show()
-    sys.exit(qApp.exec_())
-    #qApp.exec_()
-    return aw
+
+    #sys.exit(qApp.exec_())
+    
+    return aw, qApp
 
 if __name__=='__main__':
     __init__()

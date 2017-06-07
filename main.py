@@ -12,16 +12,17 @@ Description:
 """
 
 #import sys
-#import UI
+import UI
+from threading import Thread
 import data
 
 class Main:
     window = None
     s = None
+    data_recorder = None
     
     #TODO: Disable test when ready
     def __init__(self, window, test=True):
-        print("Initialising UI...")
         self.window = window
         
         if not test:
@@ -31,25 +32,46 @@ class Main:
             print("Opening connection to remote...")
             self.s = stream.DataStream()
         else:
-            print('hello')
             import tester as t
             
             self.window.statusBar().showMessage("Opening tester data stream...", 2000)
             print("Opening tester data stream...")
             self.s = t.Tester()
             
-
-    def main(self):
-        
-        temp_data = self.s.get_data()
-        data.update_all(temp_data)
+        self.data_recorder = data.Data()
+        return
             
-        self.arrays = data.get_arrays()
-        self.window.altitude.update_figure()
-        self.window.acceleration.update_figure()
+
+    def main_loop(self):
+        print('hello')
+        while True:
+            temp_data = self.s.get_data()
+            self.data_recorder.update_all(temp_data)
+                
+            self.arrays = self.data_recorder.get_arrays()
+            self.window.altitude.update_figure()
+            self.window.acceleration.update_figure()
         
         return
 
 if __name__=='__main__':
-    temp = Main()
-    temp.main()
+    
+    aw, qApp = UI.__init__()
+    print("Hello")
+    temp = Main(aw)
+    
+    t1 = Thread(target=qApp)
+    t2 = Thread(target=temp.main_loop)
+    
+    print("Initialising UI...")
+    t1.start()
+    print("Initialising backend...")
+    t2.start()
+    
+    
+    print("Done.")
+    
+    
+    
+    
+    
