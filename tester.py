@@ -69,6 +69,3 @@ def __init__():
         print(temp.get_data())
         
     return
-        
-if __name__=='__main__':
-    __init__()

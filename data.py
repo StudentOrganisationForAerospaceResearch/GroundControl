@@ -20,7 +20,7 @@ class Data():
     Data from rocket.
     
     """
-    data_file = ''
+    data_file = open('data_file.txt', 'w')
     altitude = []
     pressure = []
     acceleration_x = []
@@ -66,6 +66,7 @@ class Data():
         Params:
             data_string - (string) data, separated with vertical lines
         """
+        
         data = data_string.split('|')
         self.data_file.write('%s' % datetime.datetime.now())
         

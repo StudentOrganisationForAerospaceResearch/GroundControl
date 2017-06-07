@@ -29,7 +29,6 @@ from matplotlib.figure import Figure
 progname = os.path.basename('SOAR I Ground Control System')
 progversion = "0.1"
 
-
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
@@ -91,7 +90,6 @@ class MyDynamicMplCanvas(MyMplCanvas):
         args = [args[0]]
         MyMplCanvas.__init__(self, *args, **kwargs)
 
-
     def compute_initial_figure(self):
         self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4])
         self.axes.set_title(self.title)
@@ -107,7 +105,47 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.draw()
-        
+
+class MyTextBox(QtWidgets.QLabel):
+    lay = QtWidgets.QGridLayout()
+    def __init__(self, parent = None):
+        super(MyTextBox,self).__init__(parent)
+        self.Layout()
+        self.setlayout()
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(self.updatetext)
+        timer.start(100)
+    def Layout(self):
+        a = random.randint(0,10)
+        b = random.randint(0,10)
+        c = random.randint(0,10)
+        d = random.randint(0,10)
+        l1 = "Temperature: "+str(a)
+        l2 = "RPM: "+str(b)
+        l3 = "Longitude: "+str(c)
+        l4 = "Latitude: "+str(d)
+        Temp = QtWidgets.QLabel()
+        RPM = QtWidgets.QLabel()
+        Lon = QtWidgets.QLabel()
+        Lat = QtWidgets.QLabel()
+        Temp.setText(l1)
+        RPM.setText(l2)
+        Lon.setText(l3)
+        Lat.setText(l4)
+        Temp.setAlignment(QtCore.Qt.AlignCenter)
+        RPM.setAlignment(QtCore.Qt.AlignCenter)
+        Lon.setAlignment(QtCore.Qt.AlignCenter)
+        Lat.setAlignment(QtCore.Qt.AlignCenter)
+        self.lay.addWidget(Temp,0,0)
+        self.lay.addWidget(RPM,1,0)
+        self.lay.addWidget(Lon,0,1)
+        self.lay.addWidget(Lat,1,1)
+    def setlayout(self):
+        self.setLayout(self.lay)
+    def updatetext(self):
+        for i in reversed(range(self.lay.count())):
+            self.lay.itemAt(i).widget().deleteLater()
+        self.Layout()
 class ResizeSlider(QtWidgets.QWidget):
     def __init__(self, parent = None):
         super(ResizeSlider,self).__init__(parent)
@@ -130,6 +168,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     gyro = None
     IMU = None
     diode = None
+    data = None
     
     
     def __init__(self):
@@ -157,8 +196,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.help_menu.addAction('&About', self.about)
 
         self.main_widget = QtWidgets.QWidget(self)
-
         self.wrapper = QtWidgets.QGridLayout(self.main_widget)
+
         self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude',
                                       'Time (s)','Height (m)')
         self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration',
@@ -169,23 +208,20 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                  'Angle from True (CentiDegrees)')
         self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)',
                                    'Voltage (V)')
-        
+       
+        self.data = MyTextBox(self.main_widget) 
+
         self.wrapper.addWidget(self.altitude,0,0)
         self.wrapper.addWidget(self.acceleration,0,1)
         self.wrapper.addWidget(self.gyro,0,2)
         self.wrapper.addWidget(self.IMU,1,0)
         self.wrapper.addWidget(self.diode,1,1)
+        self.wrapper.addWidget(self.data,1,2)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
         
-        # Some really wacky 'threading'. Don't judge. It'll be fixed later.
-        # Also should probably be moved outside of this function
-        '''
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(loop.main_loop)
-        timer.start(100)
-        '''
+
         return
 
     def fileQuit(self):
@@ -218,7 +254,7 @@ Developer:
            4nathan@outlook.com""")
 
         
-		
+	
 def __init__():
     qApp = QtWidgets.QApplication(sys.argv)
     
@@ -230,3 +266,4 @@ def __init__():
 
 if __name__=='__main__':
     __init__()
+
