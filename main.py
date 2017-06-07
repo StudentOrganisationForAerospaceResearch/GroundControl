@@ -43,14 +43,18 @@ class Main:
             
 
     def main_loop(self):
-        print('hello')
+        print("Main Loop Started")
         while True:
             temp_data = self.s.get_data()
+            print(temp_data)
             self.data_recorder.update_all(temp_data)
                 
             self.arrays = self.data_recorder.get_arrays()
             self.window.altitude.update_figure()
             self.window.acceleration.update_figure()
+            self.window.IMU.update_figure()
+            self.window.gyro.update_figure()
+            self.window.diode.update_figure()
         
         return
 
@@ -59,13 +63,13 @@ if __name__=='__main__':
     aw, qApp = UI.__init__()
     temp = Main(aw)
     
-    t1 = Thread(target=sys.exit(qApp.exec_))
-    t2 = Thread(target=temp.main_loop)
+    t = Thread(target=temp.main_loop)
+    print("Initialising backend...")
+    t.daemon = True
+    t.start()
     
     print("Initialising UI...")
-    t1.start()
-    print("Initialising backend...")
-    t2.start()
+    sys.exit(qApp.exec_())
     
     
     print("Done.")

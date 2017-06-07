@@ -225,8 +225,6 @@ def __init__():
     aw = ApplicationWindow()
     aw.setWindowTitle("%s" % progname)
     aw.show()
-
-    #sys.exit(qApp.exec_())
     
     return aw, qApp
 
