@@ -56,11 +56,20 @@ class Main(QThread):
                 
             arrays = self.data_recorder.get_arrays()
             
-            self.window.altitude.update_figure(arrays[0][-200:])
-            self.window.acceleration.update_figure(arrays[1][-200:])
-            self.window.IMU.update_figure(arrays[2][-200:])
-            self.window.gyro.update_figure(arrays[3][-200:])
-            self.window.diode.update_figure(arrays[4][-200:])
+            self.window.altitude.update_figure(((arrays[0][-200:],'Altitude'),))
+            self.window.acceleration.update_figure(((arrays[2][-200:],'Accel-x'),
+                                                    (arrays[3][-200:],'Accel-y'),
+                                                    (arrays[4][-200:],'Accel-z')))
+            self.window.gyro.update_figure(((arrays[5][-200:],'Ang Accel-x'),
+                                            (arrays[6][-200:],'Ang Accel-y'),
+                                            (arrays[7][-200:],'Ang Accel-z')))
+            self.window.mag.update_figure(((arrays[8][-200:],'Mag-x'),
+                                           (arrays[9][-200:],'Mag-y'),
+                                           (arrays[10][-200:],'Mag-z')))
+            
+            self.window.IMU.update_figure(((arrays[11][-200:],'Pitch'),
+                                            (arrays[12][-200:],'Yaw'),
+                                            (arrays[13][-200:],'Roll')))
             self.window.text_boxes.updateText()
             
             #******DO NOT REMOVE*****

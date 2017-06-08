@@ -52,7 +52,7 @@ class MyMplCanvas(FigureCanvas):
 
 
 class MyStaticMplCanvas(MyMplCanvas):
-    """Simple canvas with a sine plot."""
+    """Simple canvas"""
     title = ''
     xlabel = ''
     ylabel = ''
@@ -86,11 +86,15 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
 
-    def update_figure(self, array):
-        self.axes.plot(array)
+    def update_figure(self, lines):
+        
+        for line in lines:
+            self.axes.plot(line[0], label=line[1])
+            
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
+        self.axes.legend(loc='upper left')
         self.draw()
 
 class MyTextBox(QtWidgets.QLabel):
@@ -158,8 +162,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     altitude = None
     acceleration = None
     gyro = None
+    mag = None
     IMU = None
-    diode = None
     text_boxes = None
     
     
@@ -190,18 +194,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
         self.wrapper = QtWidgets.QGridLayout(self.main_widget)
 
-        self.altitude = MyDynamicMplCanvas(self.main_widget,'Altitude','Time (s)','Height (m)')
-        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Acceleration','Time (s)','Acceleration $(m/s^2)$')
-        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyro','Time (s)','Acceleration $(m/s^2)$')
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Barometer','Time (s)','Height (m)')
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Accelerometer','Time (s)','Acceleration $(m/s^2)$')
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyroscope','Time (s)','Acceleration $(m/s^2)$')
+        self.mag = MyDynamicMplCanvas(self.main_widget,'Magnetometer','Time (s)','Tesla (T)')
         self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)','Angle from True (CentiDegrees)')
-        self.diode = MyDynamicMplCanvas(self.main_widget,'Diode','Time (s)','Voltage (V)')
         self.text_boxes = MyTextBox(self.main_widget) 
 
         self.wrapper.addWidget(self.altitude,0,0)
         self.wrapper.addWidget(self.acceleration,0,1)
         self.wrapper.addWidget(self.gyro,1,1)
-        self.wrapper.addWidget(self.IMU,1,0)
-        self.wrapper.addWidget(self.diode,0,2)
+        self.wrapper.addWidget(self.mag,1,0)
+        self.wrapper.addWidget(self.IMU,0,2)
         self.wrapper.addWidget(self.text_boxes,1,2)
 
         self.main_widget.setFocus()
