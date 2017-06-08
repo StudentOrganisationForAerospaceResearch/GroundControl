@@ -48,21 +48,29 @@ class Main(QThread):
             
     def run(self):
         print("Main loop started...")
+        count = 0
         while True:
             temp_data = self.s.get_data()
-            print(temp_data)
+            #print(temp_data) #Enable this for debugging
             self.data_recorder.update_all(temp_data)
                 
             arrays = self.data_recorder.get_arrays()
             
-            self.window.altitude.update_figure(arrays[0])
-            self.window.acceleration.update_figure(arrays[1])
-            self.window.IMU.update_figure(arrays[2])
-            self.window.gyro.update_figure(arrays[3])
-            self.window.diode.update_figure(arrays[4])
+            self.window.altitude.update_figure(arrays[0][-200:])
+            self.window.acceleration.update_figure(arrays[1][-200:])
+            self.window.IMU.update_figure(arrays[2][-200:])
+            self.window.gyro.update_figure(arrays[3][-200:])
+            self.window.diode.update_figure(arrays[4][-200:])
             self.window.text_boxes.updateText()
-
-            self.window.repaint()
+            
+            #******DO NOT REMOVE*****
+            # This code forces a refresh of the interface to prevent the gui
+            # from appearing to freeze. If this is removed, the window will
+            # stop updating at random intervals
+            count += 1
+            if (count == 10):
+                count = 0
+                self.window.repaint()
         
         return
 
