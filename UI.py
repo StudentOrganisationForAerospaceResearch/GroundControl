@@ -171,8 +171,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
-        self.width = 1000
-        self.height = 900
+        self.width = 1100
+        self.height = 1000
         self.resize(self.width,self.height)
         self.file_menu = QtWidgets.QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,

@@ -77,7 +77,7 @@ class Main(QThread):
             # from appearing to freeze. If this is removed, the window will
             # stop updating at random intervals
             count += 1
-            if (count == 10):
+            if (count == 8):
                 count = 0
                 self.window.repaint()
         
