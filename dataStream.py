@@ -29,7 +29,7 @@ class DataStream():
             isWindows=False    
         
         if isWindows:      # This needs to be adjusted to the correct port name... []
-            #import msvcrt
+            # Import msvcrt
             self.ser=serial.Serial('COM4',timeout=1)
         if not isWindows:
             # Import the linux version

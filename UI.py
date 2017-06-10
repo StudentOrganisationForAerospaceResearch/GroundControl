@@ -32,13 +32,9 @@ class MyMplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
-        # We want the axes cleared every time plot() is called
-        self.axes.hold(False)
-        
 
         self.compute_initial_figure()
        
-        #
         FigureCanvas.__init__(self,fig)
         self.setParent(parent)
 
@@ -88,8 +84,9 @@ class MyDynamicMplCanvas(MyMplCanvas):
 
     def update_figure(self, lines):
         
+        self.axes.clear()
         for line in lines:
-            self.axes.plot(line[0], label=line[1])
+            self.axes.plot(line[0], label=line[1])  
             
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
