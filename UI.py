@@ -136,10 +136,10 @@ class MyTextBox(QtWidgets.QLabel):
         self.setLayout(self.lay)
         return 
         
-    def updateText(self):
-        self.temperature.setText("Temperature: "+str(random.randint(0,10)))
-        self.lon.setText("Longitude: "+str(random.randint(0,10)))
-        self.lat.setText("Latitude: "+str(random.randint(0,10)))
+    def updateText(self, temp, long, lat):
+        self.temperature.setText("Temperature: "+str(temp))
+        self.lon.setText("Longitude: "+str(long))
+        self.lat.setText("Latitude: "+str(lat))
         return
         
 class ResizeSlider(QtWidgets.QWidget):
@@ -170,7 +170,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setWindowTitle("application main window")
+        self.setWindowTitle("Application main window")
         self.width = 1100
         self.height = 1000
         self.resize(self.width,self.height)

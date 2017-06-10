@@ -70,7 +70,9 @@ class Main(QThread):
             self.window.IMU.update_figure(((arrays[11][-200:],'Pitch'),
                                             (arrays[12][-200:],'Yaw'),
                                             (arrays[13][-200:],'Roll')))
-            self.window.text_boxes.updateText()
+            self.window.text_boxes.updateText(arrays[14][len(arrays[14])-1], 
+                                              arrays[15][len(arrays[15])-1], 
+                                              arrays[16][len(arrays[16])-1])
             
             #******DO NOT REMOVE*****
             # This code forces a refresh of the interface to prevent the gui

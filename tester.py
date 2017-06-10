@@ -16,6 +16,7 @@ class Tester():
     """
     Very much overengineered to support future improvements.
     """
+    time = 0.0
     altitude = 0.0
     pressure = 0.0
     acceleration_x = 0.0
@@ -38,6 +39,7 @@ class Tester():
         return
     
     def get_data(self):
+        self.time = random.randrange(0, 30, 1)
         self.altitude = random.randrange(0, 30, 1)
         self.pressure = random.randrange(0, 30, 1)
         self.acceleration_x = random.randrange(0, 30, 1)
@@ -56,10 +58,11 @@ class Tester():
         self.longitude = random.randrange(0, 30, 1)
         self.latitude = random.randrange(0, 30, 1)
 
-        return (str(self.altitude) + '|' + str(self.pressure) + '|' + 
-                str(self.acceleration_x) + '|' + str(self.acceleration_y) + '|' 
-                + str(self.acceleration_z) + '|' + str(self.ang_acceleration_x)
-                + '|' + str(self.ang_acceleration_y) + '|' + 
+        return (str(self.time) + '|' + str(self.altitude) + '|' + 
+                str(self.pressure) + '|' + str(self.acceleration_x) + '|' + 
+                str(self.acceleration_y) + '|' + str(self.acceleration_z) 
+                + '|' + str(self.ang_acceleration_x) + '|' + 
+                str(self.ang_acceleration_y) + '|' + 
                 str(self.ang_acceleration_z) + '|' + str(self.magnetic_field_x)
                 + '|' + str(self.magnetic_field_y) + '|' + 
                 str(self.magnetic_field_z) + '|' + str(self.pitch) + '|' + 
