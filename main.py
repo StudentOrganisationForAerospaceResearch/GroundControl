@@ -56,20 +56,20 @@ class Main(QThread):
                 
             arrays = self.data_recorder.get_arrays()
             
-            self.window.altitude.update_figure(((arrays[0][-200:],'Altitude'),))
-            self.window.acceleration.update_figure(((arrays[2][-200:],'Accel-x'),
-                                                    (arrays[3][-200:],'Accel-y'),
-                                                    (arrays[4][-200:],'Accel-z')))
-            self.window.gyro.update_figure(((arrays[5][-200:],'Ang Accel-x'),
-                                            (arrays[6][-200:],'Ang Accel-y'),
-                                            (arrays[7][-200:],'Ang Accel-z')))
-            self.window.mag.update_figure(((arrays[8][-200:],'Mag-x'),
-                                           (arrays[9][-200:],'Mag-y'),
-                                           (arrays[10][-200:],'Mag-z')))
+            self.window.altitude.update_figure(((arrays[0][-140:],'Altitude'),))
+            self.window.acceleration.update_figure(((arrays[2][-140:],'Accel-x'),
+                                                    (arrays[3][-140:],'Accel-y'),
+                                                    (arrays[4][-140:],'Accel-z')))
+            self.window.gyro.update_figure(((arrays[5][-140:],'Ang Accel-x'),
+                                            (arrays[6][-140:],'Ang Accel-y'),
+                                            (arrays[7][-140:],'Ang Accel-z')))
+            self.window.mag.update_figure(((arrays[8][-140:],'Mag-x'),
+                                           (arrays[9][-140:],'Mag-y'),
+                                           (arrays[10][-140:],'Mag-z')))
             
-            self.window.IMU.update_figure(((arrays[11][-200:],'Pitch'),
-                                            (arrays[12][-200:],'Yaw'),
-                                            (arrays[13][-200:],'Roll')))
+            self.window.IMU.update_figure(((arrays[11][-140:],'Pitch'),
+                                            (arrays[12][-140:],'Yaw'),
+                                            (arrays[13][-140:],'Roll')))
             self.window.text_boxes.updateText(arrays[14][len(arrays[14])-1], 
                                               arrays[15][len(arrays[15])-1], 
                                               arrays[16][len(arrays[16])-1])
