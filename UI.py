@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 import sys
 import os
 import random
+import numpy as np
 from PyQt5 import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -80,13 +81,13 @@ class MyDynamicMplCanvas(MyMplCanvas):
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.axes.legend(loc='upper left')
-        print(self.lines)
 
     def update_figure(self, newLines):
         for line, newLine in zip(self.lines, newLines):
             line.set_ydata(newLine[0])
             line.set_xdata(newLine[1])
         self.axes.set_xlim(0, len(newLines[0][0]))
+        self.axes.set_ylim(np.min(), np.max())
         self.draw()
 
 class MyTextBox(QtWidgets.QLabel):
