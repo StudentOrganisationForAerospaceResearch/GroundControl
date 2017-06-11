@@ -11,9 +11,7 @@ Description:
     Main file. Run this to run the program.
 """
 
-import sys
 import UI
-#from threading import Thread
 import data
 from PyQt5.QtCore import QThread
 
@@ -93,7 +91,7 @@ if __name__=='__main__':
     thread.start()
     
     print("Initialising UI...")
-    sys.exit(qApp.exec_())
+    qApp.exec_()
     
     
     print("Done.")

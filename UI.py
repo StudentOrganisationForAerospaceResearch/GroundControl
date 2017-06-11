@@ -63,7 +63,7 @@ class MyStaticMplCanvas(MyMplCanvas):
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
-    """A canvas that updates itself every 1/10 seconds with a new plot."""
+    """A canvas that can be updated with a new plot."""
     title = ''
     xlabel = ''
     ylabel = ''
@@ -175,13 +175,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.file_menu.addAction('&Quit', self.fileQuit,
                                  QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
         self.menuBar().addMenu(self.file_menu)
-
+        ''' For future improvements
         self.options_menu = QtWidgets.QMenu('&Options', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.options_menu)
 		
         self.options_menu.addAction('&Resize', ResizeSlider)
-		
+        '''
         self.help_menu = QtWidgets.QMenu('&Help', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.help_menu)
@@ -191,11 +191,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
         self.wrapper = QtWidgets.QGridLayout(self.main_widget)
 
-        self.altitude = MyDynamicMplCanvas(self.main_widget,'Barometer','Time (s)','Height (m)')
-        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Accelerometer','Time (s)','Acceleration $(m/s^2)$')
-        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyroscope','Time (s)','Acceleration $(m/s^2)$')
-        self.mag = MyDynamicMplCanvas(self.main_widget,'Magnetometer','Time (s)','Tesla (T)')
-        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)','Angle from True (CentiDegrees)')
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Barometer','Time','Height (m)')
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Accelerometer','Time','Acceleration $(m/s^2)$')
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyroscope','Time','Acceleration $(m/s^2)$')
+        self.mag = MyDynamicMplCanvas(self.main_widget,'Magnetometer','Time','Tesla (T)')
+        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time','Angle from True (CentiDegrees)')
         self.text_boxes = MyTextBox(self.main_widget) 
 
         self.wrapper.addWidget(self.altitude,0,0)
@@ -248,6 +248,7 @@ def __init__():
     aw = ApplicationWindow()
     aw.setWindowTitle("%s" % progname)
     aw.show()
+    aw.activateWindow()
     
     return aw, qApp
 
