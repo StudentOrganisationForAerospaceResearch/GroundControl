@@ -16,9 +16,6 @@ from __future__ import unicode_literals
 import sys
 import os
 import random
-import matplotlib
-# Make sure that we are using QT5
-matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -32,8 +29,6 @@ class MyMplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
-
-        self.compute_initial_figure()
        
         FigureCanvas.__init__(self,fig)
         self.setParent(parent)
@@ -63,7 +58,7 @@ class MyStaticMplCanvas(MyMplCanvas):
 
 
 class MyDynamicMplCanvas(MyMplCanvas):
-    """A canvas that updates itself every 1/10 seconds with a new plot."""
+    """A canvas that can be updated with a new plot."""
     title = ''
     xlabel = ''
     ylabel = ''
@@ -76,22 +71,22 @@ class MyDynamicMplCanvas(MyMplCanvas):
         args = [args[0]]
         MyMplCanvas.__init__(self, *args, **kwargs)
 
-    def compute_initial_figure(self):
-        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4])
-        self.axes.set_title(self.title)
-        self.axes.set_xlabel(self.xlabel)
-        self.axes.set_ylabel(self.ylabel)
-
-    def update_figure(self, lines):
-        
-        self.axes.clear()
-        for line in lines:
-            self.axes.plot(line[0], label=line[1])  
+    def compute_initial_figure(self, newLines):
+        self.lines = []
+        for line in newLines:
+            self.lines.append(self.axes.plot(line[0], label=line[1])[0])
             
         self.axes.set_title(self.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
         self.axes.legend(loc='upper left')
+        print(self.lines)
+
+    def update_figure(self, newLines):
+        for line, newLine in zip(self.lines, newLines):
+            line.set_ydata(newLine[0])
+            line.set_xdata(newLine[1])
+        self.axes.set_xlim(0, len(newLines[0][0]))
         self.draw()
 
 class MyTextBox(QtWidgets.QLabel):
@@ -165,23 +160,29 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     
     def __init__(self):
-        QtWidgets.QMainWindow.__init__(self)
+        self.window = QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("Application main window")
+        
         self.width = 1100
         self.height = 1000
         self.resize(self.width,self.height)
+        
         self.file_menu = QtWidgets.QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,
                                  QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
         self.menuBar().addMenu(self.file_menu)
-
+        
+        '''
+        # this is code for extra features to be added in the future. Should be moved to a different branch when we have time.
+        
         self.options_menu = QtWidgets.QMenu('&Options', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.options_menu)
 		
         self.options_menu.addAction('&Resize', ResizeSlider)
-		
+		 '''
+         
         self.help_menu = QtWidgets.QMenu('&Help', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.help_menu)
@@ -191,11 +192,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.main_widget = QtWidgets.QWidget(self)
         self.wrapper = QtWidgets.QGridLayout(self.main_widget)
 
-        self.altitude = MyDynamicMplCanvas(self.main_widget,'Barometer','Time (s)','Height (m)')
-        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Accelerometer','Time (s)','Acceleration $(m/s^2)$')
-        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyroscope','Time (s)','Acceleration $(m/s^2)$')
-        self.mag = MyDynamicMplCanvas(self.main_widget,'Magnetometer','Time (s)','Tesla (T)')
-        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time (s)','Angle from True (CentiDegrees)')
+        self.altitude = MyDynamicMplCanvas(self.main_widget,'Barometer','Time','Height (m)')
+        self.acceleration = MyDynamicMplCanvas(self.main_widget,'Accelerometer','Time','Acceleration $(m/s^2)$')
+        self.gyro = MyDynamicMplCanvas(self.main_widget,'Gyroscope','Time','Acceleration $(m/s^2)$')
+        self.mag = MyDynamicMplCanvas(self.main_widget,'Magnetometer','Time','Tesla (T)')
+        self.IMU = MyDynamicMplCanvas(self.main_widget,'IMU','Time','Angle from True (CentiDegrees)')
         self.text_boxes = MyTextBox(self.main_widget) 
 
         self.wrapper.addWidget(self.altitude,0,0)
@@ -207,7 +208,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
-        
 
         return
 
@@ -248,6 +248,7 @@ def __init__():
     aw = ApplicationWindow()
     aw.setWindowTitle("%s" % progname)
     aw.show()
+    aw.activateWindow()
     
     return aw, qApp
 

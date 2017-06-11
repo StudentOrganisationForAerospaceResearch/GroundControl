@@ -11,9 +11,9 @@ Description:
     Main file. Run this to run the program.
 """
 
-import sys
+#import sys
 import UI
-#from threading import Thread
+#import numpy as np
 import data
 from PyQt5.QtCore import QThread
 
@@ -48,6 +48,34 @@ class Main(QThread):
             
     def run(self):
         print("Main loop started...")
+        
+        # Must initialise plots
+        temp_data = self.s.get_data()
+        #print(temp_data) #Enable this for debugging
+        self.data_recorder.update_all(temp_data)
+        
+        arrays = self.data_recorder.get_arrays()
+        
+        self.window.altitude.compute_initial_figure(((arrays[0][-150:],'Altitude'),))
+        
+        self.window.acceleration.compute_initial_figure(((arrays[2][-150:],'Accel-x'),
+                                                 (arrays[3][-150:],'Accel-y'),
+                                                 (arrays[4][-150:],'Accel-z')))
+        
+        self.window.gyro.compute_initial_figure(((arrays[5][-150:],'Ang Accel-x'),
+                                         (arrays[6][-150:],'Ang Accel-y'),
+                                         (arrays[7][-150:],'Ang Accel-z')))
+        
+        self.window.mag.compute_initial_figure(((arrays[8][-150:],'Mag-x'),
+                                        (arrays[9][-150:],'Mag-y'),
+                                        (arrays[10][-150:],'Mag-z')))
+        
+        self.window.IMU.compute_initial_figure(((arrays[11][-150:],'Pitch'),
+                                        (arrays[12][-150:],'Yaw'),
+                                        (arrays[13][-150:],'Roll')))
+        
+        # Loop to update
+        
         count = 0
         while True:
             temp_data = self.s.get_data()
@@ -56,20 +84,26 @@ class Main(QThread):
                 
             arrays = self.data_recorder.get_arrays()
             
-            self.window.altitude.update_figure(((arrays[0][-200:],'Altitude'),))
-            self.window.acceleration.update_figure(((arrays[2][-200:],'Accel-x'),
-                                                    (arrays[3][-200:],'Accel-y'),
-                                                    (arrays[4][-200:],'Accel-z')))
-            self.window.gyro.update_figure(((arrays[5][-200:],'Ang Accel-x'),
-                                            (arrays[6][-200:],'Ang Accel-y'),
-                                            (arrays[7][-200:],'Ang Accel-z')))
-            self.window.mag.update_figure(((arrays[8][-200:],'Mag-x'),
-                                           (arrays[9][-200:],'Mag-y'),
-                                           (arrays[10][-200:],'Mag-z')))
+            x_axis = range(len(arrays[0]))
             
-            self.window.IMU.update_figure(((arrays[11][-200:],'Pitch'),
-                                            (arrays[12][-200:],'Yaw'),
-                                            (arrays[13][-200:],'Roll')))
+            self.window.altitude.update_figure(((arrays[0][-150:],x_axis),))
+            
+            self.window.acceleration.update_figure(((arrays[2][-150:],x_axis),
+                                                    (arrays[3][-150:],x_axis),
+                                                    (arrays[4][-150:],x_axis)))
+            
+            self.window.gyro.update_figure(((arrays[5][-150:],x_axis),
+                                            (arrays[6][-150:],x_axis),
+                                            (arrays[7][-150:],x_axis)))
+            
+            self.window.mag.update_figure(((arrays[8][-150:],x_axis),
+                                           (arrays[9][-150:],x_axis),
+                                           (arrays[10][-150:],x_axis)))
+            
+            self.window.IMU.update_figure(((arrays[11][-150:],x_axis),
+                                            (arrays[12][-150:],x_axis),
+                                            (arrays[13][-150:],x_axis)))
+            
             self.window.text_boxes.updateText(arrays[14][len(arrays[14])-1], 
                                               arrays[15][len(arrays[15])-1], 
                                               arrays[16][len(arrays[16])-1])
@@ -82,19 +116,22 @@ class Main(QThread):
             if (count == 8):
                 count = 0
                 self.window.repaint()
+                
+            
         
         return
 
 if __name__=='__main__':
-    
     aw, qApp = UI.__init__()
     thread = Main(aw)
+    thread.aw = aw
+    thread.qApp = qApp
+    
     print("Initialising backend...")
     thread.start()
     
     print("Initialising UI...")
-    sys.exit(qApp.exec_())
-    
+    qApp.exec_()
     
     print("Done.")
 
