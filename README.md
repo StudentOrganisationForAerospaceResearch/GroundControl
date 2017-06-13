@@ -12,9 +12,13 @@ analysed in real time as data is received.
 Python 3.X is required.
 
 The following python libraries are needed. These can be installed using the command line or terminal command 'pip install *library name*'
+
 -matplotlib
+
 -scipy
+
 -numpy
+
 -pyqt
 
 Spyder is the recommended IDE for development of this project. If you wish to download a more robust solution that encapsulates most of these libraries, try out the newest Anaconda distribution.
