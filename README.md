@@ -19,7 +19,7 @@ The following python libraries are needed. These can be installed using the comm
 
 -numpy
 
--pyqt
+-pyqt5
 
 Spyder is the recommended IDE for development of this project. If you wish to download a more robust solution that encapsulates most of these libraries, try out the newest Anaconda distribution.
 
