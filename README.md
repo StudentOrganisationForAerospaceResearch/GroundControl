@@ -7,6 +7,18 @@ a downlink from the rocket, saving all data locally to corresponding files as
 a backup from the rocket. Additionally, data from the rocket is plotted and 
 analysed in real time as data is received.
 
+# Dependencies
+
+Python 3.X is required.
+
+The following python libraries are needed. These can be installed using the command line or terminal command 'pip install *library name*'
+-matplotlib
+-scipy
+-numpy
+-pyqt
+
+Spyder is the recommended IDE for development of this project. If you wish to download a more robust solution that encapsulates most of these libraries, try out the newest Anaconda distribution.
+
 # Our standard header
 
 Please use and maintain this header for all documents:
