@@ -21,7 +21,7 @@ class Main(QThread):
     data_recorder = None
     
     #TODO: Disable test when ready
-    def __init__(self, window, test=True):
+    def __init__(self, window, test=False):
         QThread.__init__(self)
         self.window = window
         
@@ -50,27 +50,28 @@ class Main(QThread):
         while True:
             temp_data = self.s.get_data()
             #print(temp_data) #Enable this for debugging
-            self.data_recorder.update_all(temp_data)
+            if not temp_data == None:
+                self.data_recorder.update_all(temp_data)
+                    
+                arrays = self.data_recorder.get_arrays()
                 
-            arrays = self.data_recorder.get_arrays()
-            
-            self.window.altitude.update_figure(((arrays[0][-140:],'Altitude'),))
-            self.window.acceleration.update_figure(((arrays[2][-140:],'Accel-x'),
-                                                    (arrays[3][-140:],'Accel-y'),
-                                                    (arrays[4][-140:],'Accel-z')))
-            self.window.gyro.update_figure(((arrays[5][-140:],'Ang Accel-x'),
-                                            (arrays[6][-140:],'Ang Accel-y'),
-                                            (arrays[7][-140:],'Ang Accel-z')))
-            self.window.mag.update_figure(((arrays[8][-140:],'Mag-x'),
-                                           (arrays[9][-140:],'Mag-y'),
-                                           (arrays[10][-140:],'Mag-z')))
-            
-            self.window.IMU.update_figure(((arrays[11][-140:],'Pitch'),
-                                            (arrays[12][-140:],'Yaw'),
-                                            (arrays[13][-140:],'Roll')))
-            self.window.text_boxes.updateText(arrays[14][len(arrays[14])-1], 
-                                              arrays[15][len(arrays[15])-1], 
-                                              arrays[16][len(arrays[16])-1])
+                self.window.altitude.update_figure(((arrays[0][-140:],'Altitude'),))
+                self.window.acceleration.update_figure(((arrays[2][-140:],'Accel-x'),
+                                                        (arrays[3][-140:],'Accel-y'),
+                                                        (arrays[4][-140:],'Accel-z')))
+                self.window.gyro.update_figure(((arrays[5][-140:],'Ang Accel-x'),
+                                                (arrays[6][-140:],'Ang Accel-y'),
+                                                (arrays[7][-140:],'Ang Accel-z')))
+                self.window.mag.update_figure(((arrays[8][-140:],'Mag-x'),
+                                               (arrays[9][-140:],'Mag-y'),
+                                               (arrays[10][-140:],'Mag-z')))
+                
+                self.window.IMU.update_figure(((arrays[11][-140:],'Pitch'),
+                                                (arrays[12][-140:],'Yaw'),
+                                                (arrays[13][-140:],'Roll')))
+                self.window.text_boxes.updateText(arrays[14][len(arrays[14])-1], 
+                                                  arrays[15][len(arrays[15])-1], 
+                                                  arrays[16][len(arrays[16])-1])
             
             #******DO NOT REMOVE*****
             # This code forces a refresh of the interface to prevent the gui

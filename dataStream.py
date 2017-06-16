@@ -30,14 +30,14 @@ class DataStream():
         
         if isWindows:      # This needs to be adjusted to the correct port name... []
             # Import msvcrt
-            self.ser=serial.Serial('COM4',timeout=1)
+            self.ser=serial.Serial('COM3',timeout=1)
         if not isWindows:
             # Import the linux version
             self.ser=serial.Serial('/dev/ttyUSB0')
         return None
     
     
-    def getData(self):
+    def get_data(self):
         currentLine = self.ser.readline().rstrip()
   
         if len(currentLine) > 3 and currentLine[0] == '$' and currentLine[-1] == '*':
