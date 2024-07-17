@@ -30,7 +30,3 @@ of Calgary through one of the following methods:
 
 SOAR:
     Email: soar@ucalgary.ca
-    
-Developer:
-    Email: nathan.meulenbroek@ucalgary.ca
-           4nathan@outlook.com
